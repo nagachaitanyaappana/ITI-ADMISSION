@@ -15,7 +15,7 @@ public class ReportController{
     public String tradeDisplayPost(@RequestBody DistrictCollegeType districtCollegeType) {
         dist = districtCollegeType.getDist();
         type = districtCollegeType.getType();
-        
+
         return "Received District: " + dist + ", Type: " + type;
     }
 
