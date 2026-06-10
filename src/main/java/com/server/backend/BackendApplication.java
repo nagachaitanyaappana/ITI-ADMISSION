@@ -9,5 +9,6 @@ public class BackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);
 	}
-	//changed java version to 21
+	//changed java version to 21 in pom.xml to fix the error: "error: release version 17 not supported"
+	
 }
