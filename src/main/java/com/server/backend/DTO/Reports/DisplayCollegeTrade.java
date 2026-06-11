@@ -1,3 +1,4 @@
+//A DTO to pass the college name , trade , seat strength to the frontend for the report display
 package com.server.backend.DTO.Reports;
 
 public class DisplayCollegeTrade {
