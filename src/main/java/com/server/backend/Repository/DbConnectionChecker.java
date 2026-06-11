@@ -13,8 +13,7 @@ import jakarta.annotation.PostConstruct;
 @Component
 public class DbConnectionChecker {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(DbConnectionChecker.class);
+    private static final Logger logger = LoggerFactory.getLogger(DbConnectionChecker.class);
 
     private final DataSource dataSource;
 
