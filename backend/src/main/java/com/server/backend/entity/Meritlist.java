@@ -1,4 +1,5 @@
 package com.server.backend.entity;
+import com.server.backend.entity.MeritListId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -7,8 +8,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ranks")
-@IdClass(Meritlist.class)
-public class Meritlist{
+@IdClass(MeritListId.class)
+public class MeritList{
 
     @Column(name = "dist_code")
     private String dist_Code;
@@ -44,7 +45,7 @@ public class Meritlist{
     @Column(name = "app_status")
     private String app_status;
 
-    public Meritlist() {
+    public MeritList() {
     }
 
     public String getDistCode() {
@@ -123,7 +124,7 @@ public class Meritlist{
         return app_status;
     }
 
-    public void setAppStatus(String appStatus) {
+    public void setAppStatus(String app_status) {
         this.app_status = app_status;
     }
 }
