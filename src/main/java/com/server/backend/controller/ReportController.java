@@ -1,5 +1,8 @@
 package com.server.backend.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,16 +14,25 @@ import com.server.backend.DTO.Reports.DistrictCollegeType;
 @RestController
 public class ReportController {
 
-    @PostMapping("/tradeDisplay")
-    public DisplayCollegeTrade tradeDisplayPost(@RequestBody DistrictCollegeType districtCollegeType) {
+        @PostMapping("/tradeDisplay")
+        public List<DisplayCollegeTrade> tradeDisplayPost(@RequestBody DistrictCollegeType districtCollegeType) {
 
-        DisplayCollegeTrade displayCollegeTrade = new DisplayCollegeTrade();
+        List<DisplayCollegeTrade> trades = new ArrayList<>();
 
-        displayCollegeTrade.setCollegeName("Example College");
-        displayCollegeTrade.setTradeName("Example Trade");
-        displayCollegeTrade.setSeatStrength("100");
+        DisplayCollegeTrade trade1 = new DisplayCollegeTrade();
+        trade1.setCollegeName("College A");
+        trade1.setTradeName("Electrician");
+        trade1.setSeatStrength("100");
 
-        return displayCollegeTrade;
+        DisplayCollegeTrade trade2 = new DisplayCollegeTrade();
+        trade2.setCollegeName("College B");
+        trade2.setTradeName("Fitter");
+        trade2.setSeatStrength("80");
+
+        trades.add(trade1);
+        trades.add(trade2);
+
+        return trades;
     }
 
     @GetMapping("/AboutStrive")
