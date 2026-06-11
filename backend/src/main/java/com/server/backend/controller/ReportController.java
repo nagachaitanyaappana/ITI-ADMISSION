@@ -26,6 +26,6 @@ public class ReportController{
 
     @GetMapping("/DisclosureManagement")
     public String disclosureManagement() {
-        return "Disclosure Management.";
+        return "Disclosure Management.";//
     }
 }
