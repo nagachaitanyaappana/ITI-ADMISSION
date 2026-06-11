@@ -1,4 +1,4 @@
-package com.server.backend.DTO.Reports;
+package com.server.backend.DTO.Institute;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

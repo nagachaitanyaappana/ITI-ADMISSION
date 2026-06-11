@@ -9,7 +9,7 @@ import jakarta.persistence.Column;
 @Entity
 @Table(name = "iti")
 
-public class Iti {
+public class iti {
 
     @Id
     @Column(name = "iti_code")
