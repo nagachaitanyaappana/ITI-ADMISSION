@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.Reports.DistrictCollegeType;
+import com.server.backend.DTO.Reports.distnames;
 import com.server.backend.Repository.districtmasterrepo;
 
 @RestController
@@ -19,12 +20,15 @@ public class ReportController {
         }
 
         @PostMapping("/tradeDisplay")
-        public List<String> tradeDisplayPost(@RequestBody DistrictCollegeType districtCollegeType) {
+        public distnames tradeDisplayPost(@RequestBody DistrictCollegeType districtCollegeType) {
            // String dist = districtCollegeType.getDist();
             //String type = districtCollegeType.getType();
 
-            
-            return districtmasterrepo.findAllNames();
+            List<String> districtNames = districtmasterrepo.findAllNames();
+            distnames names = new distnames();
+            names.setDistrictName(districtNames);
+            return names;
+
 
     }
 
