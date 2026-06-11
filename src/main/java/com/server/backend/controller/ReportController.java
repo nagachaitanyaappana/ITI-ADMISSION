@@ -12,11 +12,7 @@ import com.server.backend.DTO.Reports.DistrictCollegeType;
 public class ReportController {
 
     @PostMapping("/tradeDisplay")
-    public String tradeDisplayPost(
-            @RequestBody DistrictCollegeType districtCollegeType) {
-
-        //String dist = districtCollegeType.getDist();
-        //String type = districtCollegeType.getType();
+    public DisplayCollegeTrade tradeDisplayPost(@RequestBody DistrictCollegeType districtCollegeType) {
 
         DisplayCollegeTrade displayCollegeTrade = new DisplayCollegeTrade();
 
@@ -24,8 +20,8 @@ public class ReportController {
         displayCollegeTrade.setTradeName("Example Trade");
         displayCollegeTrade.setSeatStrength("100");
 
-        return districtCollegeType.getDist() + " - " + districtCollegeType.getType() + " - " + displayCollegeTrade.getCollegeName() + " - " + displayCollegeTrade.getTradeName() + " - " + displayCollegeTrade.getSeatStrength();   
-       }
+        return displayCollegeTrade;
+    }
 
     @GetMapping("/AboutStrive")
     public String aboutStrive() {
