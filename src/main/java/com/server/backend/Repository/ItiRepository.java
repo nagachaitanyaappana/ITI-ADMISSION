@@ -1,7 +1,7 @@
 package com.server.backend.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.server.backend.entity.Iti;
+import com.server.backend.entity.iti;
 
 public interface ItiRepository
-        extends JpaRepository<Iti,String> {
+        extends JpaRepository<iti,String> {
 }
