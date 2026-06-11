@@ -19,12 +19,12 @@ public class ItiServiceImpl implements ItiService {
     @Override
     public iti createIti(ItiDto dto) {
 
-        iti ITI = new iti();
+        iti iti1 = new iti();
 
-        ITI.setItiCode(dto.getItiCode());
-        ITI.setItiName(dto.getItiName());
+        iti1.setItiCode(dto.getItiCode());
+        iti1.setItiName(dto.getItiName());
 
-        return repository.save(ITI);
+        return repository.save(iti1);
     }
 
     @Override
@@ -41,12 +41,12 @@ public class ItiServiceImpl implements ItiService {
     @Override
     public iti updateIti(String itiCode, ItiDto dto) {
 
-        iti ITI = repository.findById(itiCode)
+        iti iti1 = repository.findById(itiCode)
                 .orElse(null);
 
-        if (ITI != null) {
-            ITI.setItiName(dto.getItiName());
-            return repository.save(ITI);
+        if (iti1 != null) {
+            iti1.setItiName(dto.getItiName());
+            return repository.save(iti1);
         }
 
         return null;
