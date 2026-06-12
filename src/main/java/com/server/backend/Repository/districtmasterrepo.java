@@ -15,6 +15,6 @@ public interface districtmasterrepo extends JpaRepository<dist_master, String> {
     @Query("SELECT e.distname FROM dist_master e")
     List<String> findAllNames();
 
-   @Query(value = "SELECT dist_code FROM dist_mst WHERE dist_name = :distName LIMIT 1", nativeQuery = true)
-    List<String> findCodeByDistrictName(@Param("distName") String distName);
+    @Query(value = "SELECT dist_code FROM dist_mst WHERE dist_name = :distName LIMIT 1", nativeQuery = true)
+    String findCodeByDistrictName(@Param("distName") String distName);
 }
