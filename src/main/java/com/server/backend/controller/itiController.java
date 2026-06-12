@@ -11,40 +11,40 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Institute.ItiDto;
-import com.server.backend.entity.iti;
+import com.server.backend.entity.Iti;
 import com.server.backend.service.ItiService;
 
 @RestController
 @RequestMapping("/api/itis")
-public class itiController {
+public class ItiController {
 
     private final ItiService itiService;
 
-    public itiController(ItiService itiService) {
+    public ItiController(ItiService itiService) {
         this.itiService = itiService;
     }
 
     @GetMapping
-    public List<iti> getAllItis() {
+    public List<Iti> getAllItis() {
         return itiService.getAllItis();
     }
 
     @GetMapping("/{itiCode}")
-    public iti getItiByCode(
+    public Iti getItiByCode(
             @PathVariable String itiCode) {
 
         return itiService.getItiByCode(itiCode);
     }
 
     @PostMapping
-    public iti createIti(
+    public Iti createIti(
             @RequestBody ItiDto dto) {
 
         return itiService.createIti(dto);
     }
 
     @PutMapping("/{itiCode}")
-    public iti updateIti(
+    public Iti updateIti(
             @PathVariable String itiCode,
             @RequestBody ItiDto dto) {
 
