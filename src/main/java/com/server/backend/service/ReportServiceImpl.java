@@ -38,9 +38,9 @@ public class ReportServiceImpl implements ReportService {
         String distCode = districtMasterRepository.findCodeByDistrictName(dist);
         List<String> itiNames;
 
-        if (type.equalsIgnoreCase("govt")) {
+        if ("govt".equalsIgnoreCase(type)) {
             itiNames = itiRepository.findItiNamesByDistrictCodeAndGovt(distCode, "G");
-        } else if (type.equalsIgnoreCase("private")) {
+        } else if ("private".equalsIgnoreCase(type)) {
             itiNames = itiRepository.findItiNamesByDistrictCodeAndGovt(distCode, "P");
         } else {
             itiNames = itiRepository.findItiNamesByDistrictCode(distCode);
