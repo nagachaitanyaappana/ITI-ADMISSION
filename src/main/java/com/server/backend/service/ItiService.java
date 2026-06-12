@@ -1,16 +1,16 @@
 package com.server.backend.service;
 import java.util.List;
 import com.server.backend.DTO.Institute.ItiDto;
-import com.server.backend.entity.Iti;
+import com.server.backend.entity.iti;
 
 public interface ItiService {
-     Iti createIti(ItiDto dto);
+     iti createIti(ItiDto dto);
 
-    List<Iti> getAllItis();
+    List<iti> getAllItis();
 
-    Iti getItiByCode(String itiCode);
+    iti getItiByCode(String itiCode);
 
-    Iti updateIti(String itiCode, ItiDto dto);
+    iti updateIti(String itiCode, ItiDto dto);
 
     void deleteIti(String itiCode);
     
