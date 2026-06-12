@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 @Table(name = "iti")
 @Data
-public class iti {
+public class Iti {
 
     @Id
     @Column(name = "iti_code")
