@@ -1,15 +1,14 @@
 package com.server.backend.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Table(name = "iti")
 @Data
-
-public class iti {
+public class Iti {
 
     @Id
     @Column(name = "iti_code")
@@ -19,10 +18,10 @@ public class iti {
     private String itiName;
 
     @Column(name = "govt")
-    private Character govt;
+    private String govt;
 
     @Column(name = "dist_code", nullable = false)
-    private Character distCode;
+    private String distCode;
 
     @Column(name = "capacity")
     private Integer capacity;
@@ -50,4 +49,34 @@ public class iti {
 
     @Column(name = "mobile")
     private String mobile;
+    @Column(name = "ip_address")
+    private String ipAddress;
+
+
+    @Column(name = "username")
+
+    private String username;
+
+
+    @Column(name = "password")
+
+    private String password;
+
+
+    @Column(name = "pin_code")
+    private String pinCode;
+
+    @Column(name = "iti_type")
+
+    private String itiType;
+
+
+    @Column(name = "appcode")
+
+    private String appCode;
+
+
+    @Column(name = "trno")
+
+    private String trNo;
 }

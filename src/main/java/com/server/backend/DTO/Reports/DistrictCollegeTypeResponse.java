@@ -1,7 +1,7 @@
 // DTO for TradeDisplay report. This class will be used to receive the request body (District and Type) from the frontend.
 package com.server.backend.DTO.Reports;
 
-public class DistrictCollegeType {
+public class DistrictCollegeTypeResponse {
     private String dist;
     private String type;
 

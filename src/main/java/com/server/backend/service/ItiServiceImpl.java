@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.DTO.Institute.ItiDto;
+import com.server.backend.entity.Iti;
 import com.server.backend.Repository.ItiRepository;
-import com.server.backend.entity.iti;
 
 
 @Service
@@ -17,9 +17,9 @@ public class ItiServiceImpl implements ItiService {
     private ItiRepository repository;
 
     @Override
-    public iti createIti(ItiDto dto) {
+    public Iti createIti(ItiDto dto) {
 
-        iti iti1 = new iti();
+        Iti iti1 = new Iti();
 
         iti1.setItiCode(dto.getItiCode());
         iti1.setItiName(dto.getItiName());
@@ -28,21 +28,20 @@ public class ItiServiceImpl implements ItiService {
     }
 
     @Override
-    public List<iti> getAllItis() {
+    public List<Iti> getAllItis() {
         return repository.findAll();
     }
 
     @Override
-    public iti getItiByCode(String itiCode) {
+    public Iti getItiByCode(String itiCode) {
         return repository.findById(itiCode)
                 .orElse(null);
     }
 
     @Override
-    public iti updateIti(String itiCode, ItiDto dto) {
+    public Iti updateIti(String itiCode, ItiDto dto) {
 
-        iti iti1 = repository.findById(itiCode)
-                .orElse(null);
+        Iti iti1 = repository.findById(itiCode).orElse(null);
 
         if (iti1 != null) {
             iti1.setItiName(dto.getItiName());
