@@ -50,7 +50,7 @@ public class ReportController {
             iti_names =   itiRepository.findItiNamesByDistrictCode(dist_code);
 
         ITINameResponse response = new ITINameResponse();
-        response.setItiNames(iti_names);
+        response.setItiNames(iti_names);//ignore
 
         return response;
     }
