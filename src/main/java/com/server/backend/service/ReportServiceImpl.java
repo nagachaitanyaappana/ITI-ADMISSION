@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
 import com.server.backend.DTO.Reports.DistrictNameResponse;
 import com.server.backend.DTO.Reports.ITINameResponse;
+import com.server.backend.DTO.Reports.ItiTradeRequest;
+import com.server.backend.DTO.Reports.ItiTradeResponse;
 import com.server.backend.Repository.DistrictMasterRepository;
 import com.server.backend.Repository.ItiRepository;
 
@@ -49,6 +51,19 @@ public class ReportServiceImpl implements ReportService {
         ITINameResponse response = new ITINameResponse();
         response.setItiNames(itiNames);
 
+        return response;
+    }
+
+    @Override
+    public ItiTradeResponse getTradesByItiName(ItiTradeRequest request) {
+        ItiTradeResponse response = new ItiTradeResponse();
+        if (request != null && request.getItiName() != null) {
+            String itiCode = itiRepository.findCodeByItiName(request.getItiName());
+            if (itiCode != null) {
+                List<String> trades = itiRepository.findTradeShortsByItiCode(itiCode);
+                response.setTrades(trades);
+            }
+        }
         return response;
     }
 }

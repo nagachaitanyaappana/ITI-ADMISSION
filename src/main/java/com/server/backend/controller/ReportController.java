@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
 import com.server.backend.DTO.Reports.DistrictNameResponse;
 import com.server.backend.DTO.Reports.ITINameResponse;
+import com.server.backend.DTO.Reports.ItiTradeRequest;
+import com.server.backend.DTO.Reports.ItiTradeResponse;
 import com.server.backend.service.ReportService;
 
 @RestController
@@ -27,6 +29,11 @@ public class ReportController {
     @PostMapping("/districts/code")
     public ITINameResponse getItiNamesByDistrict(@RequestBody DistrictCollegeTypeResponse districtCollegeType) {
         return reportService.getItiNamesByDistrict(districtCollegeType);
+    }
+
+    @PostMapping("/iti/trades")
+    public ItiTradeResponse getTradesByItiName(@RequestBody ItiTradeRequest request) {
+        return reportService.getTradesByItiName(request);
     }
 
     @GetMapping("/AboutStrive")
