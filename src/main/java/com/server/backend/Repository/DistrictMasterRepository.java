@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.server.backend.entity.dist_master;
 
 @Repository
-public interface districtmasterrepo extends JpaRepository<dist_master, String> {
+public interface DistrictMasterRepository extends JpaRepository<dist_master, String> {
 
     @Query("SELECT e.distname FROM dist_master e")
     List<String> findAllNames();
