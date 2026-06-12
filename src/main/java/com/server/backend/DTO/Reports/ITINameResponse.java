@@ -5,8 +5,6 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class distnames {
-    private List<String> districtName;
-
+public class ITINameResponse {
+    List<String> itiNames;
 }
-
