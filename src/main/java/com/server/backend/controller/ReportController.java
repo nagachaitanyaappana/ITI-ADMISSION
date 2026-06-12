@@ -11,15 +11,15 @@ import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
 import com.server.backend.DTO.Reports.DistrictNameResponse;
 import com.server.backend.DTO.Reports.ITINameResponse;
 import com.server.backend.Repository.ItiRepository;
-import com.server.backend.Repository.districtmasterrepo;
+import com.server.backend.Repository.DistrictMasterRepository;
 
 @RestController
 public class ReportController {
 
-    private final districtmasterrepo districtmasterrepo;
+    private final DistrictMasterRepository districtmasterrepo;
     private final ItiRepository itiRepository;
-    public ReportController(districtmasterrepo districtmasterrepo,ItiRepository itiRepository) {
-    this.districtmasterrepo = districtmasterrepo;
+    public ReportController(DistrictMasterRepository districtmasterrepo, ItiRepository itiRepository) {
+        this.districtmasterrepo = districtmasterrepo;
         this.itiRepository = itiRepository;
     }
 
