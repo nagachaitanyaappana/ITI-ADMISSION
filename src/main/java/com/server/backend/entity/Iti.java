@@ -50,4 +50,34 @@ public class iti {
 
     @Column(name = "mobile")
     private String mobile;
+    @Column(name = "ip_address")
+    private String ipAddress;
+
+
+    @Column(name = "username")
+
+    private String username;
+
+
+    @Column(name = "password")
+
+    private String password;
+
+
+    @Column(name = "pin_code")
+    private String pinCode;
+
+    @Column(name = "iti_type")
+
+    private String itiType;
+
+
+    @Column(name = "appcode")
+
+    private String appCode;
+
+
+    @Column(name = "trno")
+
+    private String trNo;
 }

@@ -18,9 +18,9 @@ public class ItiDto {
     private String itiName;
 
     @NotNull(message = "District Code is required")
-    private Character distCode;
+    private String distCode;
 
-    private Character govt;
+    private String govt;
 
     @Min(value = 0)
     private Integer capacity;
@@ -45,8 +45,14 @@ public class ItiDto {
         message = "Mobile must be 10 digits"
     )
     private String mobile;
-
     private String principalName;
+    private String ipAddress;
+    private String username;
+    private String password;
+    private String pinCode;
+    private String itiType;
+    private String appCode;
+    private String trNo;
 
     // Getters and SetterS
 
@@ -66,19 +72,19 @@ public class ItiDto {
         this.itiName = itiName;
     }
 
-    public Character getDistCode() {
+    public String getDistCode() {
         return distCode;
     }
 
-    public void setDistCode(Character distCode) {
+    public void setDistCode(String distCode) {
         this.distCode = distCode;
     }
 
-    public Character getGovt() {
+    public String getGovt() {
         return govt;
     }
 
-    public void setGovt(Character govt) {
+    public void setGovt(String govt) {
         this.govt = govt;
     }
 
@@ -152,5 +158,61 @@ public class ItiDto {
 
     public void setPrincipalName(String principalName) {
         this.principalName = principalName;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPinCode() {
+        return pinCode;
+    }
+
+    public void setPinCode(String pinCode) {
+        this.pinCode = pinCode;
+    }
+
+    public String getItiType() {
+        return itiType;
+    }
+
+    public void setItiType(String itiType) {
+        this.itiType = itiType;
+    }
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
+
+    public String getTrNo() {
+        return trNo;
+    }
+
+    public void setTrNo(String trNo) {
+        this.trNo = trNo;
     }
 }
