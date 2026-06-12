@@ -20,7 +20,7 @@ public class ReportController {
     private final ItiRepository itiRepository;
     public ReportController(districtmasterrepo districtmasterrepo,ItiRepository itiRepository) {
     this.districtmasterrepo = districtmasterrepo;
-        this.itiRepository = itiRepository;//
+        this.itiRepository = itiRepository;
     }
 
     @GetMapping("/districts")
