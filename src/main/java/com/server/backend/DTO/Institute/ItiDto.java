@@ -48,7 +48,7 @@ public class ItiDto {
 
     private String principalName;
 
-    // Getters and Setters
+    // Getters and SetterS
 
     public String getItiCode() {
         return itiCode;

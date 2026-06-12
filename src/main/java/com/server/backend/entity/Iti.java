@@ -19,10 +19,10 @@ public class iti {
     private String itiName;
 
     @Column(name = "govt")
-    private Character govt;
+    private String govt;
 
     @Column(name = "dist_code", nullable = false)
-    private Character distCode;
+    private String distCode;
 
     @Column(name = "capacity")
     private Integer capacity;
