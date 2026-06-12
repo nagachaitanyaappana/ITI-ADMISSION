@@ -37,10 +37,17 @@ public class ReportController {
         public ITINameResponse getItiNamesByDistrict(@RequestBody DistrictCollegeTypeResponse districtCollegeType) {
 
         String dist = districtCollegeType.getDist();
+        String type = districtCollegeType.getType();
 
         String dist_code = districtmasterrepo.findCodeByDistrictName(dist);
+        List<String> iti_names ;
 
-        List<String> iti_names =   itiRepository.findItiNamesByDistrictCode(dist_code);
+        if(type.equalsIgnoreCase("govt"))
+            iti_names =   itiRepository.findItiNamesByDistrictCodeAndGovt(dist_code, "G");
+        else if(type.equalsIgnoreCase("private"))
+            iti_names =   itiRepository.findItiNamesByDistrictCodeAndGovt(dist_code, "P");
+        else
+            iti_names =   itiRepository.findItiNamesByDistrictCode(dist_code);
 
         ITINameResponse response = new ITINameResponse();
         response.setItiNames(iti_names);
