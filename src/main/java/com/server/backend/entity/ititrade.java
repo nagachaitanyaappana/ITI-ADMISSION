@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 @Table(name = "ititrade")
 @Data
-public class ititrade {
+public class ItiTrade {
 
     @Id
     @Column(name = "iti_code" , nullable = false)
