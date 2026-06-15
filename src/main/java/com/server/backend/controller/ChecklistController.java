@@ -30,7 +30,7 @@ public class ChecklistController {
     @GetMapping("/district/{distCode}")
     public List<Checklist> getChecklistByDistCode(
             @PathVariable String dist_code){
-        return checklistService.getChecklistByDistCode(distCode);
+        return checklistService.getChecklistByDistCode(dist_code);
     }
 
     @GetMapping("/phase/{phase}")
@@ -42,7 +42,7 @@ public class ChecklistController {
     @GetMapping("/iti/{itiCode}")
     public List<Checklist> getChecklistByItiCode(
             @PathVariable String iti_code){
-        return checklistService.getChecklistByItiCode(itiCode);
+        return checklistService.getChecklistByItiCode(iti_code);
     }
 
     @GetMapping("/status/{appStatus}")
