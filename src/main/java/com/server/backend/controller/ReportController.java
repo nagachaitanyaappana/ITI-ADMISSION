@@ -35,7 +35,7 @@ public class ReportController {
 
     @GetMapping("/districts")
     public DistrictNameResponse getDistricts() {
-        return reportService.getDistricts();//
+        return reportService.getDistricts();
     }
 
     @PostMapping("/districts/itis-with-trades")
