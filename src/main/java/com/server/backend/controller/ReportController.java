@@ -33,11 +33,11 @@ public class ReportController {
 
     @GetMapping("/AboutStrive")
     public String aboutStrive() {
-        return "About Strive.";
+        return "aboutStrive";
     }
 
     @GetMapping("/DisclosureManagement")
     public String disclosureManagement() {
-        return "Disclosure Management.";
+        return "disclosureManagement";
     }
 }
