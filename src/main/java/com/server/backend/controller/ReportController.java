@@ -23,7 +23,7 @@ public class ReportController {
     @GetMapping("/districts")
     public DistrictNameResponse getDistricts() {
         return reportService.getDistricts();
-    }
+    }//
 
     @PostMapping("/districts/itis-with-trades")
     public List<ItiWithTradesResponse> getItisWithTradesByDistrict(
