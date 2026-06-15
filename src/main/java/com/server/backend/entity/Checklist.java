@@ -1,5 +1,4 @@
 package com.server.backend.entity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,23 +9,23 @@ import jakarta.persistence.Table;
 public class Checklist {
 
     @Column(name = "dist_code")
-    private String distCode;
+    private String dist_code;
 
     @Id
     @Column(name = "reg_id")
-    private String regId;
+    private String reg_id;
 
     @Column(name = "rank")
     private Integer rank;
 
     @Column(name = "iti_code")
-    private String itiCode;
+    private String iti_code;
 
     @Column(name = "qual")
     private String qual;
 
     @Column(name = "temp_pk")
-    private Integer tempPk;
+    private Integer temp_pk;
 
     @Column(name = "phase")
     private String phase;
@@ -35,25 +34,25 @@ public class Checklist {
     private String trno;
 
     @Column(name = "app_status")
-    private String appStatus;
+    private String app_status;
 
     public Checklist() {
     }
 
     public String getDistCode() {
-        return distCode;
+        return dist_code;
     }
 
-    public void setDistCode(String distCode) {
-        this.distCode = distCode;
+    public void setDistCode(String dist_code){
+        this.dist_code= dist_code;
     }
 
     public String getRegId() {
-        return regId;
+        return reg_id;
     }
 
-    public void setRegId(String regId) {
-        this.regId = regId;
+    public void setRegId(String reg_id){
+        this.reg_id = reg_id;
     }
 
     public Integer getRank() {
@@ -65,11 +64,11 @@ public class Checklist {
     }
 
     public String getItiCode() {
-        return itiCode;
+        return iti_code;
     }
 
-    public void setItiCode(String itiCode) {
-        this.itiCode = itiCode;
+    public void setItiCode(String iti_code){
+        this.iti_code= iti_code;
     }
 
     public String getQual() {
@@ -81,11 +80,11 @@ public class Checklist {
     }
 
     public Integer getTempPk() {
-        return tempPk;
+        return temp_pk;
     }
 
-    public void setTempPk(Integer tempPk) {
-        this.tempPk = tempPk;
+    public void setTempPk(Integer temp_pk){
+        this.temp_pk=temp_pk;
     }
 
     public String getPhase() {
@@ -105,10 +104,10 @@ public class Checklist {
     }
 
     public String getAppStatus() {
-        return appStatus;
+        return app_status;
     }
 
-    public void setAppStatus(String appStatus) {
-        this.appStatus = appStatus;
+    public void setAppStatus(String app_status){
+        this.app_status=app_status;
     }
 }
