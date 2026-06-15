@@ -16,11 +16,11 @@ import com.server.backend.service.ItiService;
 
 @RestController
 @RequestMapping("/api/itis")
-public class ItiController {
+public class itiController {
 
     private final ItiService itiService;
 
-    public ItiController(ItiService itiService) {
+    public itiController(ItiService itiService) {
         this.itiService = itiService;
     }
 
