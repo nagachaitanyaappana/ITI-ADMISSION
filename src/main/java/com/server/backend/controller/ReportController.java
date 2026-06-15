@@ -9,15 +9,19 @@ import java.util.List;
 import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
 import com.server.backend.DTO.Reports.DistrictNameResponse;
 
+<<<<<<< HEAD
 import com.server.backend.Repository.ItiRepository;
 import com.server.backend.Repository.DistrictMasterRepository;
 
+=======
+>>>>>>> 0dec8f87e36243e320d5689e1a1d016ff4b30061
 import com.server.backend.DTO.Reports.ItiWithTradesResponse;
 import com.server.backend.service.ReportService;
 
 @RestController
 public class ReportController {
 
+<<<<<<< HEAD
 
     private final DistrictMasterRepository districtmasterrepo;
     private final ItiRepository itiRepository;
@@ -26,6 +30,8 @@ public class ReportController {
         this.itiRepository = itiRepository;
     }
 
+=======
+>>>>>>> 0dec8f87e36243e320d5689e1a1d016ff4b30061
     private final ReportService reportService;
 
     public ReportController(ReportService reportService) {
@@ -36,7 +42,7 @@ public class ReportController {
     @GetMapping("/districts")
     public DistrictNameResponse getDistricts() {
         return reportService.getDistricts();
-    }
+    }//
 
     @PostMapping("/districts/itis-with-trades")
     public List<ItiWithTradesResponse> getItisWithTradesByDistrict(
@@ -54,6 +60,3 @@ public class ReportController {
         return "Disclosure Management.";
     }
 }
-
-
-

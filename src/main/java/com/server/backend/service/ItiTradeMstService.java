@@ -7,7 +7,7 @@ import com.server.backend.entity.Iti_trade_mst;
 
 public interface ItiTradeMstService {
 
-    Iti_trade_mst createTrade(ItiTradeMstDto dto);
+  //  Iti_trade_mst createTrade(ItiTradeMstDto dto);
 
     List<Iti_trade_mst> getAllTrades();
 
@@ -17,5 +17,5 @@ public interface ItiTradeMstService {
             String tradeShort,
             ItiTradeMstDto dto);
 
-    void deleteTrade(String tradeShort);
+   // void deleteTrade(String tradeShort);
 }
