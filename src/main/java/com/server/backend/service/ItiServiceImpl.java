@@ -16,7 +16,7 @@ public class ItiServiceImpl implements ItiService {
     @Autowired
     private ItiRepository repository;
 
-    @Override
+    /*@Override
     public Iti createIti(ItiDto dto) {
 
         Iti iti1 = new Iti();
@@ -26,7 +26,7 @@ public class ItiServiceImpl implements ItiService {
 
         return repository.save(iti1);
     }
-
+*/
     @Override
     public List<Iti> getAllItis() {
         return repository.findAll();
@@ -51,8 +51,8 @@ public class ItiServiceImpl implements ItiService {
         return null;
     }
 
-    @Override
+   /*  @Override
     public void deleteIti(String itiCode) {
         repository.deleteById(itiCode);
-    }
+    }*/
 }
