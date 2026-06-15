@@ -17,15 +17,14 @@ import com.server.backend.DTO.Reports.ItiWithTradesResponse;
 import com.server.backend.service.ReportService;
 
 @RestController
-public class ReportController
- {
+public class ReportController {
+
 
     private final DistrictMasterRepository districtmasterrepo;
     private final ItiRepository itiRepository;
     public ReportController(DistrictMasterRepository districtmasterrepo, ItiRepository itiRepository) {
-      {  this.districtmasterrepo = districtmasterrepo;
+        this.districtmasterrepo = districtmasterrepo;
         this.itiRepository = itiRepository;
-        }
 
     private final ReportService reportService;
 
@@ -47,11 +46,11 @@ public class ReportController
 
     @GetMapping("/AboutStrive")
     public String aboutStrive() {
-        return "aboutStrive";
+        return "aboutstrive";
     }
 
     @GetMapping("/DisclosureManagement")
     public String disclosureManagement() {
-        return "disclosureManagement";
+        return "Disclosure Management.";
     }
 }
