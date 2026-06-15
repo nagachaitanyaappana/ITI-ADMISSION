@@ -33,7 +33,7 @@ public class ReportController {
 
     @GetMapping("/AboutStrive")
     public String aboutStrive() {
-        return "About Strive.";
+        return "aboutstrive";
     }
 
     @GetMapping("/DisclosureManagement")
