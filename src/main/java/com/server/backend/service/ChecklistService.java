@@ -18,23 +18,23 @@ public class ChecklistService {
         return checklistRepository.findAll();
     }
 
-    public Checklist getChecklistByRegId(String regId) {
-        return checklistRepository.findById(regId).orElse(null);
+    public Checklist getChecklistByRegId(String regid) {
+        return checklistRepository.findById(regid).orElse(null);
     }
 
-    public List<Checklist> getChecklistByDistCode(String distCode) {
-        return checklistRepository.findByDistCode(distCode);
+    public List<Checklist> getChecklistByDistCode(String dist_code) {
+        return checklistRepository.findByDistCode(dist_code);
     }
 
     public List<Checklist> getChecklistByPhase(String phase) {
         return checklistRepository.findByPhase(phase);
     }
 
-    public List<Checklist> getChecklistByItiCode(String itiCode) {
-        return checklistRepository.findByItiCode(itiCode);
+    public List<Checklist> getChecklistByItiCode(String iti_code) {
+        return checklistRepository.findByItiCode(iti_code);
     }
 
-    public List<Checklist> getChecklistByAppStatus(String appStatus) {
-        return checklistRepository.findByAppStatus(appStatus);
+    public List<Checklist> getChecklistByAppStatus(String app_status) {
+        return checklistRepository.findByAppStatus(app_status);
     }
 }
