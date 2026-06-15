@@ -24,13 +24,13 @@ public class ChecklistController {
     }
 
     @GetMapping("/{regId}")
-    public Checklist getChecklistByRegId(@PathVariable String regId) {
-        return checklistService.getChecklistByRegId(regId);
+    public Checklist getChecklistByRegId(@PathVariable String reg_id){
+        return checklistService.getChecklistByRegId(reg_id);
     }
 
     @GetMapping("/district/{distCode}")
     public List<Checklist> getChecklistByDistCode(
-            @PathVariable String distCode) {
+            @PathVariable String dist_code){
         return checklistService.getChecklistByDistCode(distCode);
     }
 
@@ -42,13 +42,13 @@ public class ChecklistController {
 
     @GetMapping("/iti/{itiCode}")
     public List<Checklist> getChecklistByItiCode(
-            @PathVariable String itiCode) {
+            @PathVariable String iti_code){
         return checklistService.getChecklistByItiCode(itiCode);
     }
 
     @GetMapping("/status/{appStatus}")
     public List<Checklist> getChecklistByAppStatus(
-            @PathVariable String appStatus) {
-        return checklistService.getChecklistByAppStatus(appStatus);
+            @PathVariable String app_status){
+        return checklistService.getChecklistByAppStatus(app_status);
     }
 }
