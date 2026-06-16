@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Institute.ItiDto;
 import com.server.backend.entity.Iti;
 import com.server.backend.service.ItiService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/itis")
@@ -38,7 +39,7 @@ public class itiController {
 
    @PostMapping
     public Iti createIti(
-            @RequestBody ItiDto dto) {
+            @Valid @RequestBody ItiDto dto) {
 
         return itiService.createIti(dto);
     }
@@ -46,7 +47,7 @@ public class itiController {
     @PutMapping("/{itiCode}")
     public Iti updateIti(
             @PathVariable String itiCode,
-            @RequestBody ItiDto dto) {
+           @Valid @RequestBody ItiDto dto) {
 
         return itiService.updateIti(itiCode, dto);
     }
