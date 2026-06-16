@@ -9,11 +9,24 @@ import java.util.List;
 import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
 import com.server.backend.DTO.Reports.DistrictNameResponse;
 
+import com.server.backend.Repository.ItiRepository;
+import com.server.backend.Repository.DistrictMasterRepository;
+
 import com.server.backend.DTO.Reports.ItiWithTradesResponse;
 import com.server.backend.service.ReportService;
 
 @RestController
 public class ReportController {
+
+
+
+    private final DistrictMasterRepository districtmasterrepo;
+    private final ItiRepository itiRepository;
+    public ReportController(DistrictMasterRepository districtmasterrepo, ItiRepository itiRepository) {
+        this.districtmasterrepo = districtmasterrepo;
+        this.itiRepository = itiRepository;
+    }
+
 
     private final ReportService reportService;
 
