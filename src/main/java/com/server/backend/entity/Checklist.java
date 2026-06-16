@@ -2,16 +2,14 @@ package com.server.backend.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "ranks")
-@IdClass(MeritListId.class)
-public class MeritList{
+@Table(name = "checklist")
+public class Checklist {
 
     @Column(name = "dist_code")
-    private String dist_Code;
+    private String dist_code;
 
     @Id
     @Column(name = "regid")
@@ -21,45 +19,39 @@ public class MeritList{
     private Integer rank;
 
     @Column(name = "iti_code")
-    private String iti_Code;
+    private String iti_code;
 
-    @Id
     @Column(name = "qual")
     private String qual;
 
-    @Id
     @Column(name = "temp_pk")
-    private String temp_pk;
+    private Integer temp_pk;
 
-    @Id
     @Column(name = "phase")
     private String phase;
 
     @Column(name = "trno")
     private String trno;
 
-    @Column(name = "year")
-    private Integer year;
-
     @Column(name = "app_status")
     private String app_status;
 
-    public MeritList() {
+    public Checklist() {
     }
 
     public String getDistCode() {
-        return dist_Code;
+        return dist_code;
     }
 
-    public void setDistCode(String dist_Code) {
-        this.dist_Code = dist_Code;
+    public void setDistCode(String dist_code){
+        this.dist_code= dist_code;
     }
 
     public Integer getRegId() {
         return regid;
     }
 
-    public void setRegId(Integer regid) {
+    public void setRegId(Integer regid){
         this.regid = regid;
     }
 
@@ -72,11 +64,11 @@ public class MeritList{
     }
 
     public String getItiCode() {
-        return iti_Code;
+        return iti_code;
     }
 
-    public void setItiCode(String iti_Code) {
-        this.iti_Code = iti_Code;
+    public void setItiCode(String iti_code){
+        this.iti_code= iti_code;
     }
 
     public String getQual() {
@@ -87,12 +79,12 @@ public class MeritList{
         this.qual = qual;
     }
 
-    public String getTempPk() {
+    public Integer getTempPk() {
         return temp_pk;
     }
 
-    public void setTempPk(String temp_pk) {
-        this.temp_pk = temp_pk;
+    public void setTempPk(Integer temp_pk){
+        this.temp_pk=temp_pk;
     }
 
     public String getPhase() {
@@ -111,19 +103,11 @@ public class MeritList{
         this.trno = trno;
     }
 
-    public Integer getYear() {
-        return year;
-    }
-
-    public void setYear(Integer year) {
-        this.year = year;
-    }
-
     public String getAppStatus() {
         return app_status;
     }
 
-    public void setAppStatus(String app_status) {
-        this.app_status = app_status;
+    public void setAppStatus(String app_status){
+        this.app_status=app_status;
     }
 }

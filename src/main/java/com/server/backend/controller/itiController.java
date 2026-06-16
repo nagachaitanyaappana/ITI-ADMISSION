@@ -2,10 +2,10 @@ package com.server.backend.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
+//import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +16,11 @@ import com.server.backend.service.ItiService;
 
 @RestController
 @RequestMapping("/api/itis")
-public class ItiController {
+public class itiController {
 
     private final ItiService itiService;
 
-    public ItiController(ItiService itiService) {
+    public itiController(ItiService itiService) {
         this.itiService = itiService;
     }
 
@@ -36,12 +36,12 @@ public class ItiController {
         return itiService.getItiByCode(itiCode);
     }
 
-    @PostMapping
+   /* @PostMapping
     public Iti createIti(
             @RequestBody ItiDto dto) {
 
         return itiService.createIti(dto);
-    }
+    }*/
 
     @PutMapping("/{itiCode}")
     public Iti updateIti(
@@ -51,12 +51,12 @@ public class ItiController {
         return itiService.updateIti(itiCode, dto);
     }
 
-    @DeleteMapping("/{itiCode}")
+   /* @DeleteMapping("/{itiCode}")
     public String deleteIti(
             @PathVariable String itiCode) {
 
         itiService.deleteIti(itiCode);
 
         return "ITI Deleted Successfully";
-    }
+    }*/
 }

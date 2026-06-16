@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class ItiWithTradesResponse {
     private String itiName;
-    private List<String> trades;
+    private List<TradeDetail> trades;
 }

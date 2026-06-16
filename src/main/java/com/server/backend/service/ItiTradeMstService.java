@@ -18,4 +18,6 @@ public interface ItiTradeMstService {
             ItiTradeMstDto dto);
 
     void deleteTrade(String tradeShort);
+
+
 }
