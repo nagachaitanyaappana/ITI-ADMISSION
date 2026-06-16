@@ -21,7 +21,7 @@ public class ChecklistController {
     }
 
     @GetMapping("/{regid}")
-    public Checklist getChecklistByRegId(@PathVariable String regid){
+    public Checklist getChecklistByRegId(@PathVariable Integer regid){
         return checklistService.getChecklistByRegId(regid);
     }
 
