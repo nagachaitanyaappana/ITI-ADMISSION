@@ -23,7 +23,7 @@ public class ChecklistService {
     }
 
     public List<Checklist> getChecklistByDistCode(String dist_code) {
-        return checklistRepository.findByDistCode(dist_code);
+        return checklistRepository.findByDist_code(dist_code);
     }
 
     public List<Checklist> getChecklistByPhase(String phase) {
@@ -31,10 +31,10 @@ public class ChecklistService {
     }
 
     public List<Checklist> getChecklistByItiCode(String iti_code) {
-        return checklistRepository.findByItiCode(iti_code);
+        return checklistRepository.findByIti_code(iti_code);
     }
 
     public List<Checklist> getChecklistByAppStatus(String app_status) {
-        return checklistRepository.findByAppStatus(app_status);
+        return checklistRepository.findByApp_status(app_status);
     }
 }
