@@ -12,8 +12,8 @@ public class Checklist {
     private String dist_code;
 
     @Id
-    @Column(name = "reg_id")
-    private String reg_id;
+    @Column(name = "regid")
+    private String regid;
 
     @Column(name = "rank")
     private Integer rank;
@@ -48,11 +48,11 @@ public class Checklist {
     }
 
     public String getRegId() {
-        return reg_id;
+        return regid;
     }
 
-    public void setRegId(String reg_id){
-        this.reg_id = reg_id;
+    public void setRegId(String regid){
+        this.regid = regid;
     }
 
     public Integer getRank() {

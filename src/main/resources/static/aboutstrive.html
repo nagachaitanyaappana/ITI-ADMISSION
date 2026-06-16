@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department of Employment and Training - STRIVE</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+        }
+
+        /* --- Header Branding Section --- */
+        .header-brand {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background-color: #fff;
+        }
+
+        .leader-photo {
+            text-align: center;
+            max-width: 120px;
+        }
+
+        .leader-photo img {
+            height: 90px;
+            object-fit: contain;
+        }
+
+        .leader-name {
+            font-size: 10px;
+            font-weight: bold;
+            color: #b97711;
+            margin-top: 4px;
+            line-height: 1.1;
+        }
+
+        .leader-title {
+            font-size: 9px;
+            color: #666;
+        }
+
+        .center-logos {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .gov-logo {
+            height: 80px;
+        }
+
+        .header-titles {
+            text-align: center;
+        }
+
+        .header-titles h1 {
+            font-size: 22px;
+            font-weight: bold;
+            color: #000;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .header-titles h2 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .skill-india-logo {
+            height: 70px;
+        }
+
+        /* --- Navigation Bar --- */
+        .nav-container {
+            padding: 0 15px;
+            margin-bottom: 15px;
+        }
+
+        nav {
+            background: linear-gradient(to bottom, #f2f7e4 0%, #dae7ba 100%);
+            border: 1px solid #c2d49c;
+            border-radius: 12px;
+            display: flex;
+            padding: 2px 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #000000;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 10px 25px;
+            display: inline-block;
+        }
+
+        nav a.active {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Moving Marquee Ticker --- */
+        .ticker-container {
+            margin: 15px 30px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-container a {
+            font-size: 22px;
+            color: #5d681b;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            padding: 10px 30px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #000000;
+            text-decoration: underline;
+            margin-bottom: 30px;
+        }
+
+        /* --- List Elements (Moved Left) --- */
+        .strive-list {
+            list-style: none;
+            padding-left: 5px;
+        }
+
+        .strive-list li {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 25px;
+            font-size: 19px;
+            color: #000000;
+        }
+
+        /* Custom Arrow Bullets */
+        .strive-list li::before {
+            content: "►";
+            position: absolute;
+            left: 0;
+            top: -1px;
+            color: #000000;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header-brand">
+        <div class="leader-photo">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/18227606753097165714_0"
+                alt="Sri Nara Chandra Babu Naidu">
+            <div class="leader-name">Sri Nara Chandra Babu Naidu</div>
+            <div class="leader-title">Hon'ble Chief Minister</div>
+        </div>
+
+        <div class="center-logos">
+            <img class="gov-logo"
+                src="http://googleusercontent.com/image_collection/image_retrieval/13180477168412738566_0"
+                alt="Govt of Andhra Pradesh">
+            <div class="header-titles">
+                <h1>DEPARTMENT OF EMPLOYMENT AND TRAINING</h1>
+                <h2>INDUSTRIAL TRAINING INSTITUTES - ITI IMS</h2>
+            </div>
+            <img class="skill-india-logo"
+                src="http://googleusercontent.com/image_collection/image_retrieval/11254225409338428976_0"
+                alt="Skill India">
+        </div>
+
+        <div class="leader-photo">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/1539133962874700590_0"
+                alt="Sri Nara Lokesh">
+            <div class="leader-name">Sri Nara Lokesh</div>
+            <div class="leader-title">Hon'ble Minister for IT, E&C</div>
+        </div>
+    </header>
+
+    <div class="nav-container">
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">ITI Profile</a>
+            <a href="#" class="active">STRIVE</a>
+            <a href="#">PLACEMENTS / IN-PLANT TRAINING</a>
+        </nav>
+    </div>
+
+    <div class="ticker-container">
+        <marquee behavior="scroll" direction="left" scrollamount="5">
+            <a href="#">ITI Admissions 2026 Phase -1 for Student Registrations,Apply for ITI and Verifications has
+                started and will end on 02/07/2026 5PM.</a>
+        </marquee>
+    </div>
+
+    <main class="main-content">
+        <h2 class="page-title">Skills Strengthening of Industrial Value Enhancement (STRIVE) Project in State of Andhra
+            Pradesh</h2>
+
+        <ul class="strive-list">
+            <li>Objective of the scheme is to improve the relevance and efficiency of skills Training provided through
+                Industrial Training Institutes (ITIs) and Apprenticeships, duly upgrading the infrastructure, equipment
+                and machinery.</li>
+            <li>STRIVE is a Central Sector Scheme with no State Contribution, assisted by World Bank.</li>
+            <li>It is a 5 Year Project , closing by November 2022.</li>
+            <li>STRIVE Scheme has four result areas.</li>
+            <li>Result Area 1 - Improved Performance of ITIs</li>
+            <li>Result Area 2 - Increased Capacities of State Governments to support ITIs and Apprenticeship Training
+            </li>
+            <li>Result Area 3 - Improved Teaching and Learning</li>
+            <li>Result Area 4 - Improved and Broadened Apprenticeship Training.</li>
+            <li>15 Govt. ITIs have been selected under the scheme and Institute Management Committees are also
+                constituted in these ITIs.</li>
+            <li>Govt. of A.P have made an Agreement (Performance Based Fund Agreement ) with Govt. of India in Feb 2019
+                accepting terms and Conditions of the Project.</li>
+        </ul>
+    </main>
+
+</body>
+
+</html>

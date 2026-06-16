@@ -23,8 +23,8 @@ public class ChecklistController {
     }
 
     @GetMapping("/{regId}")
-    public Checklist getChecklistByRegId(@PathVariable String reg_id){
-        return checklistService.getChecklistByRegId(reg_id);
+    public Checklist getChecklistByRegId(@PathVariable String regid){
+        return checklistService.getChecklistByRegId(regid);
     }
 
     @GetMapping("/district/{distCode}")
