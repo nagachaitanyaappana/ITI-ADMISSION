@@ -55,11 +55,11 @@ public class MeritList{
         this.dist_Code = dist_Code;
     }
 
-    public String getRegId() {
+    public Integer getRegId() {
         return regid;
     }
 
-    public void setRegId(String regid) {
+    public void setRegId(Integer regid) {
         this.regid = regid;
     }
 
