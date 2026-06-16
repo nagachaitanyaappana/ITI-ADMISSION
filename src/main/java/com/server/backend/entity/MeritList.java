@@ -15,7 +15,7 @@ public class MeritList{
 
     @Id
     @Column(name = "regid")
-    private String regid;
+    private Integer regid;
 
     @Column(name = "rank")
     private Integer rank;

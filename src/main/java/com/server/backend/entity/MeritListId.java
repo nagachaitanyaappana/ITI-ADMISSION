@@ -2,7 +2,7 @@ package com.server.backend.entity;
 import java.io.Serializable;
 import java.util.Objects;
 public class MeritListId implements Serializable {
-    private String regid;
+    private Integer regid;
     private String qual;
     private String temp_pk;
     private String phase;
