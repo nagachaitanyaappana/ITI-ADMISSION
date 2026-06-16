@@ -1,5 +1,4 @@
 package com.server.backend.Repository;
-import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,12 +9,12 @@ import com.server.backend.entity.Checklist;
 @Repository
 public interface ChecklistRepository extends JpaRepository<Checklist, String> {
 
-    List<Checklist> findByDistCode(@Param("dist_code")String dist_code);
+    List<Checklist> findByDist_code(String dist_code);
 
 
     List<Checklist> findByPhase(String phase);
 
-    List<Checklist> findByItiCode(String iti_code);
+    List<Checklist> findByIti_code(String iti_code);
 
-    List<Checklist> findByAppStatus(String app_status);
+    List<Checklist> findByApp_status(String app_status);
 }
