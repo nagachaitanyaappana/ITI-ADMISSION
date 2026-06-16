@@ -13,7 +13,7 @@ public class Checklist {
 
     @Id
     @Column(name = "regid")
-    private String regid;
+    private Integer regid;
 
     @Column(name = "rank")
     private Integer rank;
@@ -47,11 +47,11 @@ public class Checklist {
         this.dist_code= dist_code;
     }
 
-    public String getRegId() {
+    public Integer getRegId() {
         return regid;
     }
 
-    public void setRegId(String regid){
+    public void setRegId(Integer regid){
         this.regid = regid;
     }
 

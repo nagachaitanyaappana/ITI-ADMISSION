@@ -1,218 +1,88 @@
 package com.server.backend.DTO.Institute;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
-
-
+@Data
 public class ItiDto {
-
+    
     @NotBlank(message = "ITI Code is required")
     private String itiCode;
-
+    
     @NotBlank(message = "ITI Name is required")
-    @Size(max = 100)
     private String itiName;
-
-    @NotNull(message = "District Code is required")
-    private String distCode;
-
+    @NotBlank(message="Govt field is required")
     private String govt;
+    @NotBlank(message="District Code is required")
+    private String distCode;
+    private String itiNoniti;
+    private String olditicode;
 
-    @Min(value = 0)
     private Integer capacity;
-
     private Integer allocated;
-
     private Integer remainingCapacity;
-
     private Integer totStrength;
-
-    @Size(max = 250)
-    private String address;
-
-    @Size(max = 100)
-    private String cityTown;
-
-    @Email(message = "Invalid email")
-    private String email;
-
-    @Pattern(
-        regexp = "^[0-9]{10}$",
-        message = "Mobile must be 10 digits"
-    )
-    private String mobile;
-    private String principalName;
+    private LocalDateTime ts;
     private String ipAddress;
     private String username;
     private String password;
-    private String pinCode;
+    private String address;
+    private String cityTown;
+
+    private Integer mandCode;
+    private Integer pinCode;
+
+    @Email
+    private String email;
+
+    private String principalName;
+    private Integer roleId;
+    private String description;
+
+    @Pattern(regexp="^[0-9]{10}$")
+    private String mobile;
+
+    private String landlineNumber;
+    private String yearEst;
+    private Integer trNo;
+
     private String itiType;
     private String appCode;
-    private String trNo;
 
-    // Getters and SetterS
+    private Boolean vtp;
+    private String vtpRegno;
 
-    public String getItiCode() {
-        return itiCode;
-    }
+    private String land;
+    private String builtupArea;
 
-    public void setItiCode(String itiCode) {
-        this.itiCode = itiCode;
-    }
+    private Integer noofToilets;
+    private Boolean availableDrinkingwater;
+    private Integer noofLabs;
+    private Integer noofClassrooms;
+    private Integer examconductingStrength;
 
-    public String getItiName() {
-        return itiName;
-    }
+    private String strength;
+    private String strengthVacant;
+    private String strengthFill;
 
-    public void setItiName(String itiName) {
-        this.itiName = itiName;
-    }
+    private Boolean admissionPermission;
 
-    public String getDistCode() {
-        return distCode;
-    }
+    private String dgetItiCode;
+    private String region;
+    private String urbanRural;
+    private String webItiCode;
 
-    public void setDistCode(String distCode) {
-        this.distCode = distCode;
-    }
+    private Boolean toolStatus;
 
-    public String getGovt() {
-        return govt;
-    }
+    private String recStatus;
+    @Size(max = 255,message = "Website URL should not exceed 255 characters")
+    private String website;
+    private String gradePoint;
+    private String ncvtCode;
 
-    public void setGovt(String govt) {
-        this.govt = govt;
-    }
+    private String mandalCode;
+    private String jnanabhumicode;
 
-    public Integer getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
-
-    public Integer getAllocated() {
-        return allocated;
-    }
-
-    public void setAllocated(Integer allocated) {
-        this.allocated = allocated;
-    }
-
-    public Integer getRemainingCapacity() {
-        return remainingCapacity;
-    }
-
-    public void setRemainingCapacity(Integer remainingCapacity) {
-        this.remainingCapacity = remainingCapacity;
-    }
-
-    public Integer getTotStrength() {
-        return totStrength;
-    }
-
-    public void setTotStrength(Integer totStrength) {
-        this.totStrength = totStrength;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCityTown() {
-        return cityTown;
-    }
-
-    public void setCityTown(String cityTown) {
-        this.cityTown = cityTown;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getPrincipalName() {
-        return principalName;
-    }
-
-    public void setPrincipalName(String principalName) {
-        this.principalName = principalName;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPinCode() {
-        return pinCode;
-    }
-
-    public void setPinCode(String pinCode) {
-        this.pinCode = pinCode;
-    }
-
-    public String getItiType() {
-        return itiType;
-    }
-
-    public void setItiType(String itiType) {
-        this.itiType = itiType;
-    }
-
-    public String getAppCode() {
-        return appCode;
-    }
-
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
-    }
-
-    public String getTrNo() {
-        return trNo;
-    }
-
-    public void setTrNo(String trNo) {
-        this.trNo = trNo;
-    }
+    private String parliamentConstituencyName;
+    private String assemblyConstituencyName;
 }

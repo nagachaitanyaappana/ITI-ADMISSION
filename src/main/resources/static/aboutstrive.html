@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Department of Employment and Training - STRIVE</title>
+    <title>STRIVE</title>
     <style>
         * {
             box-sizing: border-box;
@@ -19,68 +19,19 @@
             line-height: 1.5;
         }
 
-        /* --- Header Branding Section --- */
-        .header-brand {
+        /* --- Full Banner Image Container --- */
+        .header-banner-container {
+            width: 100%;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
+            justify-content: center;
             background-color: #fff;
+            padding: 5px 0;
         }
 
-        .leader-photo {
-            text-align: center;
-            max-width: 120px;
-        }
-
-        .leader-photo img {
-            height: 90px;
-            object-fit: contain;
-        }
-
-        .leader-name {
-            font-size: 10px;
-            font-weight: bold;
-            color: #b97711;
-            margin-top: 4px;
-            line-height: 1.1;
-        }
-
-        .leader-title {
-            font-size: 9px;
-            color: #666;
-        }
-
-        .center-logos {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .gov-logo {
-            height: 80px;
-        }
-
-        .header-titles {
-            text-align: center;
-        }
-
-        .header-titles h1 {
-            font-size: 22px;
-            font-weight: bold;
-            color: #000;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        .header-titles h2 {
-            font-size: 18px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        .skill-india-logo {
-            height: 70px;
+        .header-banner-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
         }
 
         /* --- Navigation Bar --- */
@@ -139,7 +90,7 @@
             margin-bottom: 30px;
         }
 
-        /* --- List Elements (Moved Left) --- */
+        /* --- List Elements --- */
         .strive-list {
             list-style: none;
             padding-left: 5px;
@@ -167,33 +118,8 @@
 
 <body>
 
-    <header class="header-brand">
-        <div class="leader-photo">
-            <img src="http://googleusercontent.com/image_collection/image_retrieval/18227606753097165714_0"
-                alt="Sri Nara Chandra Babu Naidu">
-            <div class="leader-name">Sri Nara Chandra Babu Naidu</div>
-            <div class="leader-title">Hon'ble Chief Minister</div>
-        </div>
-
-        <div class="center-logos">
-            <img class="gov-logo"
-                src="http://googleusercontent.com/image_collection/image_retrieval/13180477168412738566_0"
-                alt="Govt of Andhra Pradesh">
-            <div class="header-titles">
-                <h1>DEPARTMENT OF EMPLOYMENT AND TRAINING</h1>
-                <h2>INDUSTRIAL TRAINING INSTITUTES - ITI IMS</h2>
-            </div>
-            <img class="skill-india-logo"
-                src="http://googleusercontent.com/image_collection/image_retrieval/11254225409338428976_0"
-                alt="Skill India">
-        </div>
-
-        <div class="leader-photo">
-            <img src="http://googleusercontent.com/image_collection/image_retrieval/1539133962874700590_0"
-                alt="Sri Nara Lokesh">
-            <div class="leader-name">Sri Nara Lokesh</div>
-            <div class="leader-title">Hon'ble Minister for IT, E&C</div>
-        </div>
+    <header class="header-banner-container">
+        <img src="images/Banner.jpg" alt="Department of Employment and Training Banner">
     </header>
 
     <div class="nav-container">
