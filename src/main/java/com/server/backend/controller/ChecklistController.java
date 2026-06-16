@@ -1,7 +1,5 @@
 package com.server.backend.controller;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +25,7 @@ public class ChecklistController {
         return checklistService.getChecklistByRegId(regid);
     }
 
-    @GetMapping("/district/{distCode}")
+    @GetMapping("/district/{dist_code}")
     public List<Checklist> getChecklistByDistCode(
             @PathVariable String dist_code){
         return checklistService.getChecklistByDistCode(dist_code);
@@ -39,13 +37,13 @@ public class ChecklistController {
         return checklistService.getChecklistByPhase(phase);
     }
 
-    @GetMapping("/iti/{itiCode}")
+    @GetMapping("/iti/{iti_code}")
     public List<Checklist> getChecklistByItiCode(
             @PathVariable String iti_code){
         return checklistService.getChecklistByItiCode(iti_code);
     }
 
-    @GetMapping("/status/{appStatus}")
+    @GetMapping("/status/{app_status}")
     public List<Checklist> getChecklistByAppStatus(
             @PathVariable String app_status){
         return checklistService.getChecklistByAppStatus(app_status);
