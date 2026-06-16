@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.server.backend.entity.Checklist;
 
 @Repository
-public interface ChecklistRepository extends JpaRepository<Checklist, String> {
+public interface ChecklistRepository extends JpaRepository<Checklist, Integer> {
 
     List<Checklist> findByDist_code(String dist_code);
 
