@@ -4,7 +4,7 @@ import com.server.backend.DTO.Institute.ItiDto;
 import com.server.backend.entity.Iti;
 
 public interface ItiService {
-     //Iti createIti(ItiDto dto);
+     Iti createIti(ItiDto dto);
 
     List<Iti> getAllItis();
 
@@ -12,6 +12,6 @@ public interface ItiService {
 
     Iti updateIti(String itiCode, ItiDto dto);
 
-    //void deleteIti(String itiCode);
+    void deleteIti(String itiCode);
     
 }
