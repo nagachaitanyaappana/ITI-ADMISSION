@@ -22,7 +22,7 @@ public class ChecklistController {
         return checklistService.getAllChecklist();
     }
 
-    @GetMapping("/{regId}")
+    @GetMapping("/{regid}")
     public Checklist getChecklistByRegId(@PathVariable String regid){
         return checklistService.getChecklistByRegId(regid);
     }
