@@ -8,7 +8,7 @@ public class ReportController {
 
     @GetMapping("/AboutStrive")
     public String aboutStrive() {
-        return "aboutstrive";
+        return "/aboutstrive.html";
     }
 
 }
