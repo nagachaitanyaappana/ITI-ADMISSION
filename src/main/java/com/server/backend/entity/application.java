@@ -24,28 +24,28 @@ public class application {
     @Column(name = "regid" , nullable = false)
     private Integer regid;
 
-    @Column(name = "name" , nullable = false)
+    @Column(name = "name" , nullable = false , length = 50)
     private String name;
 
-    @Column(name = "fname" , nullable = false)
+    @Column(name = "fname" , nullable = false , length = 50)
     private String fname;
 
-    @Column(name = "addr")
+    @Column(name = "addr" , length = 100)
     private String addr;
 
-    @Column(name = "mname" , nullable = false)
+    @Column(name = "mname" , nullable = false , length = 50)
     private String mname;
 
     @Column(name = "phno" , nullable = false)
     private Long phno;
 
-    @Column(name = "adarno" , nullable = false)
+    @Column(name = "adarno" , nullable = false , length = 20)
     private String adarno;
 
-    @Column(name = "gender" , nullable = false)
+    @Column(name = "gender" , nullable = false , length = 10)
     private String gender;
 
-    @Column(name = "caste" , nullable = false)
+    @Column(name = "caste" , nullable = false , length = 50)
     private String caste;
 
     @Column(name = "ssc_passed")
@@ -57,7 +57,7 @@ public class application {
     @Column(name = "inter_marks")
     private Integer inter_marks;
 
-    @Column(name = "local")
+    @Column(name = "local" , length = 20)
     private String local;
 
     @Column(name = "pincode")
@@ -100,31 +100,31 @@ public class application {
     @Column(name = "phase", columnDefinition = "hstore")
     private Map<String, String> phase = new HashMap<>();
 
-    @Column(name = "year")
+    @Column(name = "year" , length = 4)
     private String year;
 
-    @Column(name = "university_area")
+    @Column(name = "university_area" , length = 50)
     private String university_area;
 
-    @Column(name = "data_flag")
+    @Column(name = "data_flag" , length = 1)
     private String data_flag;
 
-    @Column(name = "app_status")
+    @Column(name = "app_status" , length = 1)
     private String app_status;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id" , length = 50)
     private String user_id;
 
-    @Column(name = "ssc_type")
+    @Column(name = "ssc_type" , length = 5)
     private String ssc_type;
 
-    @Column(name = "reason")
+    @Column(name = "reason" , length = 500)
     private String reason;
 
-    @Column(name = "email")
+    @Column(name = "email" , length = 70)
     private String email;
 
-    @Column(name = "pwd_category")
+    @Column(name = "pwd_category" , length = 1)
     private String pwd_category;
 
     @Column(name = "economic_weaker_section")
@@ -139,46 +139,46 @@ public class application {
     @Column(name = "verified_date")
     private LocalDateTime verified_date;
 
-    @Column(name = "verified_ip")
+    @Column(name = "verified_ip" , length = 50)
     private String verified_ip;
 
-    @Column(name = "ssc_eq_marks")
+    @Column(name = "ssc_eq_marks" , length = 30)
     private String ssc_eq_marks;
 
-    @Column(name = "tc")
+    @Column(name = "tc" , length = 30)
     private String tc;
 
-    @Column(name = "caste_certificate")
+    @Column(name = "caste_certificate" , length = 30)
     private String caste_certificate;
 
-    @Column(name = "ph_challenge")
+    @Column(name = "ph_challenge" , length = 30)
     private String ph_challenge;
 
-    @Column(name = "ex_service")
+    @Column(name = "ex_service" , length = 30)
     private String ex_service;
 
-    @Column(name = "study_certificate")
+    @Column(name = "study_certificate" , length = 30)
     private String study_certificate;
 
-    @Column(name = "nativity_certificate")
+    @Column(name = "nativity_certificate" , length = 30)
     private String nativity_certificate;
 
-    @Column(name = "uidv")
+    @Column(name = "uidv" , length = 30)
     private String uidv;
 
-    @Column(name = "ewsv")
+    @Column(name = "ewsv" , length = 30)
     private String ewsv;
 
-    @Column(name = "age_21")
+    @Column(name = "age_21" , length = 30)
     private String age_21;
 
-    @Column(name = "experience")
+    @Column(name = "experience" , length = 30)
     private String experience;
 
-    @Column(name = "est")
+    @Column(name = "est" , length = 30)
     private String est;
 
-    @Column(name = "sub_caste")
+    @Column(name = "sub_caste" , length = 20)
     private String sub_caste;
 
 }

@@ -18,7 +18,7 @@ import lombok.Data;
 public class iti_seatmatrix {
 
     @Id    
-    @Column(name = "iti_code" , nullable = false)
+    @Column(name = "iti_code" , nullable = false , length = 4)
     private String iti_code;
 
     @Id
@@ -38,7 +38,7 @@ public class iti_seatmatrix {
     private Map<String, String> strength_vacant = new HashMap<>();
 
     @Id
-    @Column(name = "year" , nullable = false)
+    @Column(name = "year" , nullable = false , length = 4)
     private String year;
 
     @Id
