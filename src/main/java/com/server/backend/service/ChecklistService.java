@@ -2,7 +2,6 @@ package com.server.backend.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.entity.Checklist;
@@ -11,13 +10,15 @@ import com.server.backend.Repository.ChecklistRepository;
 @Service
 public class ChecklistService {
 
-    @Autowired
-    private ChecklistRepository checklistRepository;
 
-    public List<Checklist> getAllChecklist() {
-        return checklistRepository.findAll();
+    private final ChecklistRepository checklistRepository;
+
+    public ChecklistService(ChecklistRepository checklistRepository) {
+        this.checklistRepository = checklistRepository;
     }
-
+public List<Checklist> getAllChecklist() {
+    return checklistRepository.findAll();
+}
     public Checklist getChecklistByRegId(Integer regid) {
         return checklistRepository.findById(regid).orElse(null);
     }
