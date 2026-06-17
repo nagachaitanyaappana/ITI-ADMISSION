@@ -12,7 +12,11 @@ import com.server.backend.Repository.MeritListRepository;
 public class MeritListService {
 
 
-    private MeritListRepository meritListRepository;
+    private final MeritListRepository meritListRepository;
+
+    public MeritListService(MeritListRepository meritListRepository) {
+        this.meritListRepository = meritListRepository;
+    }
 
     public List<MeritList> getAllMeritList() {
         return meritListRepository.findAll();
