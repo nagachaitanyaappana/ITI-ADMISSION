@@ -9,9 +9,9 @@ import lombok.Data;
 public class Designation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
     @Column(name = "desig_code")
-    private Integer desigCode;
+    private String desigCode;
 
     @Column(name = "designation", length = 50, nullable = false)
     private String designation;

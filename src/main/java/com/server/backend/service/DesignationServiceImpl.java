@@ -6,9 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.DTO.Institute.DesignationDto;
-import com.server.backend.entity.Designation;
 import com.server.backend.Repository.DesignationRepository;
-
+import com.server.backend.entity.Designation;
 
 @Service
 public class DesignationServiceImpl implements DesignationService {
@@ -24,6 +23,7 @@ public class DesignationServiceImpl implements DesignationService {
 
         Designation designation = new Designation();
 
+        designation.setDesigCode(dto.getDesigCode());
         designation.setDesignation(dto.getDesignation());
         designation.setDisplayOrder(dto.getDisplayOrder());
 
@@ -42,7 +42,7 @@ public class DesignationServiceImpl implements DesignationService {
     }
 
     @Override
-    public DesignationDto getDesignationById(Integer desigCode) {
+    public DesignationDto getDesignationById(String desigCode) {
 
         Designation designation = repository.findById(desigCode)
                 .orElseThrow(() -> new RuntimeException("Designation not found"));
@@ -51,7 +51,7 @@ public class DesignationServiceImpl implements DesignationService {
     }
 
     @Override
-    public DesignationDto updateDesignation(Integer desigCode, DesignationDto dto) {
+    public DesignationDto updateDesignation(String desigCode, DesignationDto dto) {
 
         Designation designation = repository.findById(desigCode)
                 .orElseThrow(() -> new RuntimeException("Designation not found"));
@@ -65,7 +65,7 @@ public class DesignationServiceImpl implements DesignationService {
     }
 
     @Override
-    public void deleteDesignation(Integer desigCode) {
+    public void deleteDesignation(String desigCode) {
 
         if (!repository.existsById(desigCode)) {
             throw new RuntimeException("Designation not found");
