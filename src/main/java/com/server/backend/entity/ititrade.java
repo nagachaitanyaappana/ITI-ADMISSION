@@ -58,4 +58,23 @@ public class ititrade {
     @Type(PostgreSQLHStoreType.class)
     @Column(name = "aff_no", columnDefinition = "hstore")
     private Map<String, String> aff_no = new HashMap<>();
+
+    @Type(PostgreSQLHStoreType.class)
+    @Column(name = "aff_year", columnDefinition = "hstore")
+    private Map<String, String> aff_year = new HashMap<>();
+
+    @Type(PostgreSQLHStoreType.class)
+    @Column(name = "aff_date", columnDefinition = "hstore")
+    private Map<String, String> aff_date = new HashMap<>();
+
+    @Type(PostgreSQLHStoreType.class)
+    @Column(name = "aff_no_of_units", columnDefinition = "hstore")
+    private Map<String, String> aff_no_of_units = new HashMap<>();
+
+    @Column(name = "unit_strength")
+    private Integer unit_strength ;
+
+    @Column(name = "mod")
+    private Integer mod ;
+
 }
