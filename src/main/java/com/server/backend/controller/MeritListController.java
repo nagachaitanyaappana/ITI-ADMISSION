@@ -10,8 +10,16 @@ import com.server.backend.service.MeritListService;
 @RequestMapping("/api/meritlist")
 public class MeritListController {
 
-   
-    private MeritListService meritListService;
+
+    private final MeritListService meritListService;
+
+
+    private final MeritListService meritListService;
+
+    public MeritListController(MeritListService meritListService) {
+        this.meritListService = meritListService;
+    }
+
 
     @GetMapping
     public List<MeritList> getAllMeritList() {

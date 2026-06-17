@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.server.backend.entity.dist_master;
-
 public interface DistrictMasterRepository extends JpaRepository<dist_master, String> {
 
     @Query("SELECT e.distname FROM dist_master e")
