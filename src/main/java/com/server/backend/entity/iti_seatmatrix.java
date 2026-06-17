@@ -10,9 +10,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "iti_admissions" , schema = "admissions")
+@Table(name = "iti_seatmatrix" , schema = "public")
 @Data
-public class iti_admissions {
+public class iti_seatmatrix {
 
     @Column(name = "regid")
     private String regid;
