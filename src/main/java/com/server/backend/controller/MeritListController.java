@@ -13,9 +13,13 @@ public class MeritListController {
 
     private final MeritListService meritListService;
 
+
+    private final MeritListService meritListService;
+
     public MeritListController(MeritListService meritListService) {
         this.meritListService = meritListService;
     }
+
 
     @GetMapping
     public List<MeritList> getAllMeritList() {
