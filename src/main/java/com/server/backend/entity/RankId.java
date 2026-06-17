@@ -8,12 +8,12 @@ public class RankId implements Serializable {
     private String regid;
     private String qual;
     private Long tempPk;
-    private Integer phase;
+    private String phase;
 
     public RankId() {
     }
 
-    public RankId(String regid, String qual, Long tempPk, Integer phase) {
+    public RankId(String regid, String qual, Long tempPk, String phase) {
         this.regid = regid;
         this.qual = qual;
         this.tempPk = tempPk;
@@ -44,11 +44,11 @@ public class RankId implements Serializable {
         this.tempPk = tempPk;
     }
 
-    public Integer getPhase() {
+    public String getPhase() {
         return phase;
     }
 
-    public void setPhase(Integer phase) {
+    public void setPhase(String phase) {
         this.phase = phase;
     }
 

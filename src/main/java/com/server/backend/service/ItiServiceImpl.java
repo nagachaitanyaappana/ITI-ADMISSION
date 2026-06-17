@@ -8,13 +8,15 @@ import com.server.backend.DTO.Institute.ItiDto;
 import com.server.backend.entity.Iti;
 import com.server.backend.Repository.ItiRepository;
 
-
 @Service
 public class ItiServiceImpl implements ItiService {
 
     
-    private ItiRepository repository;
-
+    private final ItiRepository repository;
+        public ItiServiceImpl(ItiRepository repository) 
+   {
+        this.repository = repository;
+    }
    @Override
 public Iti createIti(ItiDto dto) {
 

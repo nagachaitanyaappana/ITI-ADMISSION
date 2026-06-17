@@ -18,9 +18,9 @@ public class AdmissionServiceImpl implements AdmissionService {
 
     @Override
     public CandidateResponseDTO getCandidateByRank(
-            Integer rank,
-            Integer phase,
-            Integer year) {
+            String rank,
+            String phase,
+            String year) {
 
         RankEntity entity = rankRepository
                 .findByRankAndPhaseAndYear(rank, phase, year)

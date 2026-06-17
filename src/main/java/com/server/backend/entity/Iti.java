@@ -4,29 +4,32 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import java.util.Map;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.Type;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;;
 @Entity
 @Table(name = "iti", schema = "public")
 @Data
 public class Iti {
 
     @Id
-    @Column(name = "iti_code")
+    @Column(name = "iti_code", length = 255)
     private String itiCode;
 
-    @Column(name = "iti_name", nullable = false)
+    @Column(name = "iti_name",length=255, nullable = false)
     private String itiName;
 
-    @Column(name = "govt")
+    @Column(name = "govt", length = 1)
     private String govt;
 
-    @Column(name = "dist_code", nullable = false)
+    @Column(name = "dist_code",length=2, nullable = false)
     private String distCode;
 
-     @Column(name = "iti_noniti")
+     @Column(name = "iti_noniti" ,length=6)
     private String itiNoniti;
 
-    @Column(name = "olditicode")
+    @Column(name = "olditicode", length = 4)
     private String olditicode;
 
     @Column(name = "capacity")
@@ -43,65 +46,64 @@ public class Iti {
     @Column(name="ts")
     private LocalDateTime ts;
  
-    @Column(name = "address")
+    @Column(name = "address" ,length=255)
     private String address;
 
-    @Column(name = "city_town")
+    @Column(name = "city_town", length = 255)
     private String cityTown;
       
     @Column(name = "mand_code")
     private Integer mandCode;
 
-    @Column(name = "email")
+    @Column(name = "email", length = 255)
     private String email;
 
-    @Column(name = "principalname")
+    @Column(name = "principalname", length = 255)
     private String principalName;
-    @Column(name="role_id")
     private Integer roleId;
-    @Column(name = "description")
-
     private String description;
-    @Column(name = "landlinenumber")
-    private String landlineNumber;
-    @Column(name = "year_est")
-     private String yearEst;
-    @Column(name = "mobile")
+    @Column(name = "mobile", length = 255)
     private String mobile;
-    @Column(name = "ip_address")
+
+    @Column(name = "landlinenumber", length = 15)
+     private String landlineNumber;
+    @Column(name = "year_est",length=6)
+     private String yearEst;
+    
+    @Column(name = "ip_address",length=50)
     private String ipAddress;
 
-    @Column(name = "username")
+    @Column(name = "username",length=50)
     private String username;
 
 
-    @Column(name = "password")
+    @Column(name = "password",length=50)
     private String password;
 
 
     @Column(name = "pin_code")
     private Integer pinCode;
 
-    @Column(name = "iti_type")
+    @Column(name = "iti_type",length=1)
 
     private String itiType;
 
 
-    @Column(name = "appcode")
+    @Column(name = "appcode",length=2)
 
     private String appCode;
 
    @Column(name = "vtp")
    private Boolean vtp;
 
-  @Column(name = "vtp_regno")
+  @Column(name = "vtp_regno", length = 20)
   private String vtpRegno;
 
-  @Column(name = "land")
+  @Column(name = "land",length=10)
    private String land;
  @Column(name = "trno")
  private Integer trNo;
- @Column(name = "builtup_area")
+ @Column(name = "builtup_area" ,length=10)
  private String builtupArea;
 
 @Column(name = "noof_toilets")
@@ -119,43 +121,50 @@ private Integer noofClassrooms;
 @Column(name = "examconducting_strength")
 private Integer examconductingStrength;
 
-@Column(name = "strength")
-private String strength;
 
-@Column(name = "strength_vacant")
-private String strengthVacant;
 
-@Column(name = "strength_fill")
-private String strengthFill;
+
+@Type(PostgreSQLHStoreType.class)
+@Column(name = "strength", columnDefinition = "hstore")
+private Map<String, String> strength;
+
+@Type(PostgreSQLHStoreType.class)
+@Column(name = "strength_vacant", columnDefinition = "hstore")
+private Map<String, String> strengthVacant;
+
+@Type(PostgreSQLHStoreType.class)
+@Column(name = "strength_fill", columnDefinition = "hstore")
+private Map<String, String> strengthFill;
+
 
 @Column(name = "admission_permission")
 private Boolean admissionPermission;
 
-@Column(name = "dget_iti_code")
+@Column(name = "dget_iti_code" ,length=10)
 private String dgetItiCode;
 
-@Column(name = "region")
+@Column(name = "region", length = 5)
 private String region;
 
-@Column(name = "urban_rural")
+@Column(name = "urban_rural",length = 2)
 private String urbanRural;
 
-@Column(name = "web_iti_code")
+@Column(name = "web_iti_code",length=8)
 private String webItiCode;
 
 @Column(name = "tool_status")
 private Boolean toolStatus;
 
-@Column(name = "rec_status")
+@Column(name = "rec_status",length=1)
 private String recStatus;
 
-@Column(name = "website")
+@Column(name = "website", length = 150)
 private String website;
 
-@Column(name = "grade_point")
+@Column(name = "grade_point", length = 35)
 private String gradePoint;
 
-@Column(name = "ncvt_code")
+@Column(name = "ncvt_code", length = 25)
 private String ncvtCode;
 
 @Column(name = "mandal_code")

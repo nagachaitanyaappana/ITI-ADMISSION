@@ -10,8 +10,8 @@ import com.server.backend.entity.RankId;
 public interface RankRepository extends JpaRepository<RankEntity, RankId> {
 
     Optional<RankEntity> findByRankAndPhaseAndYear(
-            Integer rank,
-            Integer phase,
-            Integer year);
+            String rank,
+            String phase,
+            String year);
 
 }
