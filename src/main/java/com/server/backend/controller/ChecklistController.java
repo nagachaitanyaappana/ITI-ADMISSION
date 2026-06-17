@@ -1,6 +1,5 @@
 package com.server.backend.controller;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +11,12 @@ import com.server.backend.service.ChecklistService;
 @RequestMapping("/api/checklist")
 public class ChecklistController {
 
-    @Autowired
-    private ChecklistService checklistService;
+
+    private final ChecklistService checklistService;
+
+    public ChecklistController(ChecklistService checklistService) {
+        this.checklistService = checklistService;
+    }
 
     @GetMapping
     public List<Checklist> getAllChecklist() {
