@@ -20,20 +20,20 @@ import java.util.Map;
 public class ititrade {
 
     @Id
-    @Column(name = "iti_code", nullable = false)
+    @Column(name = "iti_code", nullable = false , length = 4)
     private String itiCode;
 
     @Id
     @Column(name = "trade_code", nullable = false)
     private Integer tradecode;
 
-    @Column(name = "trade_short")
+    @Column(name = "trade_short" , length = 2)
     private String tradeshort;
 
     @Column(name = "strength")
     private Integer strength;
 
-    @Column(name = "available_for_year")
+    @Column(name = "available_for_year" , length = 1)
     private String availableforyear;
 
     @Column(name = "trade_freeze")
@@ -51,7 +51,7 @@ public class ititrade {
     @Column(name = "trno")
     private Long trno;
 
-    @Column(name = "no_of_units")
+    @Column(name = "no_of_units" , length = 2)
     private String no_of_units;
 
     // Properly declared Map + attached Hypersistence HStore type translation
