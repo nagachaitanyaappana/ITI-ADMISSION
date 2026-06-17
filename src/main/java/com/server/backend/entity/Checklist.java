@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "checklist")
+@Table(name = "checklist" , schema = "public")
 @Data
 public class Checklist 
 {

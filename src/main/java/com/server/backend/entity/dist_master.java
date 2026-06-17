@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "dist_mst")
+@Table(name = "dist_mst", schema = "public")
 public class dist_master {
 
     @Column(name = "statecode", nullable = false)

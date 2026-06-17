@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "desig_master")
+@Table(name = "desig_master", schema = "public")
 @Data
 public class Designation {
 
