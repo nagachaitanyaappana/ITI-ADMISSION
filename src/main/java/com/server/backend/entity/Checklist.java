@@ -6,7 +6,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "checklist")
-public class Checklist {
+public class Checklist 
+{
 
     @Column(name = "dist_code")
     private String distCode;
