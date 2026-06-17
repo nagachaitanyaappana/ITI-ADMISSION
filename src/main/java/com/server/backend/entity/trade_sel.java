@@ -30,7 +30,7 @@ public class trade_sel {
     @Column(name = "dist_code" , length = 2)
     private String dist_code;
 
-    @Column(name = "temp" , nullable = false)
+    @Column(name = "temp", nullable = false, insertable = false, updatable = false)
     private Integer temp;
 
     @Column(name = "freezee")
