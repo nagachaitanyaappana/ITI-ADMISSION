@@ -10,9 +10,9 @@ public interface DesignationService {
 
     List<DesignationDto> getAllDesignations();
 
-    DesignationDto getDesignationById(Integer desigCode);
+    DesignationDto getDesignationById(String desigCode);
 
-    DesignationDto updateDesignation(Integer desigCode, DesignationDto dto);
+    DesignationDto updateDesignation(String desigCode, DesignationDto dto);
 
-    void deleteDesignation(Integer desigCode);
+    void deleteDesignation(String desigCode);
 }

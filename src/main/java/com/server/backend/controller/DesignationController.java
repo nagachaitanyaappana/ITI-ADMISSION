@@ -33,26 +33,26 @@ public class DesignationController {
         return ResponseEntity.ok(service.getAllDesignations());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{desigCode}")
     public ResponseEntity<DesignationDto> getDesignationById(
-            @PathVariable Integer id) {
+            @PathVariable String desigCode) {
 
-        return ResponseEntity.ok(service.getDesignationById(id));
+        return ResponseEntity.ok(service.getDesignationById(desigCode));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{desigCode}")
     public ResponseEntity<DesignationDto> updateDesignation(
-            @PathVariable Integer id,
+            @PathVariable String desigCode,
             @RequestBody DesignationDto dto) {
 
-        return ResponseEntity.ok(service.updateDesignation(id, dto));
+        return ResponseEntity.ok(service.updateDesignation(desigCode, dto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{desigCode}")
     public ResponseEntity<String> deleteDesignation(
-            @PathVariable Integer id) {
+            @PathVariable String desigCode) {
 
-        service.deleteDesignation(id);
+        service.deleteDesignation(desigCode);
 
         return ResponseEntity.ok("Designation deleted successfully");
     }

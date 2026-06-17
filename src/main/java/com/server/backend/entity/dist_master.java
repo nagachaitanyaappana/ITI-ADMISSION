@@ -11,20 +11,20 @@ import lombok.Data;
 @Table(name = "dist_mst", schema = "public")
 public class dist_master {
 
-    @Column(name = "statecode", nullable = false)
+    @Column(name = "statecode", nullable = false , length = 2)
     private String statecode;
 
-    @Column(name = "dist_code", nullable = false)
+    @Column(name = "dist_code", nullable = false , length = 4)
     private String distcode;
 
     @Id
-    @Column(name = "dist_name")
+    @Column(name = "dist_name" , length = 25)
     private String distname;
 
-    @Column(name = "itidist_code")
+    @Column(name = "itidist_code" , length = 2)
     private String itidistcode;
 
-    @Column(name = "new_dist")
+    @Column(name = "new_dist" , length = 10)
     private String newdist;
 
     @Column(name = "lgddistcode")
