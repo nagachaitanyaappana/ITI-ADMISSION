@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "ititrade")
+@Table(name = "ititrade" , schema = "public")
 @IdClass(ItiTradeId.class) // Links the composite primary key class
 @Data
 public class ititrade {

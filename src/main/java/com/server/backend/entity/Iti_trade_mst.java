@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name="ititrade_master")
+@Table(name="ititrade_master", schema = "public")
 @Data
 
 
