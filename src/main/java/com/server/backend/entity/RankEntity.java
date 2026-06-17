@@ -7,7 +7,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "ranks")
+@Table(name = "ranks",schema="public")
 @IdClass(RankId.class)
 public class RankEntity {
 
