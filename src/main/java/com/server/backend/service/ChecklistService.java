@@ -18,7 +18,7 @@ public class ChecklistService {
         return checklistRepository.findAll();
     }
 
-    public Checklist getChecklistByRegId(String regid) {
+    public Checklist getChecklistByRegId(Integer regid) {
         return checklistRepository.findById(regid).orElse(null);
     }
 

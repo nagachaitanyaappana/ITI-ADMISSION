@@ -2,9 +2,9 @@ package com.server.backend.service;
 
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.server.backend.DTO.Institute.ItiDto;
 import com.server.backend.entity.Iti;
 import com.server.backend.Repository.ItiRepository;
@@ -16,17 +16,21 @@ public class ItiServiceImpl implements ItiService {
     @Autowired
     private ItiRepository repository;
 
-    /*@Override
-    public Iti createIti(ItiDto dto) {
+   @Override
+public Iti createIti(ItiDto dto) {
 
-        Iti iti1 = new Iti();
-
-        iti1.setItiCode(dto.getItiCode());
-        iti1.setItiName(dto.getItiName());
-
-        return repository.save(iti1);
+    if(repository.existsById(dto.getItiCode())) {
+        throw new RuntimeException(
+                "ITI Code already exists");
     }
-*/
+
+    Iti iti = new Iti();
+
+    BeanUtils.copyProperties(dto, iti);
+
+    return repository.save(iti);
+}
+
     @Override
     public List<Iti> getAllItis() {
         return repository.findAll();
@@ -38,21 +42,23 @@ public class ItiServiceImpl implements ItiService {
                 .orElse(null);
     }
 
-    @Override
-    public Iti updateIti(String itiCode, ItiDto dto) {
+   @Override
+public Iti updateIti(String itiCode, ItiDto dto) {
 
-        Iti iti1 = repository.findById(itiCode).orElse(null);
+    Iti iti = repository.findById(itiCode)
+            .orElseThrow(() ->
+                    new RuntimeException(
+                            "ITI Not Found"));
 
-        if (iti1 != null) {
-            iti1.setItiName(dto.getItiName());
-            return repository.save(iti1);
-        }
+    BeanUtils.copyProperties(dto, iti);
 
-        return null;
-    }
+    iti.setItiCode(itiCode);
 
-   /*  @Override
+    return repository.save(iti);
+}
+
+     @Override
     public void deleteIti(String itiCode) {
         repository.deleteById(itiCode);
-    }*/
+    }
 }

@@ -9,17 +9,17 @@ import jakarta.persistence.Table;
 public class Checklist {
 
     @Column(name = "dist_code")
-    private String dist_code;
+    private String distCode;
 
     @Id
     @Column(name = "regid")
-    private String regid;
+    private Integer regid;
 
     @Column(name = "rank")
     private Integer rank;
 
     @Column(name = "iti_code")
-    private String iti_code;
+    private String itiCode;
 
     @Column(name = "qual")
     private String qual;
@@ -34,24 +34,24 @@ public class Checklist {
     private String trno;
 
     @Column(name = "app_status")
-    private String app_status;
+    private String appStatus;
 
     public Checklist() {
     }
 
     public String getDistCode() {
-        return dist_code;
+        return distCode;
     }
 
-    public void setDistCode(String dist_code){
-        this.dist_code= dist_code;
+    public void setDistCode(String distCode){
+        this.distCode= distCode;
     }
 
-    public String getRegId() {
+    public Integer getRegId() {
         return regid;
     }
 
-    public void setRegId(String regid){
+    public void setRegId(Integer regid){
         this.regid = regid;
     }
 
@@ -64,11 +64,11 @@ public class Checklist {
     }
 
     public String getItiCode() {
-        return iti_code;
+        return itiCode;
     }
 
     public void setItiCode(String iti_code){
-        this.iti_code= iti_code;
+        this.itiCode= iti_code;
     }
 
     public String getQual() {
@@ -104,10 +104,10 @@ public class Checklist {
     }
 
     public String getAppStatus() {
-        return app_status;
+        return appStatus;
     }
 
-    public void setAppStatus(String app_status){
-        this.app_status=app_status;
+    public void setAppStatus(String appStatus){
+        this.appStatus=appStatus;
     }
 }
