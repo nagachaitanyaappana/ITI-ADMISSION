@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.BeanUtils;
 import com.server.backend.DTO.Institute.ItiDto;
 import com.server.backend.entity.Iti;
 import com.server.backend.Repository.ItiRepository;
