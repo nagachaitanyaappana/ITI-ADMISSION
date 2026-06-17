@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "ranks")
+@Table(name = "ranks",schema="public")
 @Data
 @IdClass(MeritListId.class)
 public class MeritList{
