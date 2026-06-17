@@ -15,6 +15,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "trade_sel", schema = "public")
+@IdClass(TradeSelId.class)
 @Data
 public class trade_sel {
 
