@@ -25,22 +25,22 @@ public class RankEntity {
 
     @Id
     @Column(name = "phase")
-    private Integer phase;
+    private String phase;
 
     @Column(name = "dist_code")
     private String distCode;
 
     @Column(name = "rank", nullable = false)
-    private Integer rank;
+    private String rank;
 
     @Column(name = "iti_code")
     private String itiCode;
 
     @Column(name = "trno")
-    private Integer trno;
+    private String trno;
 
     @Column(name = "year")
-    private Integer year;
+    private String year;
 
     @Column(name = "app_status")
     private String appStatus;
@@ -72,11 +72,11 @@ public class RankEntity {
         this.tempPk = tempPk;
     }
 
-    public Integer getPhase() {
+    public String getPhase() {
         return phase;
     }
 
-    public void setPhase(Integer phase) {
+    public void setPhase(String phase) {
         this.phase = phase;
     }
 
@@ -88,11 +88,11 @@ public class RankEntity {
         this.distCode = distCode;
     }
 
-    public Integer getRank() {
+    public String getRank() {
         return rank;
     }
 
-    public void setRank(Integer rank) {
+    public void setRank(String rank) {
         this.rank = rank;
     }
 
@@ -104,19 +104,19 @@ public class RankEntity {
         this.itiCode = itiCode;
     }
 
-    public Integer getTrno() {
+    public String getTrno() {
         return trno;
     }
 
-    public void setTrno(Integer trno) {
+    public void setTrno(String trno) {
         this.trno = trno;
     }
 
-    public Integer getYear() {
+    public String getYear() {
         return year;
     }
 
-    public void setYear(Integer year) {
+    public void setYear(String year) {
         this.year = year;
     }
 
