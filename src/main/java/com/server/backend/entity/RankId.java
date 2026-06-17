@@ -68,7 +68,3 @@ public class RankId implements Serializable {
         return Objects.hash(regid, qual, tempPk, phase);
     }
 }
-
-
-
-
