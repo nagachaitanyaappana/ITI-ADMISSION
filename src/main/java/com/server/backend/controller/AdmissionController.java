@@ -20,9 +20,9 @@ public class AdmissionController {
 
     @GetMapping("/candidate")
     public CandidateResponseDTO getCandidateByRank(
-            @RequestParam Integer rank,
-            @RequestParam Integer phase,
-            @RequestParam Integer year) {
+            @RequestParam String rank,
+            @RequestParam String phase,
+            @RequestParam String year) {
 
         return admissionService.getCandidateByRank(rank, phase, year);
     }

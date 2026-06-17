@@ -154,7 +154,7 @@ public class iti_admissions {
     private String final_year_of_pass;
 
     @Column(name = "attempt_no")
-    private Integer attempt_no;
+    private Integer attempt_no = 0;
 
     @Column(name = "sem_nonsem" , length = 6)
     private String sem_nonsem;
