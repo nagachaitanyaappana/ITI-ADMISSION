@@ -2,6 +2,7 @@ package com.server.backend.DTO.Institute;
 import java.time.LocalDateTime;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import java.util.Map;
 
 @Data
 public class ItiDto {
@@ -61,10 +62,9 @@ public class ItiDto {
     private Integer noofClassrooms;
     private Integer examconductingStrength;
 
-    private String strength;
-    private String strengthVacant;
-    private String strengthFill;
-
+    private Map<String,String> strength;
+    private Map<String,String> strengthVacant;
+    private Map<String,String> strengthFill;
     private Boolean admissionPermission;
 
     private String dgetItiCode;

@@ -63,7 +63,7 @@ public class Iti {
    private String mobile;
 
     @Column(name = "landlinenumber", length = 15)
-     private String landlineNumber;;
+     private String landlineNumber;
     @Column(name = "year_est",length=6)
      private String yearEst;
     
@@ -129,6 +129,8 @@ private Map<String, String> strengthVacant;
 
 @Column(name = "strength_fill", columnDefinition = "hstore")
 private Map<String, String> strengthFill;
+
+
 @Column(name = "admission_permission")
 private Boolean admissionPermission;
 
