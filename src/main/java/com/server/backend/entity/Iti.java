@@ -6,6 +6,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import java.util.Map;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.Type;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;;
 @Entity
 @Table(name = "iti", schema = "public")
 @Data
@@ -56,11 +58,12 @@ public class Iti {
     @Column(name = "email", length = 255)
     private String email;
 
-  @Column(name = "principalname", length = 255)
-   private String principalName;
-  
-  @Column(name = "mobile", length = 255)
-   private String mobile;
+    @Column(name = "principalname", length = 255)
+    private String principalName;
+    private Integer roleId;
+    private String description;
+    @Column(name = "mobile", length = 255)
+    private String mobile;
 
     @Column(name = "landlinenumber", length = 15)
      private String landlineNumber;
@@ -121,12 +124,15 @@ private Integer examconductingStrength;
 
 
 
+@Type(PostgreSQLHStoreType.class)
 @Column(name = "strength", columnDefinition = "hstore")
 private Map<String, String> strength;
 
+@Type(PostgreSQLHStoreType.class)
 @Column(name = "strength_vacant", columnDefinition = "hstore")
 private Map<String, String> strengthVacant;
 
+@Type(PostgreSQLHStoreType.class)
 @Column(name = "strength_fill", columnDefinition = "hstore")
 private Map<String, String> strengthFill;
 
@@ -134,7 +140,7 @@ private Map<String, String> strengthFill;
 @Column(name = "admission_permission")
 private Boolean admissionPermission;
 
-@Column(name = "dget_iti_code")
+@Column(name = "dget_iti_code" ,length=10)
 private String dgetItiCode;
 
 @Column(name = "region", length = 5)

@@ -9,14 +9,16 @@ public class ItiDto {
     
     @NotBlank(message = "ITI Code is required")
     private String itiCode;
-    
+    @Size(max=255)
     @NotBlank(message = "ITI Name is required")
     private String itiName;
     @NotBlank(message="Govt field is required")
     private String govt;
     @NotBlank(message="District Code is required")
     private String distCode;
+    @Size(max=6)
     private String itiNoniti;
+    @Size(max=4)
     private String olditicode;
 
     private Integer capacity;
@@ -25,7 +27,9 @@ public class ItiDto {
     private Integer totStrength;
     private LocalDateTime ts;
     private String ipAddress;
+    @Size(max=50)
     private String username;
+    @Size(max=50)
     private String password;
     private String address;
     private String cityTown;
@@ -51,6 +55,7 @@ public class ItiDto {
     private String appCode;
 
     private Boolean vtp;
+    @Size(max=20)
     private String vtpRegno;
 
     private String land;
@@ -75,7 +80,7 @@ public class ItiDto {
     private Boolean toolStatus;
 
     private String recStatus;
-    @Size(max = 255,message = "Website URL should not exceed 255 characters")
+    @Size(max = 150,message = "Website URL should not exceed 255 characters")
     private String website;
     private String gradePoint;
     private String ncvtCode;

@@ -12,7 +12,7 @@ import com.server.backend.Repository.ItiRepository;
 public class ItiServiceImpl implements ItiService {
 
     
-    private ItiRepository repository;
+    private final ItiRepository repository;
         public ItiServiceImpl(ItiRepository repository) 
    {
         this.repository = repository;
