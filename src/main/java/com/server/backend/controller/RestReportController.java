@@ -1,6 +1,5 @@
 package com.server.backend.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +26,7 @@ public class RestReportController {
         return reportService.getItisWithTradesByDistrict(districtCollegeType);
     }
 
-    @GetMapping("/DisclosureManagement")
+    @PostMapping("/DisclosureManagement")
     public String disclosureManagement() {
         return "Disclosure Management.";
     }
