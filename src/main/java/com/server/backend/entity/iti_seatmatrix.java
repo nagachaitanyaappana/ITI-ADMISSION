@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type;
 import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -16,9 +17,11 @@ import lombok.Data;
 @Data
 public class iti_seatmatrix {
 
+    @Id    
     @Column(name = "iti_code" , nullable = false)
     private String iti_code;
 
+    @Id
     @Column(name = "trade_code" , nullable = false)
     private Integer trade_code;
 
@@ -34,9 +37,11 @@ public class iti_seatmatrix {
     @Column(name = "strength_vacant", columnDefinition = "hstore" , nullable = false)
     private Map<String, String> strength_vacant = new HashMap<>();
 
+    @Id
     @Column(name = "year" , nullable = false)
     private String year;
 
+    @Id
     @Column(name = "phase" , nullable = false)
     private Integer phase;
 
