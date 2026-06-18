@@ -28,7 +28,7 @@ public class Checklist
     private String qual;
 
     @Column(name = "temp_pk")
-    private Integer temp_pk;
+    private String temp_pk;
 
     @Column(name = "phase")
     private String phase;
