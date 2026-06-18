@@ -1,4 +1,6 @@
 package com.server.backend.entity;
+import java.math.BigInteger;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -28,13 +30,13 @@ public class Checklist
     private String qual;
 
     @Column(name = "temp_pk")
-    private Integer temp_pk;
+    private String temp_pk;
 
     @Column(name = "phase")
     private String phase;
 
     @Column(name = "trno")
-    private Integer trno;
+    private BigInteger trno;
 
     @Column(name = "app_status")
     private String appStatus;

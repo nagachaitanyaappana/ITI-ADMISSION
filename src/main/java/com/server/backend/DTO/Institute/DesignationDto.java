@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class DesignationDto {
-
+    @Size(max=4)
     private String desigCode;
 
     @NotBlank(message = "Designation is required")
