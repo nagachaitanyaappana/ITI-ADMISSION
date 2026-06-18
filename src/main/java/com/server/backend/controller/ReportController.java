@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ReportController {
 
+    @GetMapping("/tradedisplay")
+    public String tradedisplay() {
+        return "tradedisplay.html";
+    }
+
     @GetMapping("/AboutStrive")
     public String aboutStrive() {
         return "/aboutstrive.html";
