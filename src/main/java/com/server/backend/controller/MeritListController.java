@@ -61,13 +61,13 @@ public MeritList createMeritList(@RequestBody MeritList meritList) {
     
     return meritListService.saveMeritList(meritList);
 }
-@PutMapping
+@PutMapping("{regid}")
 public MeritList updateMeritList(@RequestBody MeritList meritList) {
 
     
     return meritListService.updateMeritList(meritList);
 }
-@DeleteMapping
+@DeleteMapping("{regid}")
 public void deleteMeritList(
         @RequestParam Integer regid,
         @RequestParam String qual,
@@ -78,5 +78,5 @@ public void deleteMeritList(
             meritListService.deleteMeritList(meritListId);
         }
 
-}//
+}
 
