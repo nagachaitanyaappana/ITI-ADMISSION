@@ -13,5 +13,5 @@ public interface ItiService {
     Iti updateIti(String itiCode, ItiDto dto);
 
     void deleteIti(String itiCode);
-    
+    Iti patchIti(String itiCode,ItiDto dto);
 }

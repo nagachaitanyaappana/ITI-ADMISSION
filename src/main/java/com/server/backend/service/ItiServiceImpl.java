@@ -62,4 +62,62 @@ public Iti updateIti(String itiCode, ItiDto dto) {
     public void deleteIti(String itiCode) {
         repository.deleteById(itiCode);
     }
+
+   @Override
+public Iti patchIti(String itiCode, ItiDto dto) {
+
+    Iti iti = repository.findById(itiCode)
+            .orElseThrow(() -> new RuntimeException("ITI Not Found"));
+
+    if (dto.getItiName() != null)
+        iti.setItiName(dto.getItiName());
+
+    if (dto.getGovt() != null)
+        iti.setGovt(dto.getGovt());
+
+    if (dto.getDistCode() != null)
+        iti.setDistCode(dto.getDistCode());
+
+    if (dto.getCapacity() != null)
+        iti.setCapacity(dto.getCapacity());
+
+    if (dto.getAllocated() != null)
+        iti.setAllocated(dto.getAllocated());
+
+    if (dto.getRemainingCapacity() != null)
+        iti.setRemainingCapacity(dto.getRemainingCapacity());
+
+    if (dto.getTotStrength() != null)
+        iti.setTotStrength(dto.getTotStrength());
+
+    if (dto.getAddress() != null)
+        iti.setAddress(dto.getAddress());
+
+    if (dto.getCityTown() != null)
+        iti.setCityTown(dto.getCityTown());
+
+    if (dto.getEmail() != null)
+        iti.setEmail(dto.getEmail());
+
+    if (dto.getPrincipalName() != null)
+        iti.setPrincipalName(dto.getPrincipalName());
+
+    if (dto.getMobile() != null)
+        iti.setMobile(dto.getMobile());
+
+    if (dto.getWebsite() != null)
+        iti.setWebsite(dto.getWebsite());
+
+    if (dto.getNoofLabs() != null)
+        iti.setNoofLabs(dto.getNoofLabs());
+
+    if (dto.getNoofClassrooms() != null)
+        iti.setNoofClassrooms(dto.getNoofClassrooms());
+
+    if (dto.getAdmissionPermission() != null)
+        iti.setAdmissionPermission(dto.getAdmissionPermission());
+
+    return repository.save(iti);
+}
+
 }
