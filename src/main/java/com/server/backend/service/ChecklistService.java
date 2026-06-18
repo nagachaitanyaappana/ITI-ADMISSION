@@ -38,4 +38,27 @@ public List<Checklist> getAllChecklist() {
     public List<Checklist> getChecklistByAppStatus(String app_status) {
         return checklistRepository.findByAppStatus(app_status);
     }
+    // CREATE
+public Checklist createChecklist(Checklist checklist) {
+    return checklistRepository.save(checklist);
+}
+
+// UPDATE
+public Checklist updateChecklist(Integer regid, Checklist checklist) {
+
+    Checklist existing = checklistRepository.findById(regid)
+            .orElseThrow(() -> new RuntimeException("Checklist not found: " + regid));
+
+    existing.setDistCode(checklist.getDistCode());
+    existing.setPhase(checklist.getPhase());
+    existing.setItiCode(checklist.getItiCode());
+    existing.setAppStatus(checklist.getAppStatus());
+
+    return checklistRepository.save(existing);
+}
+
+// DELETE
+public void deleteChecklist(Integer regid) {
+    checklistRepository.deleteById(regid);
+}
 }

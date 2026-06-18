@@ -19,7 +19,7 @@ public class Checklist
     private Integer regid;
 
     @Column(name = "rank")
-    private Integer rank;
+    private String rank;
 
     @Column(name = "iti_code")
     private String itiCode;
@@ -34,7 +34,7 @@ public class Checklist
     private String phase;
 
     @Column(name = "trno")
-    private String trno;
+    private Integer trno;
 
     @Column(name = "app_status")
     private String appStatus;

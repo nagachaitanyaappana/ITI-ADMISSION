@@ -20,7 +20,7 @@ public class MeritList{
     private Integer regid;
 
     @Column(name = "rank")
-    private Integer rank;
+    private String rank;
 
     @Column(name = "iti_code")
     private String iti_Code;
@@ -38,10 +38,10 @@ public class MeritList{
     private String phase;
 
     @Column(name = "trno")
-    private String trno;
+    private Long trno;
 
     @Column(name = "year")
-    private Integer year;
+    private String year;
 
     @Column(name = "app_status")
     private String app_status;
