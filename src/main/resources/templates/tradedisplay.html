@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>:: ITI ::</title>
+    <link rel="shortcut icon" type="image/ico" th:href="@{/iti.png}" href="iti.png" />
+    
+    <link rel="stylesheet" th:href="@{/css/expe1011.css}" href="../static/css/expe1011.css" />
+    
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}" src="../static/js/jquery.min.js"></script>
+    
+    <style>
+        /* ================= GENERAL STYLES ================= */
+        body {
+            font-family: Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
+            color: #333;
+        }
+        .text1 {
+            font-size: 20px;
+            padding-left: 65px;
+        }
+        .text2 {
+            font-size: 20px;
+            padding-left: 25px;
+            line-height: 1.6;
+        }
+        p:before {
+            content: ' \25BA';
+        }
+        .style4 {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* ================= NAVIGATION BAR ================= */
+        #menu-bar {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            height: 30px;
+            line-height: 100%;
+            border-radius: 0;
+            box-shadow: 2px 2px 2px #666666;
+            background: #e4eeb9;
+            position: relative;
+            z-index: 999;
+            display: inline-block;
+        }
+        html[xmlns] #menu-bar {
+            display: block;
+        }
+        #menu-bar li {
+            margin: 0 0 6px 0;
+            padding: 0 6px 0 6px;
+            float: left;
+            position: relative;
+            list-style: none;
+        }
+        #menu-bar a {
+            font-weight: bold;
+            font-family: verdana;
+            font-size: 14px;
+            color: #000000;
+            background: #e4eeb9;
+            text-decoration: none;
+            display: block;
+            padding: 6px 20px;
+            margin: 0 0 6px 0;
+            border-radius: 10px;
+        }
+        #menu-bar li ul li a {
+            margin: 0;
+        }
+        #menu-bar .active a, #menu-bar li:hover > a {
+            background: -webkit-gradient(linear, left top, left bottom, from(#EB4954), to(#A19197));
+            background: linear-gradient(top,  #EB4954,  #A19197);
+            color: white;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+        }
+        #menu-bar ul li:hover a, #menu-bar li:hover li a {
+            background: lightgoldenrodyellow;
+            color: #000000;
+            box-shadow: none;
+        }
+        #menu-bar ul a:hover {
+            background: lightblue !important;
+            color: black !important;
+            border-radius: 0;
+        }
+        #menu-bar li:hover > ul {
+            display: block;
+        }
+        #menu-bar ul {
+            background: -webkit-gradient(linear, left top, left bottom, from(#FFD21C), to(#CF7688));
+            background: linear-gradient(top,  #FFD21C,  #CF7688);
+            display: none;
+            margin: 0;
+            padding: 0;
+            width: 300px;
+            position: absolute;
+            top: 30px;
+            left: 0;
+            border-radius: 10px;
+            box-shadow: 2px 2px 3px #222222;
+        }
+        #menu-bar ul li {
+            float: none;
+            margin: 0;
+            padding: 0;
+        }
+        #menu-bar ul a {
+            padding: 10px 0 10px 15px;
+            background: gold;
+            color: grey;
+            font-size: 13px;
+            font-family: verdana;
+            font-weight: normal;
+            text-shadow: 2px 2px 3px #FFFFFF;
+        }
+        #menu-bar ul li:first-child > a {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        #menu-bar ul li:last-child > a {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        #menu-bar:after {
+            content: ".";
+            display: block;
+            clear: both;
+            visibility: hidden;
+            line-height: 0;
+            height: 0;
+        }
+
+        /* ================= MARQUEE & FORM TABLES ================= */
+        marquee {
+            width: 100%;
+            font-family: Verdana, sans-serif;
+        }
+        .selection-table {
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: #e4eeb9;
+            border: 1px solid #666;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .selection-table td {
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+        }
+        .submit-row {
+            background-color: green;
+            text-align: center;
+        }
+        .submit-row input {
+            padding: 6px 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="text-align: center;">
+        <img th:src="@{/images/Banner.jpg}" src="../static/images/Banner.jpg" id="banner-id" style="width:100%; height:auto;" alt="Banner" />
+    </div>
+
+    <ul id="menu-bar">
+        <li><a th:href="@{/login}" href="login.jsp">Home</a></li>
+        <li><a th:href="@{/trade-display}" href="trade_display1.jsp">ITI Profile</a></li>
+        <li>
+            <a href="javascript:void(0);">STRIVE</a>
+            <ul>
+                <li><a th:href="@{/strive/about}" href="AboutStrive.jsp">ABOUT STRIVE</a></li>
+                <li><a th:href="@{/strive/disclosure}" href="strive.jsp">Disclosure Management</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="https://itiadmissions.ap.gov.in/placementsfe/" target="_blank">PLACEMENTS / IN-PLANT TRAINING</a>
+        </li>
+    </ul>
+
+    <br /><br />
+
+    <marquee onmouseover="this.stop();" onmouseout="this.start();" scrolldelay="100">
+        <span style="font-weight: bold; color: blue; font-size: 20px;">
+            <a href="#" target="_blank" th:text="${announcementText != null} ? ${announcementText} : 'ITI Admissions 2026 Phase -1 for Student Registrations, Apply for ITI and Verifications has started and will end on 02/07/2026 5PM.'">
+                ITI Admissions 2026 Phase -1 for Student Registrations, Apply for ITI and Verifications has started and will end on 02/07/2026 5PM.
+            </a>
+        </span>
+    </marquee>
+
+    <br />
+
+    <form name="form1" method="POST" th:action="@{/trade_display2}" action="./trade_display2.jsp">
+        <p class="style4"> 
+            <span style="color: blue; font-size: 20px;">
+                List of ITI's with Trades &amp; Strengths Interface
+            </span>
+        </p>
+
+        <table class="selection-table" id="AutoNumber1">
+            <tbody>
+                <tr>
+                    <td><span class="style52">Select District : </span></td>
+                    <td style="width: 148px;">
+                        <select name="dist_code" class="style52">
+                            <option value="" selected="selected">--select--</option>
+                            <option value="25">Alluri Sitaramaraju</option>
+                            <option value="24">Anakapalli</option>
+                            <option value="22">Anantapur</option>
+                            <option value="33">Annamayya</option>
+                            <option value="32">Bapatla</option>
+                            <option value="23">Chittoor</option>
+                            <option value="14">East Godavari</option>
+                            <option value="29">Eluru</option>
+                            <option value="17">Guntur</option>
+                            <option value="27">Kakinada</option>
+                            <option value="28">Konaseema</option>
+                            <option value="16">Krishna</option>
+                            <option value="21">Kurnool</option>
+                            <option value="38">Marakapuram</option>
+                            <option value="34">Nandyal</option>
+                            <option value="19">Nellore</option>
+                            <option value="30">NTR</option>
+                            <option value="31">Palnadu</option>
+                            <option value="26">Parvathipuram-Manyam</option>
+                            <option value="37">Polavaram</option>
+                            <option value="18">Prakasam</option>
+                            <option value="11">Srikakulam</option>
+                            <option value="35">Sri Satyasai</option>
+                            <option value="36">Tirupati</option>
+                            <option value="13">Visakhapatnam</option>
+                            <option value="12">Vizianagaram</option>
+                            <option value="15">West Godavari</option>
+                            <option value="20">YSR</option>
+                        </select> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>GOVT/PVT</td>
+                    <td> 
+                        <select name="gov">
+                            <option value="">----ALL----</option>
+                            <option value="G">GOVERNMENT</option>
+                            <option value="P">PRIVATE</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="submit-row">
+                    <td colspan="2">
+                        <input type="submit" value="Submit" onclick="formSubmit();" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Named the function formSubmit() to avoid name clashing with natively reserved form .submit() methods
+        function formSubmit() {
+            if(document.form1) {
+                document.form1.submit();
+            }
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>
