@@ -10,7 +10,7 @@ public class Designation {
 
     @Id
     
-    @Column(name = "desig_code")
+    @Column(name = "desig_code",length=4)
     private String desigCode;
 
     @Column(name = "designation", length = 50, nullable = false)
