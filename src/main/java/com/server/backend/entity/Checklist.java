@@ -30,7 +30,7 @@ public class Checklist
     private String qual;
 
     @Column(name = "temp_pk")
-    private String temp_pk;
+    private String tempPk;
 
     @Column(name = "phase")
     private String phase;
@@ -42,3 +42,25 @@ public class Checklist
     private String appStatus;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
