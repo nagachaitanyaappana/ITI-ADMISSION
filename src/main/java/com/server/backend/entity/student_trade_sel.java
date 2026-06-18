@@ -22,7 +22,7 @@ public class student_trade_sel {
 
     @Id
     @Column(name = "regid", nullable = false)
-    private String regid;
+    private Integer regid;
 
     @Id
     @Column(name = "iti_code", nullable = false , length = 4)
