@@ -2,7 +2,8 @@ package com.server.backend.service;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
+import java.util.ArrayList;
 import com.server.backend.DTO.CandidateResponseDTO;
 import com.server.backend.Repository.RankRepository;
 import com.server.backend.entity.RankEntity;
@@ -17,20 +18,28 @@ public class AdmissionServiceImpl implements AdmissionService {
     }
 
     @Override
-    public CandidateResponseDTO getCandidateByRank(
+    public List<CandidateResponseDTO> getCandidatesByRank(
             String rank,
             String phase,
             String year) {
 
-        RankEntity entity = rankRepository
-                .findByRankAndPhaseAndYear(rank, phase, year)
-                .orElseThrow(() ->
-                        new RuntimeException("Candidate not found"));
+        List<RankEntity> entities = rankRepository
+                .findByRankAndPhaseAndYear(rank, phase, year);
 
-        CandidateResponseDTO dto = new CandidateResponseDTO();
+        if (entities.isEmpty()) {
+            throw new RuntimeException("Candidate not found");
+        }
 
-        BeanUtils.copyProperties(entity, dto);
+        List<CandidateResponseDTO> dtos = new ArrayList<>();
 
-        return dto;
+        for (RankEntity entity : entities) {
+            CandidateResponseDTO dto = new CandidateResponseDTO();
+            BeanUtils.copyProperties(entity, dto);
+            dtos.add(dto);
+        }
+
+        BeanUtils.copyProperties(entities.get(0), dtos.get(0));
+
+        return dtos;
     }
 }

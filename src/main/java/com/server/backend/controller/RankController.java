@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import java.util.List;
 import com.server.backend.DTO.CandidateResponseDTO;
 import com.server.backend.service.AdmissionService;
 
@@ -19,11 +19,11 @@ public class RankController {
     }
 
     @GetMapping("/candidate")
-    public CandidateResponseDTO getCandidateByRank(
+    public List<CandidateResponseDTO> getCandidatesByRank(
             @RequestParam String rank,
             @RequestParam String phase,
             @RequestParam String year) {
 
-        return admissionService.getCandidateByRank(rank, phase, year);
+        return admissionService.getCandidatesByRank(rank, phase, year);
     }
 }
