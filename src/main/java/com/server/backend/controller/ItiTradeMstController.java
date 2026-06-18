@@ -15,7 +15,7 @@ import com.server.backend.entity.Iti_trade_mst;
 import com.server.backend.service.ItiTradeMstService;
 
 @RestController
-@RequestMapping("/api/trades")
+@RequestMapping("/api/iti/trades")
 public class ItiTradeMstController {
 
     private final ItiTradeMstService service;
