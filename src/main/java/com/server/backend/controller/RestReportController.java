@@ -26,8 +26,5 @@ public class RestReportController {
         return reportService.getItisWithTradesByDistrict(districtCollegeType);
     }
 
-    @PostMapping("/DisclosureManagement")
-    public String disclosureManagement() {
-        return "Disclosure Management.";
-    }
 }
+

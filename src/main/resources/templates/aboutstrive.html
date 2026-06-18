@@ -1,166 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STRIVE</title>
+    <script type="text/javascript" th:src="@{/js1/jquery.min.js}" src="../static/js/jquery.min.js"></script>
+
     <style>
-        * {
-            box-sizing: border-box;
+        .text1 {
+            font-size: 20px;
+            padding-left: 65px;
+        }
+        .text2 {
+            font-size: 20px;
+            padding-left: 25px;
+            line-height: 1.6;
+        }
+        p:before {
+            content: ' \25BA';
+        }
+
+        /* ================= MENU CSS ================= */
+        #menu-bar {
+            width: 100%;
             margin: 0;
             padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            color: #000000;
-            line-height: 1.5;
-        }
-
-        /* --- Full Banner Image Container --- */
-        .header-banner-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            background-color: #fff;
-            padding: 5px 0;
-        }
-
-        .header-banner-container img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* --- Navigation Bar --- */
-        .nav-container {
-            padding: 0 15px;
-            margin-bottom: 15px;
-        }
-
-        nav {
-            background: linear-gradient(to bottom, #f2f7e4 0%, #dae7ba 100%);
-            border: 1px solid #c2d49c;
-            border-radius: 12px;
-            display: flex;
-            padding: 2px 20px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #000000;
-            font-weight: bold;
-            font-size: 15px;
-            padding: 10px 25px;
+            height: 30px;
+            line-height: 100%;
+            border-radius: 0;
+            box-shadow: 2px 2px 2px #666666;
+            background: #e4eeb9;
+            position: relative;
+            z-index: 999;
             display: inline-block;
         }
-
-        nav a.active {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* --- Moving Marquee Ticker --- */
-        .ticker-container {
-            margin: 15px 30px;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .ticker-container a {
-            font-size: 22px;
-            color: #5d681b;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        /* --- Main Content Area --- */
-        .main-content {
-            padding: 10px 30px;
-        }
-
-        .page-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #000000;
-            text-decoration: underline;
-            margin-bottom: 30px;
-        }
-
-        /* --- List Elements --- */
-        .strive-list {
-            list-style: none;
-            padding-left: 5px;
-        }
-
-        .strive-list li {
+        #menu-bar li {
+            margin: 0 0 6px 0;
+            padding: 0 6px;
+            float: left;
             position: relative;
-            padding-left: 28px;
-            margin-bottom: 25px;
-            font-size: 19px;
+            list-style: none;
+        }
+        #menu-bar a {
+            font-weight: bold;
+            font-family: verdana;
+            font-size: 14px;
             color: #000000;
+            background: #e4eeb9;
+            text-decoration: none;
+            display: block;
+            padding: 6px 20px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+        }
+        #menu-bar .active a, #menu-bar li:hover > a {
+            background: -webkit-gradient(linear, left top, left bottom, from(#EB4954), to(#A19197));
+            background: linear-gradient(to bottom, #EB4954, #A19197);
+            color: white;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+        }
+        #menu-bar ul li:hover a, #menu-bar li:hover li a {
+            background: lightgoldenrodyellow;
+            color: #000000;
+        }
+        #menu-bar ul a:hover {
+            background: lightblue !important;
+            color: black !important;
+            border-radius: 0;
+        }
+        #menu-bar li:hover > ul {
+            display: block;
+        }
+        #menu-bar ul {
+            background: linear-gradient(top, #FFD21C, #CF7688);
+            display: none;
+            margin: 0;
+            padding: 0;
+            width: 300px;
+            position: absolute;
+            top: 30px;
+            left: 0;
+            border-radius: 10px;
+            box-shadow: 2px 2px 3px #222222;
+        }
+        #menu-bar ul li {
+            float: none;
+        }
+        #menu-bar ul a {
+            padding: 10px 0 10px 15px;
+            background: gold;
+            color: grey;
+            font-size: 13px;
+            font-weight: normal;
+            text-shadow: 2px 2px 3px #FFFFFF;
+        }
+        #menu-bar:after {
+            content: ".";
+            display: block;
+            clear: both;
+            visibility: hidden;
+            line-height: 0;
+            height: 0;
         }
 
-        /* Custom Arrow Bullets */
-        .strive-list li::before {
-            content: "►";
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none;
             position: absolute;
-            left: 0;
-            top: -1px;
-            color: #000000;
-            font-size: 18px;
+            background-color: #f9f9f9;
+            min-width: 160px;
         }
+        .dropdown-content a {
+            padding: 12px 16px;
+            display: block;
+        }
+        .dropdown:hover .dropdown-content { display: block; }
     </style>
 </head>
-
 <body>
 
-    <header class="header-banner-container">
-        <img src="images/Banner.jpg" alt="Department of Employment and Training Banner">
-    </header>
+<center>
+    <img src="../static/images/Banner.jpg" th:src="@{/images/Banner.jpg}" id="banner-id" width="100%" alt="Department Banner">
+</center>
 
-    <div class="nav-container">
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">ITI Profile</a>
-            <a href="#" class="active">STRIVE</a>
-            <a href="#">PLACEMENTS / IN-PLANT TRAINING</a>
-        </nav>
-    </div>
-
-    <div class="ticker-container">
-        <marquee behavior="scroll" direction="left" scrollamount="5">
-            <a href="#">ITI Admissions 2026 Phase -1 for Student Registrations,Apply for ITI and Verifications has
-                started and will end on 02/07/2026 5PM.</a>
-        </marquee>
-    </div>
-
-    <main class="main-content">
-        <h2 class="page-title">Skills Strengthening of Industrial Value Enhancement (STRIVE) Project in State of Andhra
-            Pradesh</h2>
-
-        <ul class="strive-list">
-            <li>Objective of the scheme is to improve the relevance and efficiency of skills Training provided through
-                Industrial Training Institutes (ITIs) and Apprenticeships, duly upgrading the infrastructure, equipment
-                and machinery.</li>
-            <li>STRIVE is a Central Sector Scheme with no State Contribution, assisted by World Bank.</li>
-            <li>It is a 5 Year Project , closing by November 2022.</li>
-            <li>STRIVE Scheme has four result areas.</li>
-            <li>Result Area 1 - Improved Performance of ITIs</li>
-            <li>Result Area 2 - Increased Capacities of State Governments to support ITIs and Apprenticeship Training
-            </li>
-            <li>Result Area 3 - Improved Teaching and Learning</li>
-            <li>Result Area 4 - Improved and Broadened Apprenticeship Training.</li>
-            <li>15 Govt. ITIs have been selected under the scheme and Institute Management Committees are also
-                constituted in these ITIs.</li>
-            <li>Govt. of A.P have made an Agreement (Performance Based Fund Agreement ) with Govt. of India in Feb 2019
-                accepting terms and Conditions of the Project.</li>
+<ul id="menu-bar">
+    <li>
+        <a th:href="@{/login.jsp}" href="login.jsp">Home</a>
+    </li>
+    <li>
+        <a th:href="@{/trade_display1.jsp}" href="trade_display1.jsp">ITI Profile</a>
+    </li>
+    <li class="active">
+        <a>STRIVE</a>
+        <ul>
+            <li><a th:href="@{/AboutStrive.jsp}" href="AboutStrive.jsp">ABOUT STRIVE</a></li>
+            <li><a th:href="@{/strive.jsp}" href="strive.jsp">Disclosure Management</a></li>
         </ul>
-    </main>
+    </li>
+    <li>
+        <a href="https://itiadmissions.ap.gov.in/placementsfe/" target="_blank">PLACEMENTS / IN-PLANT TRAINING</a>
+    </li>
+</ul>
+
+<br><br>
+
+<marquee onmouseover="this.stop();" onmouseout="this.start();" scrolldelay="100">
+    <b>
+        <font color="blue" size="5">
+            <a href="#" target="_blank">
+                ITI Admissions 2026 Phase -1 for Student Registrations,Apply for ITI and Verifications has started and will end on 02/07/2026 5PM.
+            </a>
+        </font>
+    </b>
+</marquee>
+
+<br>
+<h2 align="center"><b><u>Skills Strengthening of Industrial Value Enhancement (STRIVE) Project in State of Andhra Pradesh</u></b></h2>
+
+<div class="text1">
+    <p>Objective of the scheme is to improve the relevance and efficiency of skills Training provided through Industrial Training Institutes (ITIs) and Apprenticeships, duly upgrading the infrastructure, equipment and machinery.</p>
+    <p>STRIVE is a Central Sector Scheme with no State Contribution, assisted by World Bank.</p>
+    <p>It is a 5 Year Project , closing by November 2022.</p>
+    <p>STRIVE Scheme has four result areas.</p>
+    <p>Result Area 1 - Improved Performance of ITIs</p>
+    <p>Result Area 2 - Increased Capacities of State Governments to support ITIs and Apprenticeship Training</p>
+    <p>Result Area 3 - Improved Teaching and Learning</p>
+    <p>Result Area 4 - Improved and Broadened Apprenticeship Training.</p>
+    <p>15 Govt. ITIs have been selected under the scheme and Institute Management Committees are also constituted in these ITIs.</p>
+    <p>Govt. of A.P have made an Agreement (Performance Based Fund Agreement ) with Govt. of India in Feb 2019 accepting terms and Conditions of the Project.</p>
+</div>
 
 </body>
-
 </html>
