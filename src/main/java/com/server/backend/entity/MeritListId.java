@@ -20,6 +20,12 @@ public class MeritListId implements Serializable {
                 && Objects.equals(temp_pk, that.temp_pk)
                 && Objects.equals(phase, that.phase);
     }
+public MeritListId(Integer regid, String qual, String temp_pk, String phase) {
+        this.regid = regid;
+        this.qual = qual;
+        this.temp_pk = temp_pk;
+        this.phase = phase;
+    }
 
     @Override
     public int hashCode() {
