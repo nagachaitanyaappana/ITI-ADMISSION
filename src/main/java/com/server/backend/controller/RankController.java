@@ -10,11 +10,11 @@ import com.server.backend.service.AdmissionService;
 
 @RestController
 @RequestMapping("/admission")
-public class AdmissionController {
+public class RankController {
 
     private final AdmissionService admissionService;
 
-    public AdmissionController(AdmissionService admissionService) {
+    public RankController(AdmissionService admissionService) {
         this.admissionService = admissionService;
     }
 

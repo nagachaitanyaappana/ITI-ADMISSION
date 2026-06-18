@@ -26,7 +26,7 @@ public class student_trade_sel {
 
     @Id
     @Column(name = "iti_code", nullable = false , length = 4)
-    private Integer iti_code;
+    private String itiCode;
 
     @Column(name = "dist_code" , length = 2)
     private String dist_code;

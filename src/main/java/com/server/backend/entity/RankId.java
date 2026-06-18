@@ -5,26 +5,26 @@ import java.util.Objects;
 
 public class RankId implements Serializable {
 
-    private String regid;
+    private Integer regid;
     private String qual;
-    private Long tempPk;
+    private String tempPk;
     private String phase;
 
     public RankId() {
     }
 
-    public RankId(String regid, String qual, Long tempPk, String phase) {
+    public RankId(Integer regid, String qual, String tempPk, String phase) {
         this.regid = regid;
         this.qual = qual;
         this.tempPk = tempPk;
         this.phase = phase;
     }
 
-    public String getRegid() {
+    public Integer getRegid() {
         return regid;
     }
 
-    public void setRegid(String regid) {
+    public void setRegid(Integer regid) {
         this.regid = regid;
     }
 
@@ -36,11 +36,11 @@ public class RankId implements Serializable {
         this.qual = qual;
     }
 
-    public Long getTempPk() {
+    public String getTempPk() {
         return tempPk;
     }
 
-    public void setTempPk(Long tempPk) {
+    public void setTempPk(String tempPk) {
         this.tempPk = tempPk;
     }
 

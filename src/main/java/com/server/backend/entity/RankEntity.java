@@ -13,7 +13,7 @@ public class RankEntity {
 
     @Id
     @Column(name = "regid")
-    private String regid;
+    private Integer regid;
 
     @Id
     @Column(name = "qual")
@@ -21,7 +21,7 @@ public class RankEntity {
 
     @Id
     @Column(name = "temp_pk")
-    private Long tempPk;
+    private String tempPk;
 
     @Id
     @Column(name = "phase")
@@ -37,7 +37,7 @@ public class RankEntity {
     private String itiCode;
 
     @Column(name = "trno")
-    private String trno;
+    private Long trno;
 
     @Column(name = "year")
     private String year;
@@ -48,11 +48,11 @@ public class RankEntity {
     public RankEntity() {
     }
 
-    public String getRegid() {
+    public Integer getRegid() {
         return regid;
     }
 
-    public void setRegid(String regid) {
+    public void setRegid(Integer regid) {
         this.regid = regid;
     }
 
@@ -64,11 +64,11 @@ public class RankEntity {
         this.qual = qual;
     }
 
-    public Long getTempPk() {
+    public String getTempPk() {
         return tempPk;
     }
 
-    public void setTempPk(Long tempPk) {
+    public void setTempPk(String tempPk) {
         this.tempPk = tempPk;
     }
 
@@ -104,11 +104,11 @@ public class RankEntity {
         this.itiCode = itiCode;
     }
 
-    public String getTrno() {
+    public Long getTrno() {
         return trno;
     }
 
-    public void setTrno(String trno) {
+    public void setTrno(Long trno) {
         this.trno = trno;
     }
 
