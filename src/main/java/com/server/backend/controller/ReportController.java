@@ -11,4 +11,9 @@ public class ReportController {
         return "/aboutstrive.html";
     }
 
+    @GetMapping("/DisclosureManagement")
+    public String disclosureManagement() {
+        return "/disclosuremanagement.html";
+    }
+
 }
