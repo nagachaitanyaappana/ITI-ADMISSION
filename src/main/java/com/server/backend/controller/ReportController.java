@@ -16,12 +16,11 @@ public class ReportController {
 
     }
 
-
-    @GetMapping("/tradedisplay")
+   @GetMapping("/tradedisplay")
     public String tradedisplay(Model model) {
-        var districts = reportService.getDistricts();
-        model.addAttribute("districtList", districts);
-        return "tradedisplay"; 
+        // Pass the list of districts to the HTML
+        model.addAttribute("districtList", reportService.getAllDistricts());
+        return "tradedisplay.html"; 
     }
 
     @GetMapping("/AboutStrive")
