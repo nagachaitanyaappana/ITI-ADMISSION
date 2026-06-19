@@ -1,16 +1,16 @@
 package com.server.backend.Repository;
 
-import java.util.List;
+//import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+//import org.springframework.data.jpa.repository.Query;
+//import org.springframework.data.repository.query.Param;
 
 import com.server.backend.entity.Iti;
 
 public interface ItiRepository extends JpaRepository<Iti, String> {
 
-    @Query(value = "SELECT i.iti_code, i.iti_name, m.trade_name, t.strength " + // Added i.iti_code
+    /*@Query(value = "SELECT i.iti_code, i.iti_name, m.trade_name, t.strength " + // Added i.iti_code
                "FROM iti i " +
                "LEFT JOIN ititrade t ON i.iti_code = t.iti_code " +
                "LEFT JOIN ititrade_master m ON t.trade_short = m.trade_short " +
@@ -24,5 +24,5 @@ public interface ItiRepository extends JpaRepository<Iti, String> {
                    "LEFT JOIN ititrade t ON i.iti_code = t.iti_code " +
                    "LEFT JOIN ititrade_master m ON t.trade_short = m.trade_short " +
                    "WHERE i.dist_code = :distCode", nativeQuery = true)
-    List<Object[]> findItiAndTradeNamesByDistrictCode(@Param("distCode") String distCode);
+    List<Object[]> findItiAndTradeNamesByDistrictCode(@Param("distCode") String distCode);*/
 }
