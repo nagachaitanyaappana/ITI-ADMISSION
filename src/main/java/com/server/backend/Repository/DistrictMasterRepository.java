@@ -13,6 +13,6 @@ public interface DistrictMasterRepository extends JpaRepository<dist_master, Str
     List<String> findAllNames();
 
     @Query("SELECT new com.server.backend.DTO.Reports.DistrictOptionResponse(d.distcode, d.distname) FROM dist_master d")
-    List<DistrictOptionResponse> findDistrictOptions();
+    List<DistrictOptionResponse> findDistrictOptions();//no errors
 }
 
