@@ -23,7 +23,7 @@ public class MeritListService {
     }
     
     public MeritList getMeritListByRegId(Integer regid) {
-        return meritListRepository.findByRegId(regid);
+        return meritListRepository.findByRegid(regid);
     }
 
     public List<MeritList> getMeritListByDistCode(String dist_code) {
