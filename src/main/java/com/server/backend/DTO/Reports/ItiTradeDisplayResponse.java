@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-public class ItiWithTradesResponse {
+public class ItiTradeDisplayResponse {
     private String code;
     private String itiName;
     private List<TradeDetail> trades;

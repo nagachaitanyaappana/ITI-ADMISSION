@@ -1,4 +1,4 @@
-package com.server.backend.controller;
+package com.server.backend.controller.Reports;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,13 +22,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
-import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
-import com.server.backend.DTO.Reports.DistrictMasterResponse;
-import com.server.backend.DTO.Reports.ItiWithTradesResponse;
-import com.server.backend.DTO.Reports.ItiWithTradesResponse.TradeDetail;
-import com.server.backend.service.ReportService;
+import com.server.backend.DTO.Reports.DistrictOptionResponse;
+import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
+import com.server.backend.DTO.Reports.ItiTradeDisplayResponse.TradeDetail;
+import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
+import com.server.backend.service.Reports.TradeDisplayReportService;
 
-class ReportControllerTest {
+class ReportsControllerTest {
 
     private FakeReportService reportService;
     private MockMvc mockMvc;
@@ -36,33 +36,40 @@ class ReportControllerTest {
     @BeforeEach
     void setUp() {
         reportService = new FakeReportService();
-        mockMvc = MockMvcBuilders.standaloneSetup(new ReportController(reportService))
+        mockMvc = MockMvcBuilders.standaloneSetup(new ReportsController(reportService))
                 .setViewResolvers(new NoOpViewResolver())
                 .build();
     }
 
     @Test
     void tradedisplayAddsDistrictsAndReturnsTradeDisplayView() throws Exception {
-        reportService.districts = List.of(new DistrictMasterResponse("01", "ANANTAPUR"));
+        reportService.districts = List.of(new DistrictOptionResponse("01", "ANANTAPUR"));
 
-        mockMvc.perform(get("/tradedisplay"))
+        mockMvc.perform(get("/reports/trade-display"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("tradedisplay"))
-                .andExpect(model().attribute("districtList", reportService.districts));
+                .andExpect(model().attribute("districtList", reportService.districts))
+                .andExpect(model().attribute("itiList", new ArrayList<>()))
+                .andExpect(model().attribute("selectedDist", ""))
+                .andExpect(model().attribute("selectedType", ""))
+                .andExpect(model().attribute("reportSubmitted", false));
     }
 
     @Test
     void submitTradeDisplayBindsRequestAndAddsReportData() throws Exception {
-        reportService.districts = List.of(new DistrictMasterResponse("01", "ANANTAPUR"));
+        reportService.districts = List.of(new DistrictOptionResponse("01", "ANANTAPUR"));
         reportService.itis = List.of(itiWithTrades());
 
-        mockMvc.perform(post("/trade_display2")
+        mockMvc.perform(post("/reports/trade-display")
                 .param("dist", "01")
                 .param("type", "G"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("tradedisplay"))
                 .andExpect(model().attribute("districtList", reportService.districts))
-                .andExpect(model().attribute("itiList", reportService.itis));
+                .andExpect(model().attribute("itiList", reportService.itis))
+                .andExpect(model().attribute("selectedDist", "01"))
+                .andExpect(model().attribute("selectedType", "G"))
+                .andExpect(model().attribute("reportSubmitted", true));
 
         assertNotNull(reportService.lastRequest);
         assertEquals("01", reportService.lastRequest.getDist());
@@ -73,7 +80,7 @@ class ReportControllerTest {
     void submitTradeDisplayUsesEmptyListWhenServiceReturnsNull() throws Exception {
         reportService.itis = null;
 
-        mockMvc.perform(post("/trade_display2")
+        mockMvc.perform(post("/reports/trade-display")
                 .param("dist", "01")
                 .param("type", ""))
                 .andExpect(status().isOk())
@@ -83,38 +90,38 @@ class ReportControllerTest {
 
     @Test
     void aboutStriveReturnsView() throws Exception {
-        mockMvc.perform(get("/AboutStrive"))
+        mockMvc.perform(get("/reports/about-strive"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/aboutstrive"));
+                .andExpect(view().name("aboutstrive"));
     }
 
     @Test
     void disclosureManagementReturnsView() throws Exception {
-        mockMvc.perform(get("/DisclosureManagement"))
+        mockMvc.perform(get("/reports/disclosure-management"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/disclosuremanagement"));
+                .andExpect(view().name("disclosuremanagement"));
     }
 
-    private ItiWithTradesResponse itiWithTrades() {
-        ItiWithTradesResponse response = new ItiWithTradesResponse();
+    private ItiTradeDisplayResponse itiWithTrades() {
+        ItiTradeDisplayResponse response = new ItiTradeDisplayResponse();
         response.setCode("ITI001");
         response.setItiName("Govt ITI");
         response.setTrades(List.of(new TradeDetail("Electrician", 24)));
         return response;
     }
 
-    private static class FakeReportService implements ReportService {
-        private List<DistrictMasterResponse> districts = new ArrayList<>();
-        private List<ItiWithTradesResponse> itis = new ArrayList<>();
-        private DistrictCollegeTypeResponse lastRequest;
+    private static class FakeReportService implements TradeDisplayReportService {
+        private List<DistrictOptionResponse> districts = new ArrayList<>();
+        private List<ItiTradeDisplayResponse> itis = new ArrayList<>();
+        private TradeDisplayReportRequest lastRequest;
 
         @Override
-        public List<DistrictMasterResponse> getAllDistricts() {
+        public List<DistrictOptionResponse> getAllDistricts() {
             return districts;
         }
 
         @Override
-        public List<ItiWithTradesResponse> getItisWithTradesByDistrict(DistrictCollegeTypeResponse request) {
+        public List<ItiTradeDisplayResponse> getItisWithTradesByDistrict(TradeDisplayReportRequest request) {
             lastRequest = request;
             return itis;
         }

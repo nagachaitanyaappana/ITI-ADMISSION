@@ -162,16 +162,6 @@
         height: 1%;
         } 
     </style>
-    <script>
-
-        function formSubmit() {
-
-            document.form1.submit();
-
-        }
-
-    </script>
-
 </head>
 <body>
 
@@ -187,7 +177,7 @@
 
         <li><a th:href="@{/login}" href="login.jsp">Home</a></li>
 
-        <li><a th:href="@{/tradedisplay}" href="trade_display1.jsp">ITI Profile</a></li>
+        <li><a th:href="@{/reports/trade-display}" href="/reports/trade-display">User Profile</a></li>
 
         <li>
 
@@ -195,9 +185,9 @@
 
             <ul>
 
-                <li><a th:href="@{/AboutStrive}" href="AboutStrive.jsp">ABOUT STRIVE</a></li>
+                <li><a th:href="@{/reports/about-strive}" href="/reports/about-strive">ABOUT STRIVE</a></li>
 
-                <li><a th:href="@{/DisclosureManagement}" href="strive.jsp">Disclosure Management</a></li>
+                <li><a th:href="@{/reports/disclosure-management}" href="/reports/disclosure-management">Disclosure Management</a></li>
 
             </ul>
 
@@ -245,7 +235,7 @@
 
 
     
-    <form name="form1" method="POST" th:action="@{/trade_display2}">
+    <form name="form1" method="POST" th:action="@{/reports/trade-display}">
          <p align="center" class="style4"> 
             <font color="blue" size="4">
                 List of ITI's with Trades &amp; Strengths Interface
@@ -260,10 +250,11 @@
                     </td>
                     <td width="148">
                         <select name="dist" class="style52">
-                                <option value="" selected>--select--</option>
+                                <option value="" th:selected="${selectedDist == null || selectedDist == ''}">--select--</option>
                                 <option th:each="dist : ${districtList}" 
                                     th:value="${dist.code}" 
-                                    th:text="${dist.name}">
+                                    th:text="${dist.name}"
+                                    th:selected="${dist.code == selectedDist}">
                                 </option>
                         </select>
                     </td>
@@ -272,53 +263,59 @@
                     <td>GOVT/PVT</td>
                     <td> 
                         <select name="type">
-                            <option value="">----ALL----</option>
-                            <option value="G">GOVERNMENT</option>
-                            <option value="P">PRIVATE</option>
+                            <option value="" th:selected="${selectedType == null || selectedType == ''}">----ALL----</option>
+                            <option value="G" th:selected="${selectedType == 'G'}">GOVERNMENT</option>
+                            <option value="P" th:selected="${selectedType == 'P'}">PRIVATE</option>
                         </select>
                     </td>
                 </tr>
                 <tr bgcolor="green">
                     <td colspan="2">
-                        <input type="submit" value="Submit" onclick="formSubmit()"/>
+                        <input type="submit" value="Submit"/>
                     </td>
                 </tr>
             </tbody>
         </table>
     </form>
 
-    <h1 align="center"><strong>List of ITI's with Trades & Strengths</strong></h1>
-    
-    <!-- DYNAMIC DATA TABLE -->
-    <table align="center" bgcolor="#ffffcc" id="tabcolor" border="1" width="80%">
-        <tr bgcolor="green">
-            <td colspan="2">&nbsp;</td>
-        </tr>
+    <div th:if="${reportSubmitted}">
+        <h1 align="center"><strong>List of ITI's with Trades & Strengths</strong></h1>
         
-        <!-- Loop through the list of ITIs provided by the Controller -->
-        <tr th:each="iti : ${itiList}">
-            <td>
-                <!-- Link to individual ITI profile -->
-                <a th:href="@{'/Iti_Registration_Report.jsp?iti_code=' + ${iti.code}}" 
-                   th:text="${iti.code} + ' :- ' + ${iti.itiName}">ITI Name</a>
-                
-                <ol>
-                    <!-- Loop through the trades for this specific ITI -->
-                    <li th:each="trade : ${iti.trades}" 
-                        th:text="${trade.tradeName} + ' (' + ${trade.strength} + ')'">
-                        Trade Name (Strength)
-                    </li>
-                </ol>
-            </td>
-        </tr>
+        <!-- DYNAMIC DATA TABLE -->
+        <table align="center" bgcolor="#ffffcc" id="tabcolor" border="1" width="80%">
+            <tr bgcolor="green">
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            
+            <!-- Loop through the list of ITIs provided by the Controller -->
+            <tr th:each="iti : ${itiList}">
+                <td>
+                    <!-- Link to individual ITI profile -->
+                    <a th:href="@{'/Iti_Registration_Report.jsp?iti_code=' + ${iti.code}}" 
+                       th:text="${iti.code} + ' :- ' + ${iti.itiName}">ITI Name</a>
+                    
+                    <ol>
+                        <!-- Loop through the trades for this specific ITI -->
+                        <li th:each="trade : ${iti.trades}" 
+                            th:text="${trade.tradeName} + ' (' + ${trade.strength} + ')'">
+                            Trade Name (Strength)
+                        </li>
+                    </ol>
+                </td>
+            </tr>
 
-        <tr bgcolor="green">
-            <td colspan="2">&nbsp;</td>
-        </tr>
-    </table>
+            <tr th:if="${#lists.isEmpty(itiList)}">
+                <td colspan="2" align="center">No ITIs found for the selected district and type.</td>
+            </tr>
 
-    <div align="center" style="margin-top: 20px;">
-        <input type="button" onclick="tableToExcel('tabcolor', 'iti')" value="For Excel Sheet Download">
+            <tr bgcolor="green">
+                <td colspan="2">&nbsp;</td>
+            </tr>
+        </table>
+
+        <div align="center" style="margin-top: 20px;">
+            <input type="button" onclick="tableToExcel('tabcolor', 'iti')" value="For Excel Sheet Download">
+        </div>
     </div>
 
 </body>
