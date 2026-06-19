@@ -187,7 +187,7 @@
 
         <li><a th:href="@{/login}" href="login.jsp">Home</a></li>
 
-        <li><a th:href="@{/trade-display}" href="trade_display1.jsp">ITI Profile</a></li>
+        <li><a th:href="@{/tradedisplay}" href="trade_display1.jsp">ITI Profile</a></li>
 
         <li>
 
@@ -195,9 +195,9 @@
 
             <ul>
 
-                <li><a th:href="@{/strive/about}" href="AboutStrive.jsp">ABOUT STRIVE</a></li>
+                <li><a th:href="@{/AboutStrive}" href="AboutStrive.jsp">ABOUT STRIVE</a></li>
 
-                <li><a th:href="@{/strive/disclosure}" href="strive.jsp">Disclosure Management</a></li>
+                <li><a th:href="@{/DisclosureManagement}" href="strive.jsp">Disclosure Management</a></li>
 
             </ul>
 
@@ -300,12 +300,12 @@
             <td>
                 <!-- Link to individual ITI profile -->
                 <a th:href="@{'/Iti_Registration_Report.jsp?iti_code=' + ${iti.code}}" 
-                   th:text="${iti.code} + ' :- ' + ${iti.name}">ITI Name</a>
+                   th:text="${iti.code} + ' :- ' + ${iti.itiName}">ITI Name</a>
                 
                 <ol>
                     <!-- Loop through the trades for this specific ITI -->
                     <li th:each="trade : ${iti.trades}" 
-                        th:text="${trade.name} + ' (' + ${trade.strength} + ')'">
+                        th:text="${trade.tradeName} + ' (' + ${trade.strength} + ')'">
                         Trade Name (Strength)
                     </li>
                 </ol>

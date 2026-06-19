@@ -10,7 +10,7 @@ import com.server.backend.entity.Iti;
 
 public interface ItiRepository extends JpaRepository<Iti, String> {
 
-    @Query(value = "SELECT i.iti_code, i.iti_name, m.trade_name, t.strength " + // Added i.iti_code
+    @Query(value = "SELECT i.iti_code, i.iti_name, m.trade_name, t.strength " +
                "FROM iti i " +
                "LEFT JOIN ititrade t ON i.iti_code = t.iti_code " +
                "LEFT JOIN ititrade_master m ON t.trade_short = m.trade_short " +
@@ -19,7 +19,7 @@ public interface ItiRepository extends JpaRepository<Iti, String> {
 
 
 
-    @Query(value = "SELECT i.iti_name, m.trade_name, t.strength " +
+    @Query(value = "SELECT i.iti_code, i.iti_name, m.trade_name, t.strength " +
                    "FROM iti i " +
                    "LEFT JOIN ititrade t ON i.iti_code = t.iti_code " +
                    "LEFT JOIN ititrade_master m ON t.trade_short = m.trade_short " +

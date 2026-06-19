@@ -31,9 +31,6 @@ public class ReportController {
     
     @PostMapping("/trade_display2")
     public String submitTradeDisplay(@ModelAttribute DistrictCollegeTypeResponse request, Model model) {
-    
-        // Add these print statements to check what the form sent
-        System.out.println("DTO received - Dist: " + request.getDist() + ", Type: " + request.getType());
 
         List<ItiWithTradesResponse> results = reportService.getItisWithTradesByDistrict(request);
 
