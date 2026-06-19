@@ -1,13 +1,16 @@
 package com.server.backend.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
 import com.server.backend.DTO.Reports.DistrictMasterResponse;
 import com.server.backend.DTO.Reports.ItiWithTradesResponse;
+import com.server.backend.DTO.Reports.TradeDetail;
 import com.server.backend.Repository.DistrictMasterRepository;
 import com.server.backend.Repository.ItiRepository;
 
@@ -24,8 +27,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<DistrictMasterResponse> getAllDistricts() {
-        // Returns the list of districts to be used in the dropdown
-        return districtMasterRepository.findAll(); 
+        return districtMasterRepository.findAllDistrictsDTO(); 
     }
 
     @Override
@@ -44,7 +46,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         // Logic to populate itiTradesMap
-        java.util.Map<String, List<com.server.backend.DTO.Reports.TradeDetail>> itiTradesMap = new java.util.LinkedHashMap<>();
+        Map<String, List<TradeDetail>> itiTradesMap = new LinkedHashMap<>();
         
         for (Object[] row : results) {
             String itiName = (String) row[0];
@@ -53,10 +55,10 @@ public class ReportServiceImpl implements ReportService {
             int strength = (strengthNum != null) ? strengthNum.intValue() : 0;
 
             itiTradesMap.computeIfAbsent(itiName, k -> new ArrayList<>())
-                        .add(new com.server.backend.DTO.Reports.TradeDetail(tradeName, strength));
+                        .add(new TradeDetail(tradeName, strength));
         }
 
-        for (java.util.Map.Entry<String, List<com.server.backend.DTO.Reports.TradeDetail>> entry : itiTradesMap.entrySet()) {
+        for (Map.Entry<String, List<TradeDetail>> entry : itiTradesMap.entrySet()) {
             ItiWithTradesResponse item = new ItiWithTradesResponse();
             item.setItiName(entry.getKey());
             item.setTrades(entry.getValue());
