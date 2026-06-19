@@ -11,9 +11,9 @@ import com.server.backend.entity.dist_master;
 
 public interface DistrictMasterRepository extends JpaRepository<dist_master, String> {
 
-    @Query("SELECT e.dist_name FROM dist_master e") 
+    @Query("SELECT e.distname FROM dist_master e")
     List<String> findAllNames();
 
-   @Query("SELECT new com.server.backend.DTO.Reports.DistrictMasterResponse(d.dist_code, d.dist_name) FROM dist_master d")
+    @Query("SELECT new com.server.backend.DTO.Reports.DistrictMasterResponse(d.distcode, d.distname) FROM dist_master d")
     List<DistrictMasterResponse> findAllDistrictsDTO();
 }
