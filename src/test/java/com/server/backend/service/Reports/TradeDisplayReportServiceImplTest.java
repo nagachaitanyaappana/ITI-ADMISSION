@@ -1,15 +1,14 @@
 package com.server.backend.service.Reports;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
 import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
@@ -19,12 +18,12 @@ import com.server.backend.Repository.ItiRepository;
 class TradeDisplayReportServiceImplTest {
 
     private ItiRepository itiRepository;
-    private TradeDisplayReportServiceImpl reportService;
+    private TradeDisplayReportServiceImpl tradeDisplayReportService;
 
     @BeforeEach
     void setUp() {
         itiRepository = mock(ItiRepository.class);
-        reportService = new TradeDisplayReportServiceImpl(mock(DistrictMasterRepository.class), itiRepository);
+        tradeDisplayReportService = new TradeDisplayReportServiceImpl(mock(DistrictMasterRepository.class), itiRepository);
     }
 
     @Test
@@ -33,13 +32,13 @@ class TradeDisplayReportServiceImplTest {
         request.setDist("01");
         request.setType("G");
 
-        when(itiRepository.findItiAndTradeNamesByDistrictCodeAndGovt("01", "G"))
+        when(itiRepository.findTradeDisplayRowsByDistrictCodeAndGovt("01", "G"))
                 .thenReturn(List.<Object[]>of(
                         new Object[] { "ITI1", "Govt ITI One", "Electrician", 24 },
                         new Object[] { "ITI1", "Govt ITI One", "Fitter", 20 },
                         new Object[] { "ITI2", "Govt ITI Two", "Welder", 16 }));
 
-        List<ItiTradeDisplayResponse> results = reportService.getItisWithTradesByDistrict(request);
+        List<ItiTradeDisplayResponse> results = tradeDisplayReportService.getTradeDisplayReport(request);
 
         assertEquals(2, results.size());
         assertEquals("ITI1", results.get(0).getCode());
@@ -59,21 +58,21 @@ class TradeDisplayReportServiceImplTest {
         request.setDist("01");
         request.setType("");
 
-        when(itiRepository.findItiAndTradeNamesByDistrictCode("01"))
+        when(itiRepository.findTradeDisplayRowsByDistrictCode("01"))
                 .thenReturn(List.<Object[]>of(new Object[] { "ITI1", "ITI One", "Electrician", 24 }));
 
-        List<ItiTradeDisplayResponse> results = reportService.getItisWithTradesByDistrict(request);
+        List<ItiTradeDisplayResponse> results = tradeDisplayReportService.getTradeDisplayReport(request);
 
         assertEquals(1, results.size());
         assertEquals("ITI One", results.get(0).getItiName());
-        verify(itiRepository).findItiAndTradeNamesByDistrictCode("01");
+        verify(itiRepository).findTradeDisplayRowsByDistrictCode("01");
     }
 
     @Test
     void returnsEmptyListWhenDistrictIsMissing() {
         TradeDisplayReportRequest request = new TradeDisplayReportRequest();
 
-        List<ItiTradeDisplayResponse> results = reportService.getItisWithTradesByDistrict(request);
+        List<ItiTradeDisplayResponse> results = tradeDisplayReportService.getTradeDisplayReport(request);
 
         assertTrue(results.isEmpty());
     }

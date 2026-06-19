@@ -25,12 +25,12 @@ public class TradeDisplayReportServiceImpl implements TradeDisplayReportService 
     }
 
     @Override
-    public List<DistrictOptionResponse> getAllDistricts() {
-        return districtMasterRepository.findAllDistrictsDTO();
+    public List<DistrictOptionResponse> getDistrictOptions() {
+        return districtMasterRepository.findDistrictOptions();
     }
 
     @Override
-    public List<ItiTradeDisplayResponse> getItisWithTradesByDistrict(TradeDisplayReportRequest request) {
+    public List<ItiTradeDisplayResponse> getTradeDisplayReport(TradeDisplayReportRequest request) {
         List<ItiTradeDisplayResponse> responseList = new ArrayList<>();
         if (request == null || request.getDist() == null)
             return responseList;
@@ -40,9 +40,9 @@ public class TradeDisplayReportServiceImpl implements TradeDisplayReportService 
 
         List<Object[]> results;
         if ("G".equalsIgnoreCase(type) || "P".equalsIgnoreCase(type)) {
-            results = itiRepository.findItiAndTradeNamesByDistrictCodeAndGovt(distCode, type);
+            results = itiRepository.findTradeDisplayRowsByDistrictCodeAndGovt(distCode, type);
         } else {
-            results = itiRepository.findItiAndTradeNamesByDistrictCode(distCode);
+            results = itiRepository.findTradeDisplayRowsByDistrictCode(distCode);
         }
 
         Map<String, ItiTradeDisplayResponse> itiMap = new java.util.LinkedHashMap<>();

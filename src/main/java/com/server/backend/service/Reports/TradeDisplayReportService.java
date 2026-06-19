@@ -7,7 +7,7 @@ import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
 import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
 
 public interface TradeDisplayReportService {
-    List<DistrictOptionResponse> getAllDistricts();
+    List<DistrictOptionResponse> getDistrictOptions();
 
-    List<ItiTradeDisplayResponse> getItisWithTradesByDistrict(TradeDisplayReportRequest request);
+    List<ItiTradeDisplayResponse> getTradeDisplayReport(TradeDisplayReportRequest request);
 }

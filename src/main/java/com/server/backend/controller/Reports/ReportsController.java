@@ -16,15 +16,15 @@ import com.server.backend.service.Reports.TradeDisplayReportService;
 @Controller
 public class ReportsController {
 
-    private final TradeDisplayReportService reportService;
+    private final TradeDisplayReportService tradeDisplayReportService;
 
-    public ReportsController(TradeDisplayReportService reportService) {
-        this.reportService = reportService;
+    public ReportsController(TradeDisplayReportService tradeDisplayReportService) {
+        this.tradeDisplayReportService = tradeDisplayReportService;
     }
 
     @GetMapping({ "/reports/trade-display", "/tradedisplay" })
     public String tradeDisplay(Model model) {
-        model.addAttribute("districtList", reportService.getAllDistricts());
+        model.addAttribute("districtList", tradeDisplayReportService.getDistrictOptions());
         model.addAttribute("itiList", new ArrayList<>());
         model.addAttribute("selectedDist", "");
         model.addAttribute("selectedType", "");
@@ -35,14 +35,14 @@ public class ReportsController {
     @PostMapping({ "/reports/trade-display", "/trade_display2" })
     public String submitTradeDisplay(@ModelAttribute TradeDisplayReportRequest request, Model model) {
 
-        List<ItiTradeDisplayResponse> results = reportService.getItisWithTradesByDistrict(request);
+        List<ItiTradeDisplayResponse> results = tradeDisplayReportService.getTradeDisplayReport(request);
 
         if (results == null) {
             results = new ArrayList<>();
         }
 
         model.addAttribute("itiList", results);
-        model.addAttribute("districtList", reportService.getAllDistricts());
+        model.addAttribute("districtList", tradeDisplayReportService.getDistrictOptions());
         model.addAttribute("selectedDist", request.getDist());
         model.addAttribute("selectedType", request.getType());
         model.addAttribute("reportSubmitted", true);
