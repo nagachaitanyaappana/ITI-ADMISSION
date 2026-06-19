@@ -17,3 +17,4 @@ public interface DistrictMasterRepository extends JpaRepository<dist_master, Str
     @Query("SELECT new com.server.backend.DTO.Reports.DistrictMasterResponse(d.distcode, d.distname) FROM dist_master d")
     List<DistrictMasterResponse> findAllDistrictsDTO();
 }
+
