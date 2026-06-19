@@ -13,7 +13,7 @@ import lombok.Data;
 public class MeritList{
 
     @Column(name = "dist_code")
-    private String dist_Code;
+    private String distCode;
 
     @Id
     @Column(name = "regid")
@@ -23,7 +23,7 @@ public class MeritList{
     private String rank;
 
     @Column(name = "iti_code")
-    private String iti_Code;
+    private String itiCode;
 
     @Id
     @Column(name = "qual")
@@ -31,7 +31,7 @@ public class MeritList{
 
     @Id
     @Column(name = "temp_pk")
-    private String temp_pk;
+    private String tempPk;
 
     @Id
     @Column(name = "phase")
@@ -44,6 +44,6 @@ public class MeritList{
     private String year;
 
     @Column(name = "app_status")
-    private String app_status;
+    private String appStatus;
 
   }
