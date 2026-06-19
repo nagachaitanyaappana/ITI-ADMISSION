@@ -1,5 +1,7 @@
 package com.server.backend.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.server.backend.DTO.Reports.DistrictCollegeTypeResponse;
 import com.server.backend.DTO.Reports.ItiWithTradesResponse;
 import com.server.backend.service.ReportService;
-import java.util.List;
 
 @Controller
 public class ReportController {
@@ -24,33 +25,36 @@ public class ReportController {
    @GetMapping("/tradedisplay")
     public String tradedisplay(Model model) {
         model.addAttribute("districtList", reportService.getAllDistricts());
-        return "tradedisplay.html"; 
+        return "tradedisplay"; 
     }
 
     
     @PostMapping("/trade_display2")
     public String submitTradeDisplay(@ModelAttribute DistrictCollegeTypeResponse request, Model model) {
     
-        // Log for debugging to see what is coming in
-        System.out.println("Received District: " + request.getDist());
-        System.out.println("Received Type: " + request.getType());
+        // Add these print statements to check what the form sent
+        System.out.println("DTO received - Dist: " + request.getDist() + ", Type: " + request.getType());
 
         List<ItiWithTradesResponse> results = reportService.getItisWithTradesByDistrict(request);
-    
+
+        if (results == null) {
+            results = new java.util.ArrayList<>();
+        }
+
         model.addAttribute("itiList", results);
         model.addAttribute("districtList", reportService.getAllDistricts());
-
-        return "tradedisplay"; 
+    
+        return "tradedisplay";
     }
 
     @GetMapping("/AboutStrive")
     public String aboutStrive() {
-        return "/aboutstrive.html";
+        return "/aboutstrive";
     }
 
     @GetMapping("/DisclosureManagement")
     public String disclosureManagement() {
-        return "/disclosuremanagement.html";
+        return "/disclosuremanagement";
     }
 
 }
