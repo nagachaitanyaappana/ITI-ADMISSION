@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.entity.Checklist;
 import com.server.backend.Repository.ChecklistRepository;
+import com.server.backend.entity.Checklist;
 
 @Service
 public class ChecklistService {

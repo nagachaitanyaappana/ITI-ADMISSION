@@ -1,9 +1,11 @@
 package com.server.backend.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.ArrayList;
+
 import com.server.backend.DTO.CandidateResponseDTO;
 import com.server.backend.Repository.RankRepository;
 import com.server.backend.entity.RankEntity;
