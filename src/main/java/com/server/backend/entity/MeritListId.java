@@ -1,11 +1,14 @@
 package com.server.backend.entity;
+
 import java.io.Serializable;
 import java.util.Objects;
+
 public class MeritListId implements Serializable {
-    private Integer regid;
-    private String qual;
-    private String tempPk;
-    private String phase;
+
+    public Integer regid;
+    public String qual;
+    public String tempPk;
+    public String phase;
 
     public MeritListId() {
     }
@@ -14,38 +17,6 @@ public class MeritListId implements Serializable {
         this.regid = regid;
         this.qual = qual;
         this.tempPk = tempPk;
-        this.phase = phase;
-    }
-
-    public Integer getRegid() {
-        return regid;
-    }
-
-    public void setRegid(Integer regid) {
-        this.regid = regid;
-    }
-
-    public String getQual() {
-        return qual;
-    }
-
-    public void setQual(String qual) {
-        this.qual = qual;
-    }
-
-    public String getTempPk() {
-        return tempPk;
-    }
-
-    public void setTempPk(String tempPk) {
-        this.tempPk = tempPk;
-    }
-
-    public String getPhase() {
-        return phase;
-    }
-
-    public void setPhase(String phase) {
         this.phase = phase;
     }
 
