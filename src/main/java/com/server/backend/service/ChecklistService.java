@@ -38,6 +38,9 @@ public List<Checklist> getAllChecklist() {
     public List<Checklist> getChecklistByAppStatus(String app_status) {
         return checklistRepository.findByAppStatus(app_status);
     }
+     public List<Checklist> getChecklistByAppStatusIsNull() {
+        return checklistRepository.findByAppStatusIsNull();
+    }
     // CREATE
 public Checklist createChecklist(Checklist checklist) {
     return checklistRepository.save(checklist);
