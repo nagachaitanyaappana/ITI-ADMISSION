@@ -18,7 +18,6 @@ public class ReportController {
 
    @GetMapping("/tradedisplay")
     public String tradedisplay(Model model) {
-        // Pass the list of districts to the HTML
         model.addAttribute("districtList", reportService.getAllDistricts());
         return "tradedisplay.html"; 
     }
