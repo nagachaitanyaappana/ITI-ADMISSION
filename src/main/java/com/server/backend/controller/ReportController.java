@@ -1,7 +1,8 @@
 package com.server.backend.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping; 
 
 import com.server.backend.service.ReportService;
 
@@ -15,9 +16,12 @@ public class ReportController {
 
     }
 
+
     @GetMapping("/tradedisplay")
-    public String tradedisplay() {
-        return "tradedisplay.html" + reportService.getDistricts();
+    public String tradedisplay(Model model) {
+        var districts = reportService.getDistricts();
+        model.addAttribute("districtList", districts);
+        return "tradedisplay"; 
     }
 
     @GetMapping("/AboutStrive")
