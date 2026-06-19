@@ -49,13 +49,15 @@ public class ReportServiceImpl implements ReportService {
         Map<String, List<TradeDetail>> itiTradesMap = new LinkedHashMap<>();
         
         for (Object[] row : results) {
-            String itiName = (String) row[0];
-            String tradeName = (String) row[1];
-            Number strengthNum = (Number) row[2];
-            int strength = (strengthNum != null) ? strengthNum.intValue() : 0;
-
-            itiTradesMap.computeIfAbsent(itiName, k -> new ArrayList<>())
-                        .add(new TradeDetail(tradeName, strength));
+        String itiCode = (String) row[0];     
+        String itiName = (String) row[1];    
+        String tradeName = (String) row[2];  
+        Number strengthNum = (Number) row[3]; 
+            
+        // Grouping logic: Use itiCode (or itiName if name is unique) as the map key
+        itiTradesMap.computeIfAbsent(itiName, k -> new ArrayList<>())
+                    .add(new TradeDetail(tradeName, strengthNum != null ? strengthNum.intValue() : 0));
+            
         }
 
         for (Map.Entry<String, List<TradeDetail>> entry : itiTradesMap.entrySet()) {

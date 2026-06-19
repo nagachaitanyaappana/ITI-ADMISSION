@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class ItiWithTradesResponse {
-    private String code; // Add this field
+    private String code; // Add this
     private String itiName;
     private List<TradeDetail> trades;
 }
