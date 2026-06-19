@@ -41,6 +41,9 @@ public class MeritListService {
     public List<MeritList> getMeritListByAppStatus(String app_status) {
         return meritListRepository.findByAppStatus(app_status);
     }
+    public List<MeritList> getMeritListByAppStatusIsNull() {
+        return meritListRepository.findByAppStatusIsNull();
+    }
     public MeritList saveMeritList(MeritList meritList) {
         return meritListRepository.save(meritList);
     }

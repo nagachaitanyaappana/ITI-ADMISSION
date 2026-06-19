@@ -51,9 +51,12 @@ public class ChecklistController {
         return checklistService.getChecklistByItiCode(iti_code);
     }
 
-    @GetMapping("/status/{app_status}")
+     @GetMapping("/status/{app_status}")
     public List<Checklist> getChecklistByAppStatus(
             @PathVariable String app_status){
+                if("null".equalsIgnoreCase(app_status)) {
+                    return checklistService.getChecklistByAppStatusIsNull();
+                }
         return checklistService.getChecklistByAppStatus(app_status);
     }
       @PostMapping

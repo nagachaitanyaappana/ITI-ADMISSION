@@ -54,6 +54,9 @@ public class MeritListController {
     @GetMapping("/status/{app_status}")
     public List<MeritList> getMeritListByAppStatus(
             @PathVariable String app_status){
+                if("null".equalsIgnoreCase(app_status)) {
+                    return meritListService.getMeritListByAppStatusIsNull();
+                }
         return meritListService.getMeritListByAppStatus(app_status);
     }
 @PostMapping
