@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+//import org.springframework.data.repository.query.Param;
 import com.server.backend.entity.dist_master;
+import com.server.backend.DTO.Reports.DistrictOptionResponse;
 
 public interface DistrictMasterRepository extends JpaRepository<dist_master, String> {
 
