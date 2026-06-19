@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.server.backend.Repository.MeritListRepository;
 @RestController
 @RequestMapping("/api/meritlist")
 public class MeritListController {
@@ -54,6 +55,9 @@ public class MeritListController {
     @GetMapping("/status/{app_status}")
     public List<MeritList> getMeritListByAppStatus(
             @PathVariable String app_status){
+                if("null".equalsIgnoreCase(app_status)) {
+                    return meritListService.getMeritListByAppStatusIsNull();
+                }
         return meritListService.getMeritListByAppStatus(app_status);
     }
 @PostMapping

@@ -15,4 +15,5 @@ public interface MeritListRepository extends JpaRepository<MeritList, MeritListI
     List<MeritList> findByItiCode(String iti_code);
 
     List<MeritList> findByAppStatus(String app_status);
+    List<MeritList> findByAppStatusIsNull();
 }
