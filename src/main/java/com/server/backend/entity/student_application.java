@@ -21,4 +21,6 @@ public class student_application {
     @Column(name = "regid", nullable = false)
     private Integer regid;
 
+    
+
 }
