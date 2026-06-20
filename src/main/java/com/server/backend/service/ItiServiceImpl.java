@@ -6,32 +6,45 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import com.server.backend.DTO.Institute.ItiDto;
 import com.server.backend.entity.Iti;
+import com.server.backend.entity.dist_master;
 import com.server.backend.Repository.ItiRepository;
-
+import com.server.backend.Repository.DistrictMasterRepository;
 @Service
 public class ItiServiceImpl implements ItiService {
 
     
     private final ItiRepository repository;
-        public ItiServiceImpl(ItiRepository repository) 
-   {
+    private final DistrictMasterRepository districtRepo;
+
+    public ItiServiceImpl(ItiRepository repository, DistrictMasterRepository districtRepo) {
         this.repository = repository;
+        this.districtRepo = districtRepo;
     }
-   @Override
+
+    @Override
 public Iti createIti(ItiDto dto) {
 
     if(repository.existsById(dto.getItiCode())) {
-        throw new RuntimeException(
-                "ITI Code already exists");
+        throw new RuntimeException("ITI code already exists");
     }
 
     Iti iti = new Iti();
 
     BeanUtils.copyProperties(dto, iti);
+    
+
+    if(dto.getDistrictName()!=null) {
+
+        dist_master district =
+                districtRepo.findByDistname(dto.getDistrictName())
+                .orElseThrow(() ->
+                        new RuntimeException("District not found"));
+
+        iti.setDistCode(district.getDistcode());
+    }
 
     return repository.save(iti);
 }
-
     @Override
     public List<Iti> getAllItis() {
         return repository.findAll();

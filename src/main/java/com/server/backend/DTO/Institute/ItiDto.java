@@ -16,6 +16,7 @@ public class ItiDto {
     private String govt;
     @NotBlank(message="District Code is required")
     private String distCode;
+    private String districtName;
     @Size(max=6)
     private String itiNoniti;
     @Size(max=4)

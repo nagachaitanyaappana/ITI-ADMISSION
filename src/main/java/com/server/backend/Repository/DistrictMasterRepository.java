@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 //import org.springframework.data.repository.query.Param;
 import com.server.backend.entity.dist_master;
 import com.server.backend.DTO.Reports.DistrictOptionResponse;
+import java.util.Optional;
 
 public interface DistrictMasterRepository extends JpaRepository<dist_master, String> {
 
@@ -15,5 +16,9 @@ public interface DistrictMasterRepository extends JpaRepository<dist_master, Str
 
     @Query("SELECT new com.server.backend.DTO.Reports.DistrictOptionResponse(d.distcode, d.distname) FROM dist_master d")
     List<DistrictOptionResponse> findDistrictOptions();//no errors
+
+    Optional<dist_master> findByDistcode(String distcode);
+
+    Optional<dist_master> findByDistname(String distname);
 }
 
