@@ -1,13 +1,13 @@
 package com.server.backend.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-//import org.springframework.data.repository.query.Param;
-import com.server.backend.entity.dist_master;
+
 import com.server.backend.DTO.Reports.DistrictOptionResponse;
-import java.util.Optional;
+import com.server.backend.entity.dist_master;
 
 public interface DistrictMasterRepository extends JpaRepository<dist_master, String> {
 
@@ -15,10 +15,8 @@ public interface DistrictMasterRepository extends JpaRepository<dist_master, Str
     List<String> findAllNames();
 
     @Query("SELECT new com.server.backend.DTO.Reports.DistrictOptionResponse(d.distcode, d.distname) FROM dist_master d")
-    List<DistrictOptionResponse> findDistrictOptions();//no errors
+    List<DistrictOptionResponse> findDistrictOptions();
 
     Optional<dist_master> findByDistcode(String distcode);
-
-    Optional<dist_master> findByDistname(String distname);
 }
 

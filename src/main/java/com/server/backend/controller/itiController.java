@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.Institute.ItiDto;
-import com.server.backend.service.ItiService;
 import com.server.backend.entity.Iti;
+import com.server.backend.service.ItiService;
 
 import jakarta.validation.Valid;
 
@@ -40,6 +40,13 @@ public class itiController {
         return itiService.getItiByCode(itiCode);
     }
 
+    //here
+    /* @GetMapping("/create")
+    public String createItiPage(Model model) {
+        model.addAttribute("districtList", itiService.getDistrictOptions());
+        return "iti-create"; // name of Thymeleaf template iti-create.html
+    }*/
+
    @PostMapping
     public Iti createIti(
             @Valid @RequestBody ItiDto dto) {
@@ -63,6 +70,7 @@ public class itiController {
 
         return "ITI Deleted Successfully";
             }
+
       @PatchMapping("/{itiCode}")
     
        public Iti patchIti(@PathVariable String itiCode, @RequestBody ItiDto dto) {

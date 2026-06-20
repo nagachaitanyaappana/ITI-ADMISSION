@@ -1,6 +1,6 @@
 package com.server.backend.controller;
 import java.util.List;
-
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.entity.Checklist;
 import com.server.backend.service.ChecklistService;
-
+ @Tag(name = "Checklist Controller", description = "Operations related to checklists")
 @RestController
 @RequestMapping("/api/checklist")
 public class ChecklistController {
@@ -25,35 +25,39 @@ public class ChecklistController {
         this.checklistService = checklistService;
     }
 
+    @Operation(summary = "Get all checklists")
     @GetMapping
     public List<Checklist> getAllChecklist() {
         return checklistService.getAllChecklist();
     }
-
+@Operation(summary = "Get checklist by registration ID")
     @GetMapping("/{regid}")
     public Checklist getChecklistByRegId(@PathVariable Integer regid){
         return checklistService.getChecklistByRegId(regid);
     }
-
+@Operation(summary = "Get checklist by district code")
     @GetMapping("/district/{dist_code}")
     public List<Checklist> getChecklistByDistCode(
             @PathVariable String dist_code){
         return checklistService.getChecklistByDistCode(dist_code);
     }
 
+    @Operation(summary = "Get checklist by phase")
     @GetMapping("/phase/{phase}")
     public List<Checklist> getChecklistByPhase(
             @PathVariable String phase) {
         return checklistService.getChecklistByPhase(phase);
     }
 
+    @Operation(summary = "Get checklist by ITI code")
     @GetMapping("/iti/{iti_code}")
     public List<Checklist> getChecklistByItiCode(
             @PathVariable String iti_code){
         return checklistService.getChecklistByItiCode(iti_code);
     }
 
-     @GetMapping("/status/{app_status}")
+    @Operation(summary = "Get checklist by application status")
+    @GetMapping("/status/{app_status}")
     public List<Checklist> getChecklistByAppStatus(
             @PathVariable String app_status){
                 if("null".equalsIgnoreCase(app_status)) {
@@ -61,7 +65,9 @@ public class ChecklistController {
                 }
         return checklistService.getChecklistByAppStatus(app_status);
     }
-      @PostMapping
+     
+    @Operation(summary = "Create a new checklist")
+    @PostMapping
     public ResponseEntity<Checklist> createChecklist(
             @RequestBody Checklist checklist) {
 
@@ -69,6 +75,7 @@ public class ChecklistController {
         return ResponseEntity.ok(savedChecklist);
     }
 
+    @Operation(summary = "Update an existing checklist")
     @PutMapping("/{regid}")
     public ResponseEntity<Checklist> updateChecklist(
             @PathVariable Integer regid,
@@ -80,7 +87,7 @@ public class ChecklistController {
         return ResponseEntity.ok(updatedChecklist);
     }
 
-    
+    @Operation(summary = "Delete a checklist")
     @DeleteMapping("/{regid}")
     public ResponseEntity<String> deleteChecklist(
             @PathVariable Integer regid) {
