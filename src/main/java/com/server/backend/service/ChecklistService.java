@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.entity.Checklist;
 import com.server.backend.Repository.ChecklistRepository;
+import com.server.backend.entity.Checklist;
 
 @Service
 public class ChecklistService {
@@ -38,12 +38,15 @@ public List<Checklist> getAllChecklist() {
     public List<Checklist> getChecklistByAppStatus(String app_status) {
         return checklistRepository.findByAppStatus(app_status);
     }
-    // CREATE
+     public List<Checklist> getChecklistByAppStatusIsNull() {
+        return checklistRepository.findByAppStatusIsNull();
+    }
+    
 public Checklist createChecklist(Checklist checklist) {
     return checklistRepository.save(checklist);
 }
 
-// UPDATE
+
 public Checklist updateChecklist(Integer regid, Checklist checklist) {
 
     Checklist existing = checklistRepository.findById(regid)
@@ -57,7 +60,7 @@ public Checklist updateChecklist(Integer regid, Checklist checklist) {
     return checklistRepository.save(existing);
 }
 
-// DELETE
+
 public void deleteChecklist(Integer regid) {
     checklistRepository.deleteById(regid);
 }

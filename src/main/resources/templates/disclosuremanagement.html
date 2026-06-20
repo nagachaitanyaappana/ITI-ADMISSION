@@ -44,6 +44,8 @@
             background: #e4eeb9;
             position: relative;
             z-index: 999;
+            list-style: none;
+            list-style-type: none;
             display: inline-block;
         }
         html[xmlns] #menu-bar {
@@ -55,6 +57,7 @@
             float: left;
             position: relative;
             list-style: none;
+            list-style-type: none;
         }
         #menu-bar a {
             font-weight: bold;
@@ -96,6 +99,8 @@
             display: none;
             margin: 0;
             padding: 0;
+            list-style: none;
+            list-style-type: none;
             width: 300px;
             position: absolute;
             top: 30px;
@@ -107,6 +112,8 @@
             float: none;
             margin: 0;
             padding: 0;
+            list-style: none;
+            list-style-type: none;
         }
         #menu-bar ul a {
             padding: 10px 0 10px 15px;
@@ -165,12 +172,12 @@
 
     <ul id="menu-bar">
         <li><a th:href="@{/login}" href="login.jsp">Home</a></li>
-        <li><a th:href="@{/trade-display}" href="trade_display1.jsp">ITI Profile</a></li>
+        <li><a th:href="@{/reports/trade-display}" href="/reports/trade-display">User Profile</a></li>
         <li>
             <a href="javascript:void(0);">STRIVE</a>
             <ul>
-                <li><a th:href="@{/strive/about}" href="AboutStrive.jsp">ABOUT STRIVE</a></li>
-                <li><a th:href="@{/strive/disclosure}" href="strive.jsp">Disclosure Management</a></li>
+                <li><a th:href="@{/reports/about-strive}" href="/reports/about-strive">ABOUT STRIVE</a></li>
+                <li><a th:href="@{/reports/disclosure-management}" href="/reports/disclosure-management">Disclosure Management</a></li>
             </ul>
         </li>
         <li>
