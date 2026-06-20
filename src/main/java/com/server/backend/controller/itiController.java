@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.Institute.ItiDto;
-import com.server.backend.service.ItiService;
+import com.server.backend.DTO.Reports.DistrictOptionResponse;
 import com.server.backend.entity.Iti;
+import com.server.backend.service.ItiService;
 
 import jakarta.validation.Valid;
 
@@ -40,6 +41,11 @@ public class itiController {
         return itiService.getItiByCode(itiCode);
     }
 
+    @GetMapping("/districts")
+    public List<DistrictOptionResponse> getDistrictOptions() {
+        return itiService.getDistrictOptions();
+    }
+
    @PostMapping
     public Iti createIti(
             @Valid @RequestBody ItiDto dto) {
@@ -63,6 +69,7 @@ public class itiController {
 
         return "ITI Deleted Successfully";
             }
+
       @PatchMapping("/{itiCode}")
     
        public Iti patchIti(@PathVariable String itiCode, @RequestBody ItiDto dto) {
