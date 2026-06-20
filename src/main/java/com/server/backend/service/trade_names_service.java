@@ -2,7 +2,6 @@ package com.server.backend.service;
 
 import java.util.List;
 
-
 import org.springframework.stereotype.Service;
 
 import com.server.backend.DTO.admission_process.iti.trade_names_dto;
@@ -11,11 +10,13 @@ import com.server.backend.Repository.trade_names_repository;
 @Service
 public class trade_names_service {
 
+    private final trade_names_repository repository;
 
-    private trade_names_repository repository;
+    public trade_names_service(trade_names_repository repository) {
+        this.repository = repository;
+    }
 
     public trade_names_dto getTradesNamesData() {
-
         List<String> itiNames = repository.getAllItiNames();
         List<String> tradeNames = repository.getAllTradeNames();
 
