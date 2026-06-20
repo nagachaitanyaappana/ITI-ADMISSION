@@ -1,17 +1,19 @@
 package com.server.backend.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.Type;
+import org.hibernate.generator.EventType;
+
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.Data;
-
-import java.util.Map;
-import java.util.HashMap;
-
-import org.hibernate.annotations.Type;
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;
 
 
 @Entity
@@ -31,6 +33,7 @@ public class student_trade_sel {
     @Column(name = "dist_code" , length = 2)
     private String dist_code;
 
+    @Generated(event = EventType.INSERT)
     @Column(name = "temp", nullable = false, insertable = false, updatable = false)
     private Integer temp;
 
