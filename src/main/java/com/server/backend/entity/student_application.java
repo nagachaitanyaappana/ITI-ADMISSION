@@ -22,6 +22,6 @@ public class student_application {
     @SequenceGenerator(name = "application_registration_id_seq", sequenceName = "application_Registration_id_seq", allocationSize = 1)
     @EqualsAndHashCode.Include
     @Column(name = "regid", nullable = false, unique = true, updatable = false)
-    private Integer regid;
+    private Integer regid;//here
 
 }
