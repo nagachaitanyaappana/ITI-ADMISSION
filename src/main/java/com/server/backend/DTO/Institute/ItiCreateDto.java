@@ -1,13 +1,15 @@
 package com.server.backend.DTO.Institute;
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import java.util.Map;
+import jakarta.validation.constraints.Pattern;
 
 @Data
-public class ItiDto {
-    
-    @NotBlank(message = "ITI Code is required")
+public class ItiCreateDto {
+@NotBlank(message = "ITI Code is required")
     private String itiCode;
     @Size(max=255)
     @NotBlank(message = "ITI Name is required")
@@ -67,28 +69,5 @@ public class ItiDto {
     private Integer noofLabs;
     private Integer noofClassrooms;
     private Integer examconductingStrength;
-
-    private Map<String,String> strength;
-    private Map<String,String> strengthVacant;
-    private Map<String,String> strengthFill;
-    private Boolean admissionPermission;
-
-    private String dgetItiCode;
-    private String region;
-    private String urbanRural;
-    private String webItiCode;
-
-    private Boolean toolStatus;
-
-    private String recStatus;
-    @Size(max = 150,message = "Website URL should not exceed 255 characters")
-    private String website;
-    private String gradePoint;
-    private String ncvtCode;
-
-    private String mandalCode;
-    private String jnanabhumicode;
-
-    private String parliamentConstituencyName;
-    private String assemblyConstituencyName;
 }
+    
