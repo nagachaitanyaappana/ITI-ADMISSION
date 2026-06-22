@@ -1,4 +1,4 @@
-package com.server.backend.config;
+/*package com.server.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,3 +26,4 @@ public class OpenApiConfig {
                                 .url("http://springdoc.org")));
     }
 }
+*/
