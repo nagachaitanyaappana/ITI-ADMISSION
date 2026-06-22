@@ -13,6 +13,11 @@ import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
 import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
 import com.server.backend.service.Reports.TradeDisplayReportService;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Reports Controller", description = "Page and report endpoints for the reports UI")
 @Controller
 public class ReportsController {
 
@@ -22,7 +27,8 @@ public class ReportsController {
         this.tradeDisplayReportService = tradeDisplayReportService;
     }
 
-    @GetMapping({ "/reports/trade-display", "/tradedisplay" })
+    @Operation(summary = "Display the trade display report page")
+    @GetMapping("/reports/trade-display")
     public String tradeDisplay(Model model) {
         model.addAttribute("districtList", tradeDisplayReportService.getDistrictOptions());
         model.addAttribute("itiList", new ArrayList<>());
@@ -32,7 +38,14 @@ public class ReportsController {
         return "tradedisplay";
     }
 
-    @PostMapping({ "/reports/trade-display", "/trade_display2" })
+    @Hidden
+    @GetMapping("/tradedisplay")
+    public String tradeDisplayAlias() {
+        return "redirect:/reports/trade-display";
+    }
+
+    @Operation(summary = "Submit trade display request and render report results")
+    @PostMapping("/reports/trade-display")
     public String submitTradeDisplay(@ModelAttribute TradeDisplayReportRequest request, Model model) {
 
         List<ItiTradeDisplayResponse> results = tradeDisplayReportService.getTradeDisplayReport(request);
@@ -50,14 +63,39 @@ public class ReportsController {
         return "tradedisplay";
     }
 
-    @GetMapping({ "/reports/about-strive", "/aboutstrive", "/AboutStrive" })
+    @Hidden
+    @PostMapping("/trade_display2")
+    public String submitTradeDisplayAlias(@ModelAttribute TradeDisplayReportRequest request, Model model) {
+        return submitTradeDisplay(request, model);
+    }
+
+    @Operation(summary = "Show the About Strive page")
+    @GetMapping("/reports/about-strive")
     public String aboutStrive() {
         return "aboutstrive";
     }
 
-    @GetMapping({ "/reports/disclosure-management", "/disclosuremanagement", "/DisclosureManagement" })
+    @Hidden
+    @GetMapping({ "/aboutstrive", "/AboutStrive" })
+    public String aboutStriveAlias() {
+        return "redirect:/reports/about-strive";
+    }
+
+    @Operation(summary = "Show the disclosure management page")
+    @GetMapping("/reports/disclosure-management")
     public String disclosureManagement() {
         return "disclosuremanagement";
+    }
+
+    @Hidden
+    @GetMapping({ "/disclosuremanagement", "/DisclosureManagement" })
+    public String disclosureManagementAlias() {
+        return "redirect:/reports/disclosure-management";
+    }
+
+    @GetMapping("/reports/api-docs")
+    public String apiDocs() {
+        return "swagger";
     }
 
 }

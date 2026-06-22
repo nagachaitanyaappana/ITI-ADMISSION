@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ITI Admission API Docs</title>
+    <link rel="shortcut icon" type="image/ico" th:href="@{/iti.png}" />
+    <link rel="stylesheet" th:href="@{/css/expe1011.css}" />
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f7f7f7;
+        }
+        .page-header {
+            background: #004080;
+            color: white;
+            padding: 24px 32px;
+            text-align: center;
+        }
+        .page-header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+        .page-header p {
+            margin: 8px 0 0;
+            color: #d4e1ff;
+        }
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .swagger-frame {
+            width: 100%;
+            height: 1400px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+        .alert {
+            background: #fff8c4;
+            border: 1px solid #ffe58f;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .nav-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #004080;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>ITI Admission API Documentation</h1>
+        <p>Interactive Swagger UI embedded as an application page</p>
+    </div>
+    <div class="content">
+        <div class="alert">
+            <strong>Note:</strong> If the Swagger UI does not appear, open <a th:href="@{/swagger-ui.html}">/swagger-ui.html</a> directly.
+        </div>
+        <div class="swagger-frame">
+            <iframe src="/swagger" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+        <a class="nav-link" th:href="@{/reports/trade-display}">Back to Reports</a>
+    </div>
+</body>
+</html>
