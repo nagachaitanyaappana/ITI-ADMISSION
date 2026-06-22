@@ -2,6 +2,7 @@ package com.server.backend.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.Institute.ItiDto;
+import com.server.backend.DTO.Institute.ItiPatchDto;
 import com.server.backend.entity.Iti;
 import com.server.backend.service.ItiService;
 
@@ -80,9 +82,15 @@ public class itiController {
             }
 
       @Operation(summary = "Partially update an ITI")
-      @PatchMapping("/{itiCode}")
-    
-       public Iti patchIti(@PathVariable String itiCode, @RequestBody ItiDto dto) {
-        return itiService.patchIti(itiCode, dto);
-       }
+      @PatchMapping("/{itiCode}/{distCode}")
+public ResponseEntity<Iti> patchIti(
+        @PathVariable String itiCode,
+        @PathVariable String distCode,
+        @RequestBody ItiPatchDto dto) {
+
+    Iti updatedIti =
+            itiService.patchIti( itiCode,distCode, dto);
+
+    return ResponseEntity.ok(updatedIti);
+  }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.Optional;
 
 import com.server.backend.entity.Iti;
 
@@ -25,4 +26,6 @@ public interface ItiRepository extends JpaRepository<Iti, String> {
                    "LEFT JOIN ititrade_master m ON t.trade_short = m.trade_short " +
                    "WHERE i.dist_code = :distCode", nativeQuery = true)
     List<Object[]> findTradeDisplayRowsByDistrictCode(@Param("distCode") String distCode);
+
+    Optional<Iti> findByItiCodeAndDistCode(String itiCode, String distCode);
 }

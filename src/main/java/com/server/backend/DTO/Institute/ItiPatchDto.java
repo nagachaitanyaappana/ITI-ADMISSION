@@ -8,9 +8,10 @@ import lombok.Data;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
 @Data
-public class ItiCreateDto {
+public class ItiPatchDto {
 @NotBlank(message = "ITI Code is required")
     private String itiCode;
+    private String dgetItiCode;
     @Size(max=255)
     @NotBlank(message = "ITI Name is required")
     private String itiName;
