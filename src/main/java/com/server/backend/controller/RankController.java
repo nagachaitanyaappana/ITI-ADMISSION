@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.CandidateResponseDTO;
 import com.server.backend.service.AdmissionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Admission Controller", description = "Rank and candidate admission queries")
 @RestController
 @RequestMapping("/admission")
 public class RankController {
@@ -20,6 +24,7 @@ public class RankController {
         this.admissionService = admissionService;
     }
 
+    @Operation(summary = "Get candidates filtered by rank, phase, and year")
     @GetMapping("/candidate")
     public List<CandidateResponseDTO> getCandidatesByRank(
             @RequestParam String rank,

@@ -16,8 +16,11 @@ import com.server.backend.DTO.Institute.ItiDto;
 import com.server.backend.entity.Iti;
 import com.server.backend.service.ItiService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "ITI Controller", description = "Operations for ITI entities")
 @RestController
 @RequestMapping("/api/itis")
 public class itiController {
@@ -29,10 +32,12 @@ public class itiController {
     }
 
     @GetMapping
+    @Operation(summary = "List all ITIs")
     public List<Iti> getAllItis() {
         return itiService.getAllItis();
     }
 
+    @Operation(summary = "Get an ITI by code")
     @GetMapping("/{itiCode}")
     public Iti getItiByCode(
             @PathVariable String itiCode) {
@@ -47,6 +52,7 @@ public class itiController {
         return "iti-create"; // name of Thymeleaf template iti-create.html
     }*/
 
+   @Operation(summary = "Create a new ITI")
    @PostMapping
     public Iti createIti(
             @Valid @RequestBody ItiDto dto) {
@@ -54,6 +60,7 @@ public class itiController {
         return itiService.createIti(dto);
     }
 
+    @Operation(summary = "Update an existing ITI")
     @PutMapping("/{itiCode}")
     public Iti updateIti(
             @PathVariable String itiCode,
@@ -62,6 +69,7 @@ public class itiController {
         return itiService.updateIti(itiCode, dto);
     }
 
+    @Operation(summary = "Delete an ITI")
     @DeleteMapping("/{itiCode}")
     public String deleteIti(
             @PathVariable String itiCode) {
@@ -71,6 +79,7 @@ public class itiController {
         return "ITI Deleted Successfully";
             }
 
+      @Operation(summary = "Partially update an ITI")
       @PatchMapping("/{itiCode}")
     
        public Iti patchIti(@PathVariable String itiCode, @RequestBody ItiDto dto) {
