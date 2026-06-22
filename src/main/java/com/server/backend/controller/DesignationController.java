@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Institute.DesignationDto;
 import com.server.backend.service.DesignationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Designation Controller", description = "Manage designation resources")
 @RestController
 @RequestMapping("/api/designations")
 public class DesignationController {
@@ -27,6 +30,7 @@ public class DesignationController {
         this.service = service;
     }
 
+    @Operation(summary = "Create a new designation")
     @PostMapping
     public ResponseEntity<DesignationDto> createDesignation(
             @Valid @RequestBody DesignationDto dto) {
@@ -34,12 +38,14 @@ public class DesignationController {
         return ResponseEntity.ok(service.saveDesignation(dto));
     }
 
+    @Operation(summary = "Retrieve all designations")
     @GetMapping
     public ResponseEntity<List<DesignationDto>> getAllDesignations() {
 
         return ResponseEntity.ok(service.getAllDesignations());
     }
 
+    @Operation(summary = "Get a designation by code")
     @GetMapping("/{desigCode}")
     public ResponseEntity<DesignationDto> getDesignationById(
             @PathVariable String desigCode) {
@@ -47,6 +53,7 @@ public class DesignationController {
         return ResponseEntity.ok(service.getDesignationById(desigCode));
     }
 
+    @Operation(summary = "Update an existing designation")
     @PutMapping("/{desigCode}")
     public ResponseEntity<DesignationDto> updateDesignation(
             @PathVariable String desigCode,
@@ -55,6 +62,7 @@ public class DesignationController {
         return ResponseEntity.ok(service.updateDesignation(desigCode, dto));
     }
 
+    @Operation(summary = "Delete a designation")
     @DeleteMapping("/{desigCode}")
     public ResponseEntity<String> deleteDesignation(
             @PathVariable String desigCode) {
