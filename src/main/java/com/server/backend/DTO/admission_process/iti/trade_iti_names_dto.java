@@ -2,12 +2,12 @@ package com.server.backend.DTO.admission_process.iti;
 
 import java.util.List;
 
-public class trade_names_dto {
+public class trade_iti_names_dto {
 
     private List<String> itiNames;
     private List<String> tradeNames;
 
-    public trade_names_dto(List<String> itiNames, List<String> tradeNames) {
+    public trade_iti_names_dto(List<String> itiNames, List<String> tradeNames) {
         this.itiNames = itiNames;
         this.tradeNames = tradeNames;
     }
