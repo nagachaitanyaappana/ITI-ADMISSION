@@ -9,19 +9,17 @@ import com.server.backend.Repository.DistrictMasterRepository;
 
 
 @RestController
-
 @RequestMapping("/api/districts")
 public class DistrictController {
 
-    private final DistrictMasterRepository districtRepo;
+    private final DistrictMasterRepository repository;
 
-    public DistrictController(DistrictMasterRepository districtRepo) {
-        this.districtRepo = districtRepo;
+    public DistrictController(DistrictMasterRepository repository) {
+        this.repository = repository;
     }
 
     @GetMapping
     public List<DistrictOptionResponse> getDistricts() {
-
-        return districtRepo.findDistrictOptions();
+        return repository.findDistrictOptions();
     }
 }
