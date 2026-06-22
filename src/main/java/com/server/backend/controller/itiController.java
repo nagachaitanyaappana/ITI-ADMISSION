@@ -81,38 +81,16 @@ public class itiController {
         return "ITI Deleted Successfully";
             }
 
-<<<<<<< HEAD
-      @GetMapping("/{itiCode}/{distCode}")
-      public ResponseEntity<Iti> getItiByCodeAndDistCode(
-        @PathVariable String itiCode,
-        @PathVariable String distCode) {
-
-    Iti iti = itiService.getItiByCodeAndDistCode(
-            itiCode,
-            distCode);
-
-    return ResponseEntity.ok(iti);
-}
-@PatchMapping("/{itiCode}/{distCode}")
+      @Operation(summary = "Partially update an ITI")
+      @PatchMapping("/{itiCode}/{distCode}")
 public ResponseEntity<Iti> patchIti(
         @PathVariable String itiCode,
         @PathVariable String distCode,
         @RequestBody ItiPatchDto dto) {
 
     Iti updatedIti =
-            itiService.patchIti(
-                    itiCode,
-                    distCode,
-                    dto);
+            itiService.patchIti( itiCode,distCode, dto);
 
     return ResponseEntity.ok(updatedIti);
-}
-=======
-      @Operation(summary = "Partially update an ITI")
-      @PatchMapping("/{itiCode}")
-    
-       public Iti patchIti(@PathVariable String itiCode, @RequestBody ItiDto dto) {
-        return itiService.patchIti(itiCode, dto);
-       }
->>>>>>> b2545b923d075b943dd116fde405ff57c8e17299
+  }
 }
