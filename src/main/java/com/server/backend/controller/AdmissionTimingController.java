@@ -21,18 +21,18 @@ public AdmissionTiming createAdmissionTiming(@RequestBody AdmissionTiming admiss
     public List<AdmissionTiming> getAllAdmissionTimings() {
         return admissionTimingService.getAllAdmissionTimings();
     }
-    @GetMapping("/{itiCode}")
-    public AdmissionTiming getById(@PathVariable String itiCode) {
-        return admissionTimingService.getById(itiCode);
+    @GetMapping("/{itiCode}/{phase}")
+    public AdmissionTiming getById(@PathVariable String itiCode, @PathVariable String phase) {
+        return admissionTimingService.getById(itiCode, phase);
     }
-    @DeleteMapping("/{itiCode}")
-    public String delete(@PathVariable String itiCode) {
-        admissionTimingService.delete(itiCode);
+    @DeleteMapping("/{itiCode}/{phase}")
+    public String delete(@PathVariable String itiCode, @PathVariable String phase) {
+        admissionTimingService.delete(itiCode, phase);
         return "Schedule Entry Deleted Successfully";
     }
-    @PutMapping("/{itiCode}")
-    public AdmissionTiming updateAdmissionTiming(@PathVariable String itiCode, @RequestBody AdmissionTiming updatedAdmissionTiming) {
-        return admissionTimingService.updateAdmissionTiming(itiCode, updatedAdmissionTiming);
+    @PutMapping("/{itiCode}/{phase}")
+    public AdmissionTiming updateAdmissionTiming(@PathVariable String itiCode, @PathVariable String phase, @RequestBody AdmissionTiming updatedAdmissionTiming) {
+        return admissionTimingService.updateAdmissionTiming(itiCode, phase, updatedAdmissionTiming);
     }
     
 }
