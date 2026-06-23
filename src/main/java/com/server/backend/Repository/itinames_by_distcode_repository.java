@@ -12,6 +12,4 @@ public interface itinames_by_distcode_repository extends JpaRepository<Iti, Stri
 
     @Query(value = "SELECT iti_name FROM iti WHERE dist_code = :distCode", nativeQuery = true)
     List<String> getItiNamesByDistrict(@Param("distCode") String distCode);
-
 }
-

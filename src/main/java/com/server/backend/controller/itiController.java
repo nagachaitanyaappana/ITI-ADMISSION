@@ -56,8 +56,7 @@ public class itiController {
 
    @Operation(summary = "Create a new ITI")
    @PostMapping
-    public Iti createIti(
-            @Valid @RequestBody ItiDto dto) {
+    public Iti createIti(@Valid @RequestBody ItiDto dto) {
 
         return itiService.createIti(dto);
     }
