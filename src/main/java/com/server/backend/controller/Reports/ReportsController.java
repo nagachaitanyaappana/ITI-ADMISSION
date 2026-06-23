@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Reports Controller", description = "Page and report endpoints for the reports UI")
+@Tag(name = "reports", description = "Reports UI pages and documentation endpoints")
 @Controller
 public class ReportsController {
 
