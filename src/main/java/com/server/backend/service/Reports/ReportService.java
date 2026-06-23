@@ -5,14 +5,21 @@ import java.util.List;
 import com.server.backend.DTO.Reports.AdmissionReportResponse;
 import com.server.backend.DTO.Reports.ApiDashboardResponse;
 import com.server.backend.DTO.Reports.ApplicantCountResponse;
+import com.server.backend.DTO.Reports.ApplicantReportResponse;
+import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
 import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
+import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
 import com.server.backend.DTO.Reports.MetadataResponse;
 import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
+import com.server.backend.DTO.Reports.ShiftUnitResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
+import com.server.backend.DTO.Reports.StudentListResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
+import com.server.backend.DTO.Reports.TradeWiseReportResponse;
+import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
 
 public interface ReportService {
     // Metadata
@@ -47,4 +54,25 @@ public interface ReportService {
 
     // 10. Student Complete Details
     StudentCompleteDetailsResponse getStudentCompleteDetails(String regid, String admNum);
+
+    // 11. Caste Wise Admissions Abstract
+    List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(String year, String distCode, String govt, String phase, String gender);
+
+    // 12. Verified Application Count
+    List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(String year, String distCode);
+
+    // 13. Permitted Shift Unit Report
+    List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode);
+
+    // 14. Applicant Report by Phase
+    List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode);
+
+    // 15. ITI Wise Status Report
+    List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode);
+
+    // 16. ITI Student List
+    List<StudentListResponse> getItiStudentList(String year, String itiCode, String distCode);
+
+    // 17. Trade Wise Report
+    List<TradeWiseReportResponse> getTradeWiseReport(String year, String distCode, String itiType);
 }

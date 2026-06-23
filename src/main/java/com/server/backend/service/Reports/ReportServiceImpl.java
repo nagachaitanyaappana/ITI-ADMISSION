@@ -11,12 +11,16 @@ import org.springframework.stereotype.Service;
 import com.server.backend.DTO.Reports.AdmissionReportResponse;
 import com.server.backend.DTO.Reports.ApiDashboardResponse;
 import com.server.backend.DTO.Reports.ApplicantCountResponse;
+import com.server.backend.DTO.Reports.ApplicantReportResponse;
+import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
 import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
+import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
 import com.server.backend.DTO.Reports.MetadataResponse;
 import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
+import com.server.backend.DTO.Reports.ShiftUnitResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.AdmissionDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.AppliedIti;
@@ -24,7 +28,10 @@ import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.MeritListDe
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.RegistrationDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.SscMarksDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.VerifiedDetail;
+import com.server.backend.DTO.Reports.StudentListResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
+import com.server.backend.DTO.Reports.TradeWiseReportResponse;
+import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -680,6 +687,321 @@ public class ReportServiceImpl implements ReportService {
         }
 
         return response;
+    }
+
+    // 11. Caste Wise Admissions Abstract
+    @Override
+    public List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(String year, String distCode, String govt, String phase, String gender) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT d.dist_code AS "District Code", d.dist_name AS "District Name",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-A%') AS "BC-A",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-B%') AS "BC-B",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-C%') AS "BC-C",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-D%') AS "BC-D",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-E%') AS "BC-E",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'EWS%') AS "EWS",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'EX-S%') AS "EX-S",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'IM%') AS "IM",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'OC%') AS "OC",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'PH%') AS "PH",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-I%') AS "SC-I",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-II%') AS "SC-II",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-III%') AS "SC-III",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SP%') AS "SP",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'ST%') AS "ST"
+            FROM public.dist_mst d
+            LEFT JOIN admissions.iti_admissions a ON d.dist_code = a.dist_code AND a.year_of_admission::text = ?::text
+            LEFT JOIN public.iti i ON a.iti_code = i.iti_code
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (govt != null && !"All".equalsIgnoreCase(govt)) {
+            sql.append(" AND i.govt = ?");
+            params.add(govt);
+        }
+        if (phase != null && !"All".equalsIgnoreCase(phase) && !"0".equals(phase)) {
+            sql.append(" AND a.phase = ?");
+            params.add(Integer.parseInt(phase));
+        }
+        if (gender != null && !"All".equalsIgnoreCase(gender)) {
+            sql.append(" AND a.gender = ?");
+            params.add(gender);
+        }
+
+        sql.append(" GROUP BY d.dist_code, d.dist_name ORDER BY d.dist_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new CasteWiseAdmissionsResponse(
+                rs.getString("District Code"),
+                rs.getString("District Name"),
+                rs.getInt("BC-A"), rs.getInt("BC-B"), rs.getInt("BC-C"),
+                rs.getInt("BC-D"), rs.getInt("BC-E"), rs.getInt("EWS"),
+                rs.getInt("EX-S"), rs.getInt("IM"), rs.getInt("OC"),
+                rs.getInt("PH"), rs.getInt("SC-I"), rs.getInt("SC-II"),
+                rs.getInt("SC-III"), rs.getInt("SP"), rs.getInt("ST")
+        ), params.toArray());
+    }
+
+    // 12. Verified Application Count
+    @Override
+    public List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(String year, String distCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT d.dist_name AS "District Name",
+                   COUNT(a.regid) AS "Total Applications",
+                   COUNT(a.regid) FILTER (WHERE a.app_status = 'A') AS "Approved",
+                   COUNT(a.regid) FILTER (WHERE a.app_status = 'R') AS "Rejected",
+                   COUNT(a.regid) FILTER (WHERE a.app_status IS NULL OR a.app_status NOT IN ('A', 'R')) AS "Unverified"
+            FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
+            LEFT JOIN public.iti i ON d.dist_code = i.dist_code
+            LEFT JOIN public.application a ON i.iti_code = a.user_id AND a.year::text = ?::text
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+
+        sql.append(" GROUP BY d.dist_name ORDER BY d.dist_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new VerifiedApplicationCountResponse(
+                rs.getString("District Name"),
+                rs.getInt("Total Applications"),
+                rs.getInt("Approved"),
+                rs.getInt("Rejected"),
+                rs.getInt("Unverified")
+        ), params.toArray());
+    }
+
+    // 13. Permitted Shift Unit Report
+    @Override
+    public List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT i.iti_name, i.govt AS iti_type, tm.trade_name, sup.strength,
+                   sup.shift_allowed AS shift, sup.unit_allowed AS unit
+            FROM public.shift_unit_permitted sup
+            JOIN public.iti i ON sup.iti_code::text = i.iti_code::text
+            JOIN public.ititrade_master tm ON sup.trade_code::text = tm.trade_code::text
+            WHERE TRIM(i.dist_code::text) = TRIM(?::text)
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(distCode);
+
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+
+        sql.append(" ORDER BY i.iti_name, tm.trade_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ShiftUnitResponse(
+                rs.getString("iti_name"),
+                rs.getString("iti_type"),
+                rs.getString("trade_name"),
+                rs.getInt("strength"),
+                rs.getString("shift"),
+                rs.getString("unit")
+        ), params.toArray());
+    }
+
+    // 14. Applicant Report by Phase
+    @Override
+    public List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT sa.ssc_regno, sa.phno AS mobile_no, sa.regid AS reg_id,
+                   sa.name, sa.fname AS father_name, sa.mname AS mother_name
+            FROM public.application sa
+            LEFT JOIN public.iti i ON sa.user_id = i.iti_code
+            WHERE sa.phase::text ILIKE '%\"' || ? || '\"=>\"true\"%'
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(phase);
+
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND sa.year::text = ?::text");
+            params.add(year);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND i.iti_code = ?");
+            params.add(itiCode);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND i.dist_code = ?");
+            params.add(distCode);
+        }
+
+        sql.append(" ORDER BY sa.name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ApplicantReportResponse(
+                rs.getString("ssc_regno"),
+                rs.getString("mobile_no"),
+                rs.getString("reg_id"),
+                rs.getString("name"),
+                rs.getString("father_name"),
+                rs.getString("mother_name")
+        ), params.toArray());
+    }
+
+    // 15. ITI Wise Status Report
+    @Override
+    public List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode) {
+        StringBuilder sql = new StringBuilder("""
+            WITH phone_duplicates AS (
+              SELECT phno, iti_code, COUNT(*) - 1 AS dup_count
+              FROM admissions.iti_admissions
+              WHERE year_of_admission::text = ?::text AND phno IS NOT NULL
+              GROUP BY phno, iti_code HAVING COUNT(*) > 1
+            ),
+            aadhar_duplicates AS (
+              SELECT adarno, iti_code, COUNT(*) - 1 AS dup_count
+              FROM admissions.iti_admissions
+              WHERE year_of_admission::text = ?::text AND adarno IS NOT NULL AND adarno != ''
+              GROUP BY adarno, iti_code HAVING COUNT(*) > 1
+            ),
+            email_duplicates AS (
+              SELECT email_id, iti_code, COUNT(*) - 1 AS dup_count
+              FROM admissions.iti_admissions
+              WHERE year_of_admission::text = ?::text AND email_id IS NOT NULL AND email_id != ''
+              GROUP BY email_id, iti_code HAVING COUNT(*) > 1
+            )
+            SELECT d.dist_name, i.iti_name, i.iti_code,
+                   COUNT(a.adm_num) AS total,
+                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'S') AS success,
+                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'N') AS pending_sid,
+                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'D') AS verified,
+                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'E') AS to_be_verified,
+                   COUNT(a.adm_num) FILTER (WHERE a.rec_status IS NULL OR a.rec_status = '') AS to_be_updated,
+                   COUNT(DISTINCT pd.phno) FILTER (WHERE pd.phno IS NOT NULL) AS phone_duplicate_records,
+                   COUNT(DISTINCT ad.adarno) FILTER (WHERE ad.adarno IS NOT NULL) AS aadhar_duplicate_records,
+                   COUNT(DISTINCT ed.email_id) FILTER (WHERE ed.email_id IS NOT NULL) AS email_duplicate_records
+            FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
+            JOIN public.iti i ON d.dist_code = i.dist_code
+            LEFT JOIN admissions.iti_admissions a ON i.iti_code = a.iti_code AND a.year_of_admission::text = ?::text
+            LEFT JOIN phone_duplicates pd ON a.phno = pd.phno AND a.iti_code = pd.iti_code
+            LEFT JOIN aadhar_duplicates ad ON a.adarno = ad.adarno AND a.iti_code = ad.iti_code
+            LEFT JOIN email_duplicates ed ON a.email_id = ed.email_id AND a.iti_code = ed.iti_code
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year); params.add(year); params.add(year); params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+
+        sql.append(" GROUP BY d.dist_name, i.iti_name, i.iti_code ORDER BY d.dist_name, i.iti_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ItiWiseStatusResponse(
+                rs.getString("dist_name"),
+                rs.getString("iti_name"),
+                rs.getString("iti_code"),
+                rs.getInt("total"),
+                rs.getInt("success"),
+                rs.getInt("pending_sid"),
+                rs.getInt("verified"),
+                rs.getInt("to_be_verified"),
+                rs.getInt("to_be_updated"),
+                rs.getInt("phone_duplicate_records"),
+                rs.getInt("aadhar_duplicate_records"),
+                rs.getInt("email_duplicate_records")
+        ), params.toArray());
+    }
+
+    // 16. ITI Student List
+    @Override
+    public List<StudentListResponse> getItiStudentList(String year, String itiCode, String distCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT a.adm_num AS admission_no, a.trade_code AS trade_code, a.ssc_regno AS ssc_hall_ticket,
+                   a.name, a.fname AS father_name, a.mname AS mother_name,
+                   TO_CHAR(a.dob, 'DD-MM-YYYY') AS date_of_birth,
+                   a.phno AS mobile_no, a.email_id AS email,
+                   a.shift, a.unit, a.pwd_category AS pwd_category,
+                   CASE WHEN a.economic_weaker_section = true THEN 'YES' ELSE 'NO' END AS economic_weaker_section,
+                   CASE WHEN a.is_trainee_dual_mode = true THEN 'YES' ELSE 'NO' END AS is_trainee_dual_mode
+            FROM admissions.iti_admissions a
+            LEFT JOIN (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d ON TRIM(a.dist_code::text) = TRIM(d.dist_code::text)
+            WHERE a.year_of_admission::text = ?::text
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND TRIM(a.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(a.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+
+        sql.append(" ORDER BY a.name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new StudentListResponse(
+                rs.getString("admission_no"),
+                rs.getString("trade_code"),
+                rs.getString("ssc_hall_ticket"),
+                rs.getString("name"),
+                rs.getString("father_name"),
+                rs.getString("mother_name"),
+                rs.getString("date_of_birth"),
+                rs.getString("mobile_no"),
+                rs.getString("email"),
+                rs.getString("shift"),
+                rs.getString("unit"),
+                rs.getString("pwd_category"),
+                rs.getString("economic_weaker_section"),
+                rs.getString("is_trainee_dual_mode")
+        ), params.toArray());
+    }
+
+    // 17. Trade Wise Report
+    @Override
+    public List<TradeWiseReportResponse> getTradeWiseReport(String year, String distCode, String itiType) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT tm.trade_name, tm.trade_code::text AS trade_code,
+                   COUNT(*) AS total_strength,
+                   COUNT(*) FILTER (WHERE a.adm_num IS NOT NULL) AS filled,
+                   COUNT(*) - COUNT(*) FILTER (WHERE a.adm_num IS NOT NULL) AS vacant
+            FROM public.ititrade_master tm
+            CROSS JOIN public.iti i
+            LEFT JOIN admissions.iti_admissions a ON a.iti_code = i.iti_code
+                AND a.trade_code = tm.trade_code
+                AND a.year_of_admission::text = ?::text
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (itiType != null && !"All".equalsIgnoreCase(itiType)) {
+            sql.append(" AND i.govt = ?");
+            params.add(itiType);
+        }
+
+        sql.append(" GROUP BY tm.trade_name, tm.trade_code ORDER BY tm.trade_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new TradeWiseReportResponse(
+                rs.getString("trade_name"),
+                rs.getString("trade_code"),
+                rs.getInt("total_strength"),
+                rs.getInt("filled"),
+                rs.getInt("vacant")
+        ), params.toArray());
     }
 
     private String str(Object o) {

@@ -12,17 +12,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Reports.AdmissionReportResponse;
 import com.server.backend.DTO.Reports.ApiDashboardResponse;
 import com.server.backend.DTO.Reports.ApplicantCountResponse;
+import com.server.backend.DTO.Reports.ApplicantReportResponse;
+import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
 import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
 import com.server.backend.DTO.Reports.DistrictOptionResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
 import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
+import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
 import com.server.backend.DTO.Reports.MetadataResponse;
 import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
+import com.server.backend.DTO.Reports.ShiftUnitResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
+import com.server.backend.DTO.Reports.StudentListResponse;
 import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
+import com.server.backend.DTO.Reports.TradeWiseReportResponse;
+import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
 import com.server.backend.service.Reports.ReportService;
 import com.server.backend.service.Reports.TradeDisplayReportService;
 
@@ -171,5 +178,83 @@ public class ReportRestController {
             @RequestParam(required = false) String regid,
             @RequestParam(required = false) String admNum) {
         return reportService.getStudentCompleteDetails(regid, admNum);
+    }
+
+    // ========== 11. CASTE WISE ADMISSIONS ==========
+
+    @Operation(summary = "Caste Wise Admissions Abstract")
+    @GetMapping("/caste-wise-admissions")
+    public List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(
+            @RequestParam String year,
+            @RequestParam(required = false, defaultValue = "All") String distCode,
+            @RequestParam(required = false, defaultValue = "All") String govt,
+            @RequestParam(required = false, defaultValue = "All") String phase,
+            @RequestParam(required = false, defaultValue = "All") String gender) {
+        return reportService.getCasteWiseAdmissions(year, distCode, govt, phase, gender);
+    }
+
+    // ========== 12. VERIFIED APPLICATION COUNT ==========
+
+    @Operation(summary = "Verified Application Count Report")
+    @GetMapping("/verified-application-count")
+    public List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(
+            @RequestParam String year,
+            @RequestParam(required = false, defaultValue = "All") String distCode) {
+        return reportService.getVerifiedApplicationCount(year, distCode);
+    }
+
+    // ========== 13. PERMITTED SHIFT UNIT ==========
+
+    @Operation(summary = "Permitted Shift and Unit Report")
+    @GetMapping("/permitted-shift-unit")
+    public List<ShiftUnitResponse> getPermittedShiftUnit(
+            @RequestParam String distCode,
+            @RequestParam(required = false, defaultValue = "All") String itiCode) {
+        return reportService.getPermittedShiftUnit(distCode, itiCode);
+    }
+
+    // ========== 14. APPLICANT REPORT BY PHASE ==========
+
+    @Operation(summary = "Applicant Report by Phase")
+    @GetMapping("/applicant-report-by-phase")
+    public List<ApplicantReportResponse> getApplicantReportByPhase(
+            @RequestParam String phase,
+            @RequestParam(required = false) String year,
+            @RequestParam(required = false, defaultValue = "All") String itiCode,
+            @RequestParam(required = false, defaultValue = "All") String distCode) {
+        return reportService.getApplicantReportByPhase(phase, year, itiCode, distCode);
+    }
+
+    // ========== 15. ITI WISE STATUS ==========
+
+    @Operation(summary = "ITI Wise Admission Status Report")
+    @GetMapping("/iti-wise-status")
+    public List<ItiWiseStatusResponse> getItiWiseStatus(
+            @RequestParam String year,
+            @RequestParam(required = false, defaultValue = "All") String distCode,
+            @RequestParam(required = false, defaultValue = "All") String itiCode) {
+        return reportService.getItiWiseStatus(year, distCode, itiCode);
+    }
+
+    // ========== 16. ITI STUDENT LIST ==========
+
+    @Operation(summary = "ITI Student List Report")
+    @GetMapping("/iti-student-list")
+    public List<StudentListResponse> getItiStudentList(
+            @RequestParam String year,
+            @RequestParam(required = false, defaultValue = "All") String itiCode,
+            @RequestParam(required = false, defaultValue = "All") String distCode) {
+        return reportService.getItiStudentList(year, itiCode, distCode);
+    }
+
+    // ========== 17. TRADE WISE REPORT ==========
+
+    @Operation(summary = "Trade Wise Report")
+    @GetMapping("/trade-wise-report")
+    public List<TradeWiseReportResponse> getTradeWiseReport(
+            @RequestParam String year,
+            @RequestParam(required = false, defaultValue = "All") String distCode,
+            @RequestParam(required = false, defaultValue = "All") String itiType) {
+        return reportService.getTradeWiseReport(year, distCode, itiType);
     }
 }
