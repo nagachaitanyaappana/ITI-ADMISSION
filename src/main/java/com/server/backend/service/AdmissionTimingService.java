@@ -21,4 +21,8 @@ public class AdmissionTimingService {
     public void delete(String itiCode){
         admissionTimingRepository.deleteById(itiCode);
     }
+    public AdmissionTiming updateAdmissionTiming(String itiCode, AdmissionTiming updatedAdmissionTiming) {
+        updatedAdmissionTiming.setItiCode(itiCode);
+        return admissionTimingRepository.save(updatedAdmissionTiming);
+    }
 }
