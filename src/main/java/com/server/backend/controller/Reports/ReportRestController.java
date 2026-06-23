@@ -36,7 +36,7 @@ import com.server.backend.service.Reports.TradeDisplayReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Report Controller", description = "REST APIs for all Reports")
+@Tag(name = "reports", description = "REST APIs for generating various reports including admissions, applicants, trade-wise analysis, and district-wise statistics")
 @RestController
 @RequestMapping("/api/reports")
 public class ReportRestController {
@@ -51,13 +51,13 @@ public class ReportRestController {
 
     // ========== LEGACY TRADE DISPLAY ==========
 
-    @Operation(summary = "Get district options for dropdown")
+    @Operation(summary = "Get district options for dropdown", description = "Retrieves a list of districts to populate dropdown filters in the trade display report UI")
     @GetMapping("/trade-display/districts")
     public List<DistrictOptionResponse> getDistrictOptions() {
         return tradeDisplayReportService.getDistrictOptions();
     }
 
-    @Operation(summary = "Get ITI trade display report by district and type")
+    @Operation(summary = "Get ITI trade display report by district and type", description = "Generates a trade-wise display report for ITIs filtered by district and ITI type (Government/Private)")
     @PostMapping("/trade-display")
     public List<ItiTradeDisplayResponse> getTradeDisplayReport(
             @RequestBody TradeDisplayReportRequest request) {
@@ -66,7 +66,7 @@ public class ReportRestController {
 
     // ========== METADATA ==========
 
-    @Operation(summary = "Get metadata (years, phases, castes, levels)")
+    @Operation(summary = "Get metadata (years, phases, castes, levels)", description = "Fetches reference data including available years, admission phases, caste categories, and course levels for report filters")
     @GetMapping("/metadata")
     public MetadataResponse getMetadata() {
         return reportService.getMetadata();
@@ -74,7 +74,7 @@ public class ReportRestController {
 
     // ========== 1. PHASE WISE ABSTRACT ==========
 
-    @Operation(summary = "Phase Wise Admissions Abstract by year")
+    @Operation(summary = "Phase Wise Admissions Abstract by year", description = "Provides an abstract summary of admissions categorized by admission phase for a selected academic year")
     @GetMapping("/phase-wise")
     public List<PhaseWiseReportResponse> getPhaseWiseReport(
             @RequestParam String year) {
@@ -83,7 +83,7 @@ public class ReportRestController {
 
     // ========== 2. OPEN SEATS ABSTRACT (District wise) ==========
 
-    @Operation(summary = "Open Seats Abstract - District wise")
+    @Operation(summary = "Open Seats Abstract - District wise", description = "Returns district-wise summary of open seats available across ITIs for a given academic year")
     @GetMapping("/open-seats")
     public List<OpenSeatsAbstractResponse> getOpenSeatsAbstract(
             @RequestParam String year) {
@@ -92,7 +92,7 @@ public class ReportRestController {
 
     // ========== 3. COLLEGE WISE OPEN SEATS ==========
 
-    @Operation(summary = "College Wise Open Seats by year and district")
+    @Operation(summary = "College Wise Open Seats by year and district", description = "Lists open seat details at college/ITI level for a specific district and academic year")
     @GetMapping("/open-seats/college")
     public List<CollegeWiseOpenSeatsResponse> getCollegeWiseOpenSeats(
             @RequestParam String year,
@@ -102,7 +102,7 @@ public class ReportRestController {
 
     // ========== 4. TRADE DURATION SEATS ABSTRACT ==========
 
-    @Operation(summary = "Trade Duration Seats Abstract")
+    @Operation(summary = "Trade Duration Seats Abstract", description = "Provides seat availability abstract grouped by trade duration (e.g., 6 months, 1 year, 2 years) for a selected year and ITI type")
     @GetMapping("/trade-duration-seats")
     public List<TradeDurationSeatsResponse> getTradeDurationSeats(
             @RequestParam String year,
@@ -113,7 +113,7 @@ public class ReportRestController {
 
     // ========== 5. ADMISSION REPORT (Trade wise) ==========
 
-    @Operation(summary = "Admission Report - Trade wise (boys/girls)")
+    @Operation(summary = "Admission Report - Trade wise (boys/girls)", description = "Generates trade-wise admission report showing seat utilization broken down by gender and caste category")
     @GetMapping("/admission-report")
     public List<AdmissionReportResponse> getAdmissionReport(
             @RequestParam String year,
@@ -124,7 +124,7 @@ public class ReportRestController {
 
     // ========== 6. APPLICANT COUNT NODAL ==========
 
-    @Operation(summary = "Applicant Count Nodal Report")
+    @Operation(summary = "Applicant Count Nodal Report", description = "Returns the total count of applicants for a specific year and admission phase, used for nodal officer reporting")
     @GetMapping("/applicant-count")
     public ApplicantCountResponse getApplicantCount(
             @RequestParam String year,
@@ -134,7 +134,7 @@ public class ReportRestController {
 
     // ========== 7. ITI ADMISSIONS REPORT ==========
 
-    @Operation(summary = "ITI Detailed Admissions Report")
+    @Operation(summary = "ITI Detailed Admissions Report", description = "Provides detailed admissions data for ITIs with optional filters for district, government/private status, caste, gender, and NCVT/SCVT affiliation")
     @GetMapping("/iti-admissions")
     public List<ITIAdmissionsReportResponse> getITIAdmissionsReport(
             @RequestParam String year,
@@ -149,7 +149,7 @@ public class ReportRestController {
 
     // ========== 8. DSC FULL REPORT ==========
 
-    @Operation(summary = "DSC Full Admission Selection Report")
+    @Operation(summary = "DSC Full Admission Selection Report", description = "Generates a comprehensive District Selection Committee (DSC) admission selection report for a specific ITI, trade, phase, and mode of admission")
     @GetMapping("/dsc-full")
     public DscFullReportResponse getDscFullReport(
             @RequestParam String distCode,
@@ -163,7 +163,7 @@ public class ReportRestController {
 
     // ========== 9. API DASHBOARD ==========
 
-    @Operation(summary = "API Dashboard - District wise verification status")
+    @Operation(summary = "API Dashboard - District wise verification status", description = "Displays district-wise verification status dashboard showing application verification metrics for a selected year")
     @GetMapping("/api-dashboard")
     public List<ApiDashboardResponse> getApiDashboard(
             @RequestParam String year) {
@@ -172,7 +172,7 @@ public class ReportRestController {
 
     // ========== 10. STUDENT COMPLETE DETAILS ==========
 
-    @Operation(summary = "Student Complete Profile Details")
+    @Operation(summary = "Student Complete Profile Details", description = "Retrieves complete profile and application details for a student using either registration ID or admission number")
     @GetMapping("/student-details")
     public StudentCompleteDetailsResponse getStudentCompleteDetails(
             @RequestParam(required = false) String regid,
@@ -182,7 +182,7 @@ public class ReportRestController {
 
     // ========== 11. CASTE WISE ADMISSIONS ==========
 
-    @Operation(summary = "Caste Wise Admissions Abstract")
+    @Operation(summary = "Caste Wise Admissions Abstract", description = "Provides admissions abstract grouped by caste category with optional filters for district, government/private status, phase, and gender")
     @GetMapping("/caste-wise-admissions")
     public List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(
             @RequestParam String year,
@@ -195,7 +195,7 @@ public class ReportRestController {
 
     // ========== 12. VERIFIED APPLICATION COUNT ==========
 
-    @Operation(summary = "Verified Application Count Report")
+    @Operation(summary = "Verified Application Count Report", description = "Returns count of verified applications for a selected year and district, used for tracking verification progress")
     @GetMapping("/verified-application-count")
     public List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(
             @RequestParam String year,
@@ -205,7 +205,7 @@ public class ReportRestController {
 
     // ========== 13. PERMITTED SHIFT UNIT ==========
 
-    @Operation(summary = "Permitted Shift and Unit Report")
+    @Operation(summary = "Permitted Shift and Unit Report", description = "Lists permitted shift and unit combinations for ITIs in a district, used for seat matrix and admission planning")
     @GetMapping("/permitted-shift-unit")
     public List<ShiftUnitResponse> getPermittedShiftUnit(
             @RequestParam String distCode,
@@ -215,7 +215,7 @@ public class ReportRestController {
 
     // ========== 14. APPLICANT REPORT BY PHASE ==========
 
-    @Operation(summary = "Applicant Report by Phase")
+    @Operation(summary = "Applicant Report by Phase", description = "Generates applicant statistics report filtered by admission phase, with optional filters for year, ITI, and district")
     @GetMapping("/applicant-report-by-phase")
     public List<ApplicantReportResponse> getApplicantReportByPhase(
             @RequestParam String phase,
@@ -227,7 +227,7 @@ public class ReportRestController {
 
     // ========== 15. ITI WISE STATUS ==========
 
-    @Operation(summary = "ITI Wise Admission Status Report")
+    @Operation(summary = "ITI Wise Admission Status Report", description = "Provides admission status summary at ITI level showing seat filling status for a selected year with optional district and ITI filters")
     @GetMapping("/iti-wise-status")
     public List<ItiWiseStatusResponse> getItiWiseStatus(
             @RequestParam String year,
@@ -238,7 +238,7 @@ public class ReportRestController {
 
     // ========== 16. ITI STUDENT LIST ==========
 
-    @Operation(summary = "ITI Student List Report")
+    @Operation(summary = "ITI Student List Report", description = "Retrieves list of admitted students for a selected year with optional filters for ITI and district")
     @GetMapping("/iti-student-list")
     public List<StudentListResponse> getItiStudentList(
             @RequestParam String year,
@@ -249,7 +249,7 @@ public class ReportRestController {
 
     // ========== 17. TRADE WISE REPORT ==========
 
-    @Operation(summary = "Trade Wise Report")
+    @Operation(summary = "Trade Wise Report", description = "Generates trade-wise admission summary report showing seat allocation across different trades for a selected year")
     @GetMapping("/trade-wise-report")
     public List<TradeWiseReportResponse> getTradeWiseReport(
             @RequestParam String year,

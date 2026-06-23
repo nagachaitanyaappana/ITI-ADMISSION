@@ -1,6 +1,6 @@
 package com.server.backend.controller;
 import java.util.List;
-import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.server.backend.entity.Checklist;
 import com.server.backend.service.ChecklistService;
- @Tag(name = "Checklist Controller", description = "Operations related to checklists")
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+@Tag(name = "checklist", description = "Checklist management operations")
 @RestController
 @RequestMapping("/api/checklist")
 public class ChecklistController {

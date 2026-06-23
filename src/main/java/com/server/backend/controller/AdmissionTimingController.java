@@ -1,11 +1,21 @@
 package com.server.backend.controller;
-import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.server.backend.entity.AdmissionTiming;
 import com.server.backend.service.AdmissionTimingService;
-import java.util.List;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "admission-timings", description = "Admission timing schedule management")
 @RestController
 @RequestMapping("/admission-timings")
 public class AdmissionTimingController {

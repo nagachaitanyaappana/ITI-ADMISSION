@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@Tag(name = "Designation Controller", description = "Manage designation resources")
+@Tag(name = "designations", description = "Designation management operations")
 @RestController
 @RequestMapping("/api/designations")
 public class DesignationController {

@@ -1,14 +1,17 @@
 package com.server.backend.controller;
 import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.server.backend.DTO.Reports.DistrictOptionResponse;
 import com.server.backend.Repository.DistrictMasterRepository;
-import io.swagger.v3.oas.annotations.*;
+
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name="Districts" , description="Districts API")
+@Tag(name = "districts", description = "District management operations")
 @RestController
 @RequestMapping("/api/districts")
 public class DistrictController {

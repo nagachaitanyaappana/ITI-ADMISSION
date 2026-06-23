@@ -13,7 +13,7 @@ import com.server.backend.service.AdmissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Admission Controller", description = "Rank and candidate admission queries")
+@Tag(name = "admissions", description = "Admission and rank management operations")
 @RestController
 @RequestMapping("/admission")
 public class RankController {

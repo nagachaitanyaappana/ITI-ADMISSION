@@ -18,7 +18,7 @@ import com.server.backend.service.ItiTradeMstService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Trade Controller", description = "Manage ITI trade master data")
+@Tag(name = "trades", description = "ITI trade master data management")
 @RestController
 @RequestMapping("/api/trades")
 public class ItiTradeMstController {
