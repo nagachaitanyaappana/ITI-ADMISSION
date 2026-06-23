@@ -1,13 +1,15 @@
 package com.server.backend.entity;
+import java.time.LocalDateTime;
+import java.util.Map;
+
+import org.hibernate.annotations.Type;
+
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import java.util.Map;
-import java.time.LocalDateTime;
-import org.hibernate.annotations.Type;
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;;
 @Entity
 @Table(name = "iti", schema = "public")
 @Data

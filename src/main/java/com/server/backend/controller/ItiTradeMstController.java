@@ -15,6 +15,10 @@ import com.server.backend.DTO.Institute.ItiTradeMstDto;
 import com.server.backend.entity.Iti_trade_mst;
 import com.server.backend.service.ItiTradeMstService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Trade Controller", description = "Manage ITI trade master data")
 @RestController
 @RequestMapping("/api/trades")
 public class ItiTradeMstController {
@@ -27,12 +31,14 @@ public class ItiTradeMstController {
         this.service = service;
     }
 
+    @Operation(summary = "List all trades")
     @GetMapping
     public List<Iti_trade_mst> getAllTrades() {
 
         return service.getAllTrades();
     }
 
+    @Operation(summary = "Get a trade by short code")
     @GetMapping("/{tradeShort}")
     public Iti_trade_mst getTradeById(
             @PathVariable String tradeShort) {
@@ -40,6 +46,7 @@ public class ItiTradeMstController {
         return service.getTradeById(tradeShort);
     }
 
+    @Operation(summary = "Create a new trade")
     @PostMapping
     public Iti_trade_mst createTrade(
             @RequestBody ItiTradeMstDto dto) {
@@ -47,6 +54,7 @@ public class ItiTradeMstController {
         return service.createTrade(dto);
     }
 
+    @Operation(summary = "Update an existing trade")
     @PutMapping("/{tradeShort}")
     public Iti_trade_mst updateTrade(
             @PathVariable String tradeShort,
@@ -55,6 +63,7 @@ public class ItiTradeMstController {
         return service.updateTrade(tradeShort, dto);
     }
 
+    @Operation(summary = "Delete a trade")
     @DeleteMapping("/{tradeShort}")
     public String deleteTrade(
             @PathVariable String tradeShort) {

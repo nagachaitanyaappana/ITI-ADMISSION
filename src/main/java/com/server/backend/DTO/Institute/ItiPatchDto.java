@@ -1,14 +1,17 @@
 package com.server.backend.DTO.Institute;
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.*;
-import lombok.Data;
-import java.util.Map;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import jakarta.validation.constraints.Pattern;
+import java.util.List;
 @Data
-public class ItiDto {
-    
-    @NotBlank(message = "ITI Code is required")
+public class ItiPatchDto {
+@NotBlank(message = "ITI Code is required")
     private String itiCode;
+    private String dgetItiCode;
     @Size(max=255)
     @NotBlank(message = "ITI Name is required")
     private String itiName;
@@ -16,7 +19,6 @@ public class ItiDto {
     private String govt;
     @NotBlank(message="District Code is required")
     private String distCode;
-    private String districtName;
     @Size(max=6)
     private String itiNoniti;
     @Size(max=4)
@@ -67,28 +69,6 @@ public class ItiDto {
     private Integer noofLabs;
     private Integer noofClassrooms;
     private Integer examconductingStrength;
-
-    private Map<String,String> strength;
-    private Map<String,String> strengthVacant;
-    private Map<String,String> strengthFill;
-    private Boolean admissionPermission;
-
-    private String dgetItiCode;
-    private String region;
-    private String urbanRural;
-    private String webItiCode;
-
-    private Boolean toolStatus;
-
-    private String recStatus;
-    @Size(max = 150,message = "Website URL should not exceed 255 characters")
-    private String website;
-    private String gradePoint;
-    private String ncvtCode;
-
-    private String mandalCode;
-    private String jnanabhumicode;
-
-    private String parliamentConstituencyName;
-    private String assemblyConstituencyName;
+    private List<String> designationCodes;
 }
+    
