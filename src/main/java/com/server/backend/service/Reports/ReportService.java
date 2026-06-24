@@ -3,11 +3,15 @@ package com.server.backend.service.Reports;
 import java.util.List;
 
 import com.server.backend.DTO.Reports.AdmissionReportResponse;
+import com.server.backend.DTO.Reports.AllResourceRoleResponse;
 import com.server.backend.DTO.Reports.ApiDashboardResponse;
 import com.server.backend.DTO.Reports.ApplicantCountResponse;
+import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
 import com.server.backend.DTO.Reports.ApplicantReportResponse;
 import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
 import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
+import com.server.backend.DTO.Reports.DistrictScheduleResponse;
+import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
 import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
@@ -17,6 +21,7 @@ import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
 import com.server.backend.DTO.Reports.ShiftUnitResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
 import com.server.backend.DTO.Reports.StudentListResponse;
+import com.server.backend.DTO.Reports.TodayScheduleResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
 import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
@@ -75,4 +80,19 @@ public interface ReportService {
 
     // 17. Trade Wise Report
     List<TradeWiseReportResponse> getTradeWiseReport(String year, String distCode, String itiType);
+
+    // 18. Today Schedule ITIs
+    List<TodayScheduleResponse> getTodaySchedule();
+
+    // 19. District Schedule
+    List<DistrictScheduleResponse> getDistrictSchedule(String distCode);
+
+    // 20. All Resource Role
+    List<AllResourceRoleResponse> getAllResourceRoles();
+
+    // 21. Applicant Address With Mobile
+    List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode);
+
+    // 22. District Wise Application Count
+    List<DistrictWiseApplicationCountResponse> getDistrictWiseApplicationCount(String year);
 }

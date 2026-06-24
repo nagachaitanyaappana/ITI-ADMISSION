@@ -29,6 +29,11 @@ import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.Registratio
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.SscMarksDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.VerifiedDetail;
 import com.server.backend.DTO.Reports.StudentListResponse;
+import com.server.backend.DTO.Reports.AllResourceRoleResponse;
+import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
+import com.server.backend.DTO.Reports.DistrictScheduleResponse;
+import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
+import com.server.backend.DTO.Reports.TodayScheduleResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
 import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
@@ -1002,6 +1007,129 @@ public class ReportServiceImpl implements ReportService {
                 rs.getInt("filled"),
                 rs.getInt("vacant")
         ), params.toArray());
+    }
+
+    // 18. Today Schedule ITIs
+    @Override
+    public List<TodayScheduleResponse> getTodaySchedule() {
+        String sql = """
+            SELECT d.dist_name, i.iti_name,
+                   a.merit_from, a.merit_to, a.cal_date, a.cal_time
+            FROM public.admission_timings a
+            JOIN public.iti i ON a.iti_code = i.iti_code
+            JOIN public.dist_mst d ON i.dist_code = d.dist_code
+            WHERE a.cal_date = CURRENT_DATE::text
+            ORDER BY d.dist_name, i.iti_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new TodayScheduleResponse(
+                rs.getString("dist_name"),
+                rs.getString("iti_name"),
+                rs.getInt("merit_from"),
+                rs.getInt("merit_to"),
+                rs.getString("cal_date"),
+                rs.getString("cal_time")
+        ));
+    }
+
+    // 19. District Schedule
+    @Override
+    public List<DistrictScheduleResponse> getDistrictSchedule(String distCode) {
+        String sql = """
+            SELECT d.dist_name, i.iti_name, tm.trade_name,
+                   a.merit_from, a.merit_to, a.cal_date, a.cal_time, a.phase
+            FROM public.admission_timings a
+            JOIN public.iti i ON a.iti_code = i.iti_code
+            JOIN public.dist_mst d ON i.dist_code = d.dist_code
+            LEFT JOIN public.ititrade_master tm ON a.minqul = tm.trade_code::text
+            WHERE TRIM(i.dist_code::text) = TRIM(?::text)
+            ORDER BY i.iti_name, a.phase
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new DistrictScheduleResponse(
+                rs.getString("dist_name"),
+                rs.getString("iti_name"),
+                rs.getString("trade_name"),
+                rs.getInt("merit_from"),
+                rs.getInt("merit_to"),
+                rs.getString("cal_date"),
+                rs.getString("cal_time"),
+                rs.getString("phase")
+        ), distCode);
+    }
+
+    // 20. All Resource Role
+    @Override
+    public List<AllResourceRoleResponse> getAllResourceRoles() {
+        String sql = """
+            SELECT rm.role_name, lu.user_name, d.dist_name, i.iti_name,
+                   lu.mobile, lu.email
+            FROM public.loginusers lu
+            LEFT JOIN public.role_mst rm ON lu.role_id = rm.role_id
+            LEFT JOIN public.dist_mst d ON lu.dist_code = d.dist_code
+            LEFT JOIN public.iti i ON lu.iti_code = i.iti_code
+            ORDER BY rm.role_name, lu.user_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new AllResourceRoleResponse(
+                rs.getString("role_name"),
+                rs.getString("user_name"),
+                rs.getString("dist_name"),
+                rs.getString("iti_name"),
+                rs.getString("mobile"),
+                rs.getString("email")
+        ));
+    }
+
+    // 21. Applicant Address With Mobile
+    @Override
+    public List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT a.regid, a.name, a.fname, a.phno, a.addr, d.dist_name
+            FROM public.application a
+            LEFT JOIN public.iti i ON a.user_id = i.iti_code
+            LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code
+            WHERE a.year::text = ?::text
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+
+        sql.append(" ORDER BY a.name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ApplicantMobileAddressResponse(
+                rs.getString("regid"),
+                rs.getString("name"),
+                rs.getString("fname"),
+                rs.getString("phno"),
+                rs.getString("addr"),
+                rs.getString("dist_name")
+        ), params.toArray());
+    }
+
+    // 22. District Wise Application Count
+    @Override
+    public List<DistrictWiseApplicationCountResponse> getDistrictWiseApplicationCount(String year) {
+        String sql = """
+            SELECT d.dist_name AS "District Name",
+                   COUNT(a.regid) AS "Total Applications",
+                   COUNT(a.regid) FILTER (WHERE a.app_status = 'A') AS "Approved",
+                   COUNT(a.regid) FILTER (WHERE a.app_status = 'R') AS "Rejected",
+                   COUNT(a.regid) FILTER (WHERE a.app_status IS NULL OR a.app_status NOT IN ('A', 'R')) AS "Unverified"
+            FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
+            LEFT JOIN public.iti i ON d.dist_code = i.dist_code
+            LEFT JOIN public.application a ON i.iti_code = a.user_id AND a.year::text = ?::text
+            GROUP BY d.dist_name
+            ORDER BY d.dist_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new DistrictWiseApplicationCountResponse(
+                rs.getString("District Name"),
+                rs.getInt("Total Applications"),
+                rs.getInt("Approved"),
+                rs.getInt("Rejected"),
+                rs.getInt("Unverified")
+        ), year);
     }
 
     private String str(Object o) {
