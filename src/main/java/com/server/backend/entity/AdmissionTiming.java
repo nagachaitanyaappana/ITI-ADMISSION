@@ -4,9 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import jakarta.persistence.IdClass;
 @Entity
 @Table(name = "admission_timings")
 @Data
+@IdClass(AdmissionTimingId.class)
 public class AdmissionTiming {
 
     @Id
@@ -39,7 +41,8 @@ public class AdmissionTiming {
 
     @Column(name = "temp_pk", nullable = false)
     private String tempPk;
-
+    
+    @Id
     @Column(name = "phase")
     private String phase;
 

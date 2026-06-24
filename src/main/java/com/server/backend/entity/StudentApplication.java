@@ -14,12 +14,12 @@ import lombok.EqualsAndHashCode;
 @Table(name = "student_application", schema = "public")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class student_application {
+public class StudentApplication {
 
     @Id
     @EqualsAndHashCode.Include
     @Column(name = "ssc_regno", nullable = false, unique = true, updatable = false)
-    private String ssc_regno;
+    private String sscRegno;
 
     @Column(name = "regid", nullable = false, unique = true, updatable = false, insertable = false)
     private Integer regid;
@@ -85,13 +85,13 @@ public class student_application {
     private Long trno;
 
     @Column(name = "ssc_board")
-    private String ssc_board;
+    private String sscBoard;
 
     @Column(name = "ssc_year")
-    private String ssc_year;
+    private String sscYear;
 
     @Column(name = "ssc_month")
-    private String ssc_month;
+    private String sscMonth;
 
     @Column(name = "phase")
     private String phase;
@@ -115,7 +115,7 @@ public class student_application {
     private String reason;
 
     @Column(name = "ssc_type", length = 50)
-    private String ssc_type;
+    private String sscType;
 
     @Column(name = "email", length = 50)
     private String email;

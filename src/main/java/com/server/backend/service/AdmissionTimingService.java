@@ -3,6 +3,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import com.server.backend.entity.AdmissionTiming;
 import com.server.backend.Repository.AdmissionTimingRepository;
+import com.server.backend.entity.AdmissionTimingId;
 @Service
 public class AdmissionTimingService {
     private final AdmissionTimingRepository admissionTimingRepository;
@@ -15,10 +16,17 @@ public class AdmissionTimingService {
     public List<AdmissionTiming> getAllAdmissionTimings() {
         return admissionTimingRepository.findAll();
     }
-    public AdmissionTiming getById(String itiCode) {
-        return admissionTimingRepository.findById(itiCode).orElse(null);
+    public AdmissionTiming getById(String itiCode, String phase) {
+        AdmissionTimingId id = new AdmissionTimingId(itiCode, phase);
+        return admissionTimingRepository.findById(id).orElse(null);
     }
-    public void delete(String itiCode){
-        admissionTimingRepository.deleteById(itiCode);
+    public void delete(String itiCode, String phase) {
+        AdmissionTimingId id = new AdmissionTimingId(itiCode, phase);
+        admissionTimingRepository.deleteById(id);
+    }
+    public AdmissionTiming updateAdmissionTiming(String itiCode, String phase, AdmissionTiming updatedAdmissionTiming) {
+        updatedAdmissionTiming.setItiCode(itiCode);
+        updatedAdmissionTiming.setPhase(phase);
+        return admissionTimingRepository.save(updatedAdmissionTiming);
     }
 }
