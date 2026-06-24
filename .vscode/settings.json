@@ -1,4 +1,7 @@
 {
+    "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.jdt.ls.vmargs": "-javaagent:C:\\Users\\magac\\.m2\\repository\\org\\projectlombok\\lombok\\1.18.46\\lombok-1.18.46.jar",
+    "java.completion.enabled": true,
+    "lombok.addLombokAnnotationProcessor": true
 }

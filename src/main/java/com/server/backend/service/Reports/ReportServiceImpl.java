@@ -9,11 +9,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.DTO.Reports.AdmissionReportResponse;
+import com.server.backend.DTO.Reports.AllResourceRoleResponse;
 import com.server.backend.DTO.Reports.ApiDashboardResponse;
 import com.server.backend.DTO.Reports.ApplicantCountResponse;
+import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
 import com.server.backend.DTO.Reports.ApplicantReportResponse;
 import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
 import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
+import com.server.backend.DTO.Reports.DistrictScheduleResponse;
+import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
 import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
@@ -29,10 +33,6 @@ import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.Registratio
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.SscMarksDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.VerifiedDetail;
 import com.server.backend.DTO.Reports.StudentListResponse;
-import com.server.backend.DTO.Reports.AllResourceRoleResponse;
-import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
-import com.server.backend.DTO.Reports.DistrictScheduleResponse;
-import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
 import com.server.backend.DTO.Reports.TodayScheduleResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
@@ -410,7 +410,7 @@ public class ReportServiceImpl implements ReportService {
             ORDER BY a.adm_num, NULLIF(r.rank,'')::int NULLS LAST
             """;
         List<Map<String, Object>> candRows = jdbcTemplate.queryForList(candSql,
-                itiCode, tradeCode, Integer.parseInt(phase), Integer.parseInt(year), modeAdm.toUpperCase());
+                itiCode, tradeCode, Integer.parseInt(phase), year, modeAdm.toUpperCase());
 
         // Group candidates by category
         Map<String, List<DscFullReportResponse.CandidateRow>> candidatesByCategory = new LinkedHashMap<>();
@@ -1018,7 +1018,7 @@ public class ReportServiceImpl implements ReportService {
             FROM public.admission_timings a
             JOIN public.iti i ON a.iti_code = i.iti_code
             JOIN public.dist_mst d ON i.dist_code = d.dist_code
-            WHERE a.cal_date = CURRENT_DATE::text
+            WHERE a.cal_date::text = CURRENT_DATE::text
             ORDER BY d.dist_name, i.iti_name
             """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> new TodayScheduleResponse(
