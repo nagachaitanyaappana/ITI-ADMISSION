@@ -1062,9 +1062,9 @@ public class ReportServiceImpl implements ReportService {
         String sql = """
             SELECT rm.role_name, lu.user_name, d.dist_name, i.iti_name,
                    lu.mobile, lu.email
-            FROM public.loginusers lu
-            LEFT JOIN public.role_mst rm ON lu.role_id = rm.role_id
-            LEFT JOIN public.dist_mst d ON lu.dist_code = d.dist_code
+            FROM public.login_users lu
+            LEFT JOIN public.role_mast rm ON lu.roleid = rm.role_id
+            LEFT JOIN public.dist_mst d ON lu.ins_code = d.dist_code
             LEFT JOIN public.iti i ON lu.iti_code = i.iti_code
             ORDER BY rm.role_name, lu.user_name
             """;
