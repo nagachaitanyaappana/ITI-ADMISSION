@@ -15,7 +15,7 @@ public class LoginUser {
     @Column(name = "user_id", nullable = false, length = 50)
     private String userId;
 
-    @Column(name = "user_name", length = 100)
+    @Column(name = "username", length = 100)
     private String userName;
 
     @Column(name = "roleid")

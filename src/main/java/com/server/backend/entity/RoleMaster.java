@@ -15,6 +15,6 @@ public class RoleMaster {
     @Column(name = "role_id", nullable = false)
     private Integer roleId;
 
-    @Column(name = "role_name", length = 50, nullable = false)
+    @Column(name = "rolename", length = 50, nullable = false)
     private String roleName;
 }

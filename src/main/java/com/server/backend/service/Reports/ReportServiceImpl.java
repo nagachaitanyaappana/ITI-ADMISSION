@@ -1060,17 +1060,21 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<AllResourceRoleResponse> getAllResourceRoles() {
         String sql = """
-            SELECT rm.role_name, lu.user_name, d.dist_name, i.iti_name,
-                   lu.mobile, lu.email
+            SELECT 
+                   lu.roleid::text as rolename, 
+                   lu.username, 
+                   d.dist_name, 
+                   i.iti_name,
+                   i.mobile, 
+                   i.email
             FROM public.login_users lu
-            LEFT JOIN public.role_mast rm ON lu.roleid = rm.role_id
-            LEFT JOIN public.dist_mst d ON lu.ins_code = d.dist_code
-            LEFT JOIN public.iti i ON lu.iti_code = i.iti_code
-            ORDER BY rm.role_name, lu.user_name
+            LEFT JOIN public.iti i ON lu.ins_code = i.iti_code
+            LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code
+            ORDER BY lu.roleid, lu.username
             """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> new AllResourceRoleResponse(
-                rs.getString("role_name"),
-                rs.getString("user_name"),
+                rs.getString("rolename"),
+                rs.getString("username"),
                 rs.getString("dist_name"),
                 rs.getString("iti_name"),
                 rs.getString("mobile"),
