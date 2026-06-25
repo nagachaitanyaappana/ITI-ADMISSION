@@ -27,4 +27,25 @@ public class StudentApplicationService {
 
         return repository.save(student);
     }
+
+    public StudentApplication updateStudent(StudentRegistrationRequest request) {
+
+        StudentApplication student =
+                repository.findById(request.getHallTicketNumber())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        student.setName(request.getName());
+        student.setFname(request.getFname());
+        student.setMname(request.getMname());
+        student.setPhno(request.getPhno());
+        student.setAdarno(request.getAdarno());
+        student.setGender(request.getGender());
+        student.setCaste(request.getCaste());
+        student.setLocal(request.getLocal());
+        student.setPincode(request.getPincode());
+        student.setEmail(request.getEmail());
+        student.setAddr(request.getAddr());
+
+        return repository.save(student);
+    }
 }

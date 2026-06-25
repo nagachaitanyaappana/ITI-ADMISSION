@@ -4,5 +4,5 @@ import com.server.backend.entity.StudentApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StudentApplicationRepository
-        extends JpaRepository<StudentApplication, Long> {
+        extends JpaRepository<StudentApplication, String> {
 }

@@ -22,4 +22,11 @@ public class StudentApplicationController {
 
         return service.saveStudent(request);
     }
+
+    @PutMapping("/update")
+    public StudentApplication updateStudent(
+            @RequestBody StudentRegistrationRequest request) {
+
+        return service.updateStudent(request);
+    }
 }
