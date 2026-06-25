@@ -1,8 +1,9 @@
 package com.server.backend.DTO.Institute;
-
-
+import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+@Data
 public class ItiTradeMstDto {
-
+    @NotNull(message="trade code is required")
     private String tradeShort;
     private String tradeName;
     private Integer durationYrs;
