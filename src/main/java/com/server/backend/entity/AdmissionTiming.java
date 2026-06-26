@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import jakarta.persistence.IdClass;
 @Entity
-@Table(name = "admission_timings")
+@Table(name = "admission_timings" ,schema="public")
 @Data
 @IdClass(AdmissionTimingId.class)
 public class AdmissionTiming {
