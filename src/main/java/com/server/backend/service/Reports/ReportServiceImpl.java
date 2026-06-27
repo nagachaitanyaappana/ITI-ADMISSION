@@ -1061,16 +1061,17 @@ public class ReportServiceImpl implements ReportService {
     public List<AllResourceRoleResponse> getAllResourceRoles() {
         String sql = """
             SELECT 
-                   lu.roleid::text as rolename, 
+                   COALESCE(rm.rolename, 'Role-' || lu.roleid::text) as rolename, 
                    lu.username, 
                    d.dist_name, 
                    i.iti_name,
                    i.mobile, 
                    i.email
             FROM public.login_users lu
+            LEFT JOIN public.role_mast rm ON lu.roleid = rm.role_id
             LEFT JOIN public.iti i ON lu.ins_code = i.iti_code
             LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code
-            ORDER BY lu.roleid, lu.username
+            ORDER BY COALESCE(rm.rolename, 'Role-' || lu.roleid::text), lu.username
             """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> new AllResourceRoleResponse(
                 rs.getString("rolename"),
