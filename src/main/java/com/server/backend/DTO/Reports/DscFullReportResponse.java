@@ -2,11 +2,14 @@ package com.server.backend.DTO.Reports;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@JsonPropertyOrder({ "itiName", "tradeName", "session", "categories" })
 public class DscFullReportResponse {
     private String itiName;
     private String tradeName;

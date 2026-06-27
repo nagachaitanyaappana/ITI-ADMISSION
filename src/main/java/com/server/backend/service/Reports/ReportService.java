@@ -49,7 +49,7 @@ public interface ReportService {
     ApplicantCountResponse getApplicantCount(String year, String phase);
 
     // 7. ITI Admissions Report
-    List<ITIAdmissionsReportResponse> getITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt, String limitRows);
+    List<ITIAdmissionsReportResponse> getITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt, int page, int size);
 
     // 8. DSC Full Report
     DscFullReportResponse getDscFullReport(String distCode, String itiCode, String tradeCode, String phase, String year, String modeAdm);
@@ -67,16 +67,16 @@ public interface ReportService {
     List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(String year, String distCode);
 
     // 13. Permitted Shift Unit Report
-    List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode);
+    List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode, int page, int size);
 
     // 14. Applicant Report by Phase
-    List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode);
+    List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode, int page, int size);
 
     // 15. ITI Wise Status Report
-    List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode);
+    List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size);
 
     // 16. ITI Student List
-    List<StudentListResponse> getItiStudentList(String year, String itiCode, String distCode);
+    List<StudentListResponse> getItiStudentList(String year, String itiCode, String distCode, int page, int size);
 
     // 17. Trade Wise Report
     List<TradeWiseReportResponse> getTradeWiseReport(String year, String distCode, String itiType);
@@ -85,13 +85,13 @@ public interface ReportService {
     List<TodayScheduleResponse> getTodaySchedule();
 
     // 19. District Schedule
-    List<DistrictScheduleResponse> getDistrictSchedule(String distCode);
+    List<DistrictScheduleResponse> getDistrictSchedule(String distCode, int page, int size);
 
     // 20. All Resource Role
-    List<AllResourceRoleResponse> getAllResourceRoles();
+    List<AllResourceRoleResponse> getAllResourceRoles(int page, int size);
 
     // 21. Applicant Address With Mobile
-    List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode);
+    List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode, int page, int size);
 
     // 22. District Wise Application Count
     List<DistrictWiseApplicationCountResponse> getDistrictWiseApplicationCount(String year);
