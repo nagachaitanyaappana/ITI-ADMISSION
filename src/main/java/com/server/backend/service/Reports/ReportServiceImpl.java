@@ -857,44 +857,45 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size) {
         StringBuilder sql = new StringBuilder("""
-            WITH phone_duplicates AS (
-              SELECT phno, iti_code, COUNT(*) - 1 AS dup_count
-              FROM admissions.iti_admissions
-              WHERE year_of_admission::text = ?::text AND phno IS NOT NULL
-              GROUP BY phno, iti_code HAVING COUNT(*) > 1
-            ),
-            aadhar_duplicates AS (
-              SELECT adarno, iti_code, COUNT(*) - 1 AS dup_count
-              FROM admissions.iti_admissions
-              WHERE year_of_admission::text = ?::text AND adarno IS NOT NULL AND adarno != ''
-              GROUP BY adarno, iti_code HAVING COUNT(*) > 1
-            ),
-            email_duplicates AS (
-              SELECT email_id, iti_code, COUNT(*) - 1 AS dup_count
-              FROM admissions.iti_admissions
-              WHERE year_of_admission::text = ?::text AND email_id IS NOT NULL AND email_id != ''
-              GROUP BY email_id, iti_code HAVING COUNT(*) > 1
+            WITH iti_data AS (
+                SELECT
+                    a.iti_code,
+                    COUNT(*) AS total,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'S') AS success,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'N') AS pending_sid,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'D') AS verified,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'E') AS to_be_verified,
+                    COUNT(*) FILTER (WHERE a.rec_status IS NULL OR a.rec_status = '') AS to_be_updated,
+                    COUNT(DISTINCT CASE WHEN phone_cnt > 1 AND a.phno IS NOT NULL THEN a.phno END) AS phone_duplicate_records,
+                    COUNT(DISTINCT CASE WHEN aadhar_cnt > 1 AND a.adarno IS NOT NULL AND a.adarno != '' THEN a.adarno END) AS aadhar_duplicate_records,
+                    COUNT(DISTINCT CASE WHEN email_cnt > 1 AND a.email_id IS NOT NULL AND a.email_id != '' THEN a.email_id END) AS email_duplicate_records
+                FROM (
+                    SELECT a.*,
+                        COUNT(*) OVER (PARTITION BY a.iti_code, a.phno) AS phone_cnt,
+                        COUNT(*) OVER (PARTITION BY a.iti_code, a.adarno) AS aadhar_cnt,
+                        COUNT(*) OVER (PARTITION BY a.iti_code, a.email_id) AS email_cnt
+                    FROM admissions.iti_admissions a
+                    WHERE a.year_of_admission = ?
+                ) a
+                GROUP BY a.iti_code
             )
             SELECT d.dist_name, i.iti_name, i.iti_code,
-                   COUNT(a.adm_num) AS total,
-                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'S') AS success,
-                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'N') AS pending_sid,
-                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'D') AS verified,
-                   COUNT(a.adm_num) FILTER (WHERE a.rec_status = 'E') AS to_be_verified,
-                   COUNT(a.adm_num) FILTER (WHERE a.rec_status IS NULL OR a.rec_status = '') AS to_be_updated,
-                   COUNT(DISTINCT pd.phno) FILTER (WHERE pd.phno IS NOT NULL) AS phone_duplicate_records,
-                   COUNT(DISTINCT ad.adarno) FILTER (WHERE ad.adarno IS NOT NULL) AS aadhar_duplicate_records,
-                   COUNT(DISTINCT ed.email_id) FILTER (WHERE ed.email_id IS NOT NULL) AS email_duplicate_records
+                   COALESCE(id.total, 0) AS total,
+                   COALESCE(id.success, 0) AS success,
+                   COALESCE(id.pending_sid, 0) AS pending_sid,
+                   COALESCE(id.verified, 0) AS verified,
+                   COALESCE(id.to_be_verified, 0) AS to_be_verified,
+                   COALESCE(id.to_be_updated, 0) AS to_be_updated,
+                   COALESCE(id.phone_duplicate_records, 0) AS phone_duplicate_records,
+                   COALESCE(id.aadhar_duplicate_records, 0) AS aadhar_duplicate_records,
+                   COALESCE(id.email_duplicate_records, 0) AS email_duplicate_records
             FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
             JOIN public.iti i ON d.dist_code = i.dist_code
-            LEFT JOIN admissions.iti_admissions a ON i.iti_code = a.iti_code AND a.year_of_admission::text = ?::text
-            LEFT JOIN phone_duplicates pd ON a.phno = pd.phno AND a.iti_code = pd.iti_code
-            LEFT JOIN aadhar_duplicates ad ON a.adarno = ad.adarno AND a.iti_code = ad.iti_code
-            LEFT JOIN email_duplicates ed ON a.email_id = ed.email_id AND a.iti_code = ed.iti_code
+            LEFT JOIN iti_data id ON i.iti_code = id.iti_code
             WHERE 1=1
             """);
         List<Object> params = new ArrayList<>();
-        params.add(year); params.add(year); params.add(year); params.add(year);
+        params.add(year);
 
         if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
             sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
@@ -905,7 +906,7 @@ public class ReportServiceImpl implements ReportService {
             params.add(itiCode);
         }
 
-        sql.append(" GROUP BY d.dist_name, i.iti_name, i.iti_code ORDER BY d.dist_name, i.iti_name LIMIT ? OFFSET ?");
+        sql.append(" ORDER BY d.dist_name, i.iti_name LIMIT ? OFFSET ?");
         params.add(size);
         params.add((long) page * size);
 
