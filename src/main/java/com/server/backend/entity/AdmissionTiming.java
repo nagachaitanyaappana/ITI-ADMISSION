@@ -4,9 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import java.time.LocalTime;
+import java.time.LocalDate;
 import jakarta.persistence.IdClass;
 @Entity
-@Table(name = "admission_timings")
+@Table(name = "admission_timings" ,schema="public")
 @Data
 @IdClass(AdmissionTimingId.class)
 public class AdmissionTiming {
@@ -25,10 +27,10 @@ public class AdmissionTiming {
     private Integer meritTo;
 
     @Column(name = "cal_date")
-    private String calDate;
+    private LocalDate calDate;
 
     @Column(name = "cal_time")
-    private String calTime;
+    private LocalTime calTime;
 
     @Column(name = "dist_code")
     private String distCode;

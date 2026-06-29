@@ -114,7 +114,7 @@ public class ReportRestController {
     )
     @GetMapping("/phase-wise")
     public List<PhaseWiseReportResponse> getPhaseWiseReport(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year) {
         return reportService.getPhaseWiseReport(year);
     }
@@ -131,7 +131,7 @@ public class ReportRestController {
     )
     @GetMapping("/open-seats")
     public List<OpenSeatsAbstractResponse> getOpenSeatsAbstract(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year) {
         return reportService.getOpenSeatsAbstract(year);
     }
@@ -148,9 +148,9 @@ public class ReportRestController {
     )
     @GetMapping("/open-seats/college")
     public List<CollegeWiseOpenSeatsResponse> getCollegeWiseOpenSeats(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
-            @Parameter(description = "District code (e.g., 01, 02, etc.)", required = true, example = "01")
+            @Parameter(description = "District code (e.g., 01, 02, etc.)", required = true, example = "11")
             @RequestParam String distCode) {
         return reportService.getCollegeWiseOpenSeats(year, distCode);
     }
@@ -167,7 +167,7 @@ public class ReportRestController {
     )
     @GetMapping("/trade-duration-seats")
     public List<TradeDurationSeatsResponse> getTradeDurationSeats(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "Duration in months (e.g., 6, 12, 24)", required = true, example = "12")
             @RequestParam String durationMonths,
@@ -188,7 +188,7 @@ public class ReportRestController {
     )
     @GetMapping("/admission-report")
     public List<AdmissionReportResponse> getAdmissionReport(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "Caste category filter (e.g., OC, BC-A, BC-B, SC, ST, All)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String caste,
@@ -209,7 +209,7 @@ public class ReportRestController {
     )
     @GetMapping("/applicant-count")
     public ApplicantCountResponse getApplicantCount(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "Admission phase (1, 2, 3, 4, or 5)", required = true, example = "1")
             @RequestParam String phase) {
@@ -228,7 +228,7 @@ public class ReportRestController {
     )
     @GetMapping("/iti-admissions")
     public List<ITIAdmissionsReportResponse> getITIAdmissionsReport(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "District code filter (e.g., 01, 02, or All for all districts)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String distCode,
@@ -240,9 +240,12 @@ public class ReportRestController {
             @RequestParam(required = false, defaultValue = "All") String gender,
             @Parameter(description = "Course type: N for NCVT, S for SCVT, All for both", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String ncvtScvt,
-            @Parameter(description = "Limit number of rows (e.g., 100, 500, or All for no limit)", required = false, example = "All")
-            @RequestParam(required = false, defaultValue = "All") String limitRows) {
-        return reportService.getITIAdmissionsReport(year, distCode, govt, caste, gender, ncvtScvt, limitRows);
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500);
+        return reportService.getITIAdmissionsReport(year, distCode, govt, caste, gender, ncvtScvt, page, safeSize);
     }
 
     // ========== 8. DSC LIST ==========
@@ -257,17 +260,17 @@ public class ReportRestController {
     )
     @GetMapping("/dsc-full")
     public DscFullReportResponse getDscFullReport(
-            @Parameter(description = "District code", required = true, example = "01")
+            @Parameter(description = "District code", required = true, example = "12")
             @RequestParam String distCode,
-            @Parameter(description = "ITI code", required = true, example = "ITI001")
+            @Parameter(description = "ITI code", required = true, example = "1220")
             @RequestParam String itiCode,
-            @Parameter(description = "Trade code", required = true, example = "101")
+            @Parameter(description = "Trade code", required = true, example = "13")
             @RequestParam String tradeCode,
-            @Parameter(description = "Admission phase (1, 2, 3, 4, or 5)", required = true, example = "1")
+            @Parameter(description = "Admission phase (1, 2, 3, 4, or 5)", required = true, example = "4")
             @RequestParam String phase,
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2015")
             @RequestParam String year,
-            @Parameter(description = "Mode of admission (e.g., AUGUST, FEBRUARY)", required = true, example = "AUGUST")
+            @Parameter(description = "Mode of admission (e.g., AUGUST, FEBRUARY)", required = true, example = "Convenor of the Sellection comitte")
             @RequestParam String modeAdm) {
         return reportService.getDscFullReport(distCode, itiCode, tradeCode, phase, year, modeAdm);
     }
@@ -284,7 +287,7 @@ public class ReportRestController {
     )
     @GetMapping("/api-dashboard")
     public List<ApiDashboardResponse> getApiDashboard(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year) {
         return reportService.getApiDashboard(year);
     }
@@ -320,7 +323,7 @@ public class ReportRestController {
     )
     @GetMapping("/caste-wise-admissions")
     public List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "District code filter (e.g., 01, 02, or All for all districts)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String distCode,
@@ -345,7 +348,7 @@ public class ReportRestController {
     )
     @GetMapping("/verified-application-count")
     public List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "District code filter (e.g., 01, 02, or All for all districts)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String distCode) {
@@ -364,11 +367,16 @@ public class ReportRestController {
     )
     @GetMapping("/permitted-shift-unit")
     public List<ShiftUnitResponse> getPermittedShiftUnit(
-            @Parameter(description = "District code", required = true, example = "01")
+            @Parameter(description = "District code", required = true, example = "11")
             @RequestParam String distCode,
             @Parameter(description = "ITI code (optional, use All for all ITIs in district)", required = false, example = "All")
-            @RequestParam(required = false, defaultValue = "All") String itiCode) {
-        return reportService.getPermittedShiftUnit(distCode, itiCode);
+            @RequestParam(required = false, defaultValue = "All") String itiCode,
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500);
+        return reportService.getPermittedShiftUnit(distCode, itiCode, page, safeSize);
     }
 
     // ========== 14. APPLICANT REPORT ==========
@@ -390,8 +398,13 @@ public class ReportRestController {
             @Parameter(description = "ITI code (optional, use All for all ITIs)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String itiCode,
             @Parameter(description = "District code (optional, use All for all districts)", required = false, example = "All")
-            @RequestParam(required = false, defaultValue = "All") String distCode) {
-        return reportService.getApplicantReportByPhase(phase, year, itiCode, distCode);
+            @RequestParam(required = false, defaultValue = "All") String distCode,
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500);
+        return reportService.getApplicantReportByPhase(phase, year, itiCode, distCode, page, safeSize);
     }
 
     // ========== 15. ITI WISE ADMISSION STATUS ==========
@@ -406,13 +419,18 @@ public class ReportRestController {
     )
     @GetMapping("/iti-wise-status")
     public List<ItiWiseStatusResponse> getItiWiseStatus(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "District code filter (e.g., 01, 02, or All for all districts)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String distCode,
             @Parameter(description = "ITI code (optional, use All for all ITIs)", required = false, example = "All")
-            @RequestParam(required = false, defaultValue = "All") String itiCode) {
-        return reportService.getItiWiseStatus(year, distCode, itiCode);
+            @RequestParam(required = false, defaultValue = "All") String itiCode,
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500);
+        return reportService.getItiWiseStatus(year, distCode, itiCode, page, safeSize);
     }
 
     // ========== 16. ITI STUDENT LIST ==========
@@ -427,13 +445,18 @@ public class ReportRestController {
     )
     @GetMapping("/iti-student-list")
     public List<StudentListResponse> getItiStudentList(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "ITI code (optional, use All for all ITIs)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String itiCode,
             @Parameter(description = "District code (optional, use All for all districts)", required = false, example = "All")
-            @RequestParam(required = false, defaultValue = "All") String distCode) {
-        return reportService.getItiStudentList(year, itiCode, distCode);
+            @RequestParam(required = false, defaultValue = "All") String distCode,
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500);
+        return reportService.getItiStudentList(year, itiCode, distCode, page, safeSize);
     }
 
     // ========== 17. TRADEWISE VACANT POSITION ==========
@@ -448,7 +471,7 @@ public class ReportRestController {
     )
     @GetMapping("/trade-wise-report")
     public List<TradeWiseReportResponse> getTradeWiseReport(
-            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
+            @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2024")
             @RequestParam String year,
             @Parameter(description = "District code filter (e.g., 01, 02, or All for all districts)", required = false, example = "All")
             @RequestParam(required = false, defaultValue = "All") String distCode,
@@ -484,9 +507,14 @@ public class ReportRestController {
     )
     @GetMapping("/district-schedule")
     public List<DistrictScheduleResponse> getDistrictSchedule(
-            @Parameter(description = "District code", required = true, example = "01")
-            @RequestParam String distCode) {
-        return reportService.getDistrictSchedule(distCode);
+            @Parameter(description = "District code (e.g., 01, or All for all districts)", required = false, example = "All")
+            @RequestParam(required = false, defaultValue = "All") String distCode,
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500);
+        return reportService.getDistrictSchedule(distCode, page, safeSize);
     }
 
     // ========== 20. ALL RESOURCE ROLE ==========
@@ -500,8 +528,13 @@ public class ReportRestController {
         }
     )
     @GetMapping("/all-resource-roles")
-    public List<AllResourceRoleResponse> getAllResourceRoles() {
-        return reportService.getAllResourceRoles();
+    public List<AllResourceRoleResponse> getAllResourceRoles(
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500);
+        return reportService.getAllResourceRoles(page, safeSize);
     }
 
     // ========== 21. APPLICANT ADDRESS WITH MOBILE ==========
@@ -518,9 +551,14 @@ public class ReportRestController {
     public List<ApplicantMobileAddressResponse> getApplicantMobileAddress(
             @Parameter(description = "Academic year (e.g., 2025, 2024)", required = true, example = "2025")
             @RequestParam String year,
-            @Parameter(description = "District code filter (e.g., 01, 02, or All for all districts)", required = false, example = "All")
-            @RequestParam(required = false, defaultValue = "All") String distCode) {
-        return reportService.getApplicantMobileAddress(year, distCode);
+            @Parameter(description = "District code filter (e.g., 01, 02, or All for all districts)", required = false, example = "24")
+            @RequestParam(required = false, defaultValue = "All") String distCode,
+            @Parameter(description = "Page number (0-based)", required = false, example = "0")
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(description = "Number of records per page (max 500)", required = false, example = "100")
+            @RequestParam(required = false, defaultValue = "100") int size) {
+        int safeSize = Math.min(size, 500); // cap at 500 to protect the server
+        return reportService.getApplicantMobileAddress(year, distCode, page, safeSize);
     }
 
     // ========== 22. DISTRICT WISE APPLICATION COUNT ==========

@@ -9,6 +9,7 @@ public class ApiDashboardResponse {
     private String distName;
     private int total;
     private int success;
+    private int pendingSid;
     private int verified;
     private int toBeVerified;
     private int toBeUpdated;
