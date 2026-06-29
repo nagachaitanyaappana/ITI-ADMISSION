@@ -1,6 +1,8 @@
 package com.server.backend.controller;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +14,7 @@ import com.server.backend.service.itinames_by_govt_pvt_service;
 @RequestMapping("/admission")
 public class itinames_by_govt_pvt_controller {
 
-    
+   
     private itinames_by_govt_pvt_service service;
 
     @GetMapping("/itis/govt-pvt/{govt}")
