@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.PutMapping;
 import com.server.backend.DTO.StudentRegistrationRequest;
 import com.server.backend.entity.StudentApplication;
 import com.server.backend.service.StudentApplicationService;
@@ -27,5 +27,12 @@ public class StudentApplicationController {
             @RequestBody StudentRegistrationRequest request) {
 
         return service.saveStudent(request);
+    }
+
+    @PutMapping("/update")
+    public StudentApplication updateStudent(
+            @RequestBody StudentRegistrationRequest request) {
+
+        return service.updateStudent(request);
     }
 }
