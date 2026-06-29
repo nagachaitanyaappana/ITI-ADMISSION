@@ -1,5 +1,4 @@
-
-    package com.server.backend.controller;
+package com.server.backend.controller;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import com.server.backend.service.itinames_by_govt_pvt_service;
 @RequestMapping("/admission")
 public class itinames_by_govt_pvt_controller {
 
-    
+
     private itinames_by_govt_pvt_service service;
 
     @GetMapping("/itis/govt-pvt/{govt}")
@@ -22,4 +21,3 @@ public class itinames_by_govt_pvt_controller {
         return service.getItiNamesByGovtPvt(govt);
     }
 }
-
