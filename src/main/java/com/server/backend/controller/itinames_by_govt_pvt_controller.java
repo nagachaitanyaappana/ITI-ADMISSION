@@ -1,10 +1,5 @@
 package com.server.backend.controller;
 import java.util.List;
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 98ab9e92c455df2ad5ac5c2501b475d6ce1dbb9c
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
