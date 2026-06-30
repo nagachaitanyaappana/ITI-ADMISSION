@@ -11,18 +11,15 @@ import org.springframework.stereotype.Service;
 import com.server.backend.DTO.Reports.AdmissionReportResponse;
 import com.server.backend.DTO.Reports.AllResourceRoleResponse;
 import com.server.backend.DTO.Reports.ApiDashboardResponse;
-import com.server.backend.DTO.Reports.ApplicantCountResponse;
 import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
 import com.server.backend.DTO.Reports.ApplicantReportResponse;
 import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
-import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
 import com.server.backend.DTO.Reports.DistrictScheduleResponse;
 import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
 import com.server.backend.DTO.Reports.GovtPvtSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
 import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
-import com.server.backend.DTO.Reports.MetadataResponse;
 import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
 import com.server.backend.DTO.Reports.ShiftUnitResponse;
@@ -35,7 +32,6 @@ import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.MeritListDe
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.RegistrationDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.SscMarksDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.VerifiedDetail;
-import com.server.backend.DTO.Reports.StudentListResponse;
 import com.server.backend.DTO.Reports.TodayScheduleResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
@@ -51,183 +47,120 @@ public class ReportServiceImpl implements ReportService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 1. ITI Wise Status Report
     @Override
-    public MetadataResponse getMetadata() {
-        List<String> years = jdbcTemplate.queryForList(
-                "SELECT DISTINCT value FROM public.iti_params WHERE code = '7' OR code = '8' ORDER BY value DESC",
-                String.class);
-        if (years.isEmpty()) {
-            years = List.of("2024", "2025", "2026");
-        }
-        List<String> phases = List.of("1", "2", "3", "4", "5");
-        List<String> castes = List.of("OC", "BC-A", "BC-B", "BC-C", "BC-D", "BC-E", "SC", "ST");
-        List<String> levels = List.of("CONVENER", "ITI");
-        return new MetadataResponse(years, phases, castes, levels);
-    }
-
-    // 1. Phase Wise Abstract
-    @Override
-    public List<PhaseWiseReportResponse> getPhaseWiseReport(String year) {
-        String sql = """
-            SELECT d.dist_name,
-                   COUNT(a.*) FILTER (WHERE a.phase = 1) AS phase_i,
-                   COUNT(a.*) FILTER (WHERE a.phase = 2) AS phase_ii,
-                   COUNT(a.*) FILTER (WHERE a.phase = 3) AS phase_iii,
-                   COUNT(a.*) FILTER (WHERE a.phase = 4) AS phase_iv,
-                   COUNT(a.*) FILTER (WHERE a.phase = 5) AS phase_v,
-                   COUNT(a.*) AS total,
-                   COUNT(a.*) FILTER (WHERE a.date_of_admission = CURRENT_DATE) AS today
-            FROM public.dist_mst d
-            LEFT JOIN admissions.iti_admissions a
-              ON d.dist_code = a.dist_code
-              AND a.year_of_admission = ?
-            GROUP BY d.dist_name
-            ORDER BY d.dist_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new PhaseWiseReportResponse(
-                rs.getString("dist_name"),
-                rs.getInt("phase_i"),
-                rs.getInt("phase_ii"),
-                rs.getInt("phase_iii"),
-                rs.getInt("phase_iv"),
-                rs.getInt("phase_v"),
-                rs.getInt("total"),
-                rs.getInt("today")
-        ), year);
-    }
-
-    // 2. Open Seats Abstract (District wise)
-    @Override
-    public List<OpenSeatsAbstractResponse> getOpenSeatsAbstract(String year) {
-        String sql = """
-            WITH individual_seats AS (
-                SELECT i.dist_code, (svals(sm.strength))::int AS strength_val
-                FROM public.iti_seatmatrix sm
-                JOIN public.iti i ON sm.iti_code = i.iti_code
-                WHERE sm.year::text = ?::text
-            ),
-            seat_capacity AS (
-                SELECT dist_code, SUM(strength_val) AS total_seats
-                FROM individual_seats GROUP BY dist_code
-            ),
-            filled_seats AS (
-                SELECT dist_code, COUNT(*) AS total_filled
-                FROM admissions.iti_admissions
-                WHERE year_of_admission::text = ?::text
-                GROUP BY dist_code
+    public List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size) {
+        StringBuilder sql = new StringBuilder("""
+            WITH iti_data AS (
+                SELECT
+                    a.iti_code,
+                    COUNT(*) AS total,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'S') AS success,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'N') AS pending_sid,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'D') AS verified,
+                    COUNT(*) FILTER (WHERE a.rec_status = 'E') AS to_be_verified,
+                    COUNT(*) FILTER (WHERE a.rec_status IS NULL OR a.rec_status = '') AS to_be_updated,
+                    COUNT(DISTINCT CASE WHEN phone_cnt > 1 AND a.phno IS NOT NULL THEN a.phno END) AS phone_duplicate_records,
+                    COUNT(DISTINCT CASE WHEN aadhar_cnt > 1 AND a.adarno IS NOT NULL AND a.adarno != '' THEN a.adarno END) AS aadhar_duplicate_records,
+                    COUNT(DISTINCT CASE WHEN email_cnt > 1 AND a.email_id IS NOT NULL AND a.email_id != '' THEN a.email_id END) AS email_duplicate_records
+                FROM (
+                    SELECT a.*,
+                        COUNT(*) OVER (PARTITION BY a.iti_code, a.phno) AS phone_cnt,
+                        COUNT(*) OVER (PARTITION BY a.iti_code, a.adarno) AS aadhar_cnt,
+                        COUNT(*) OVER (PARTITION BY a.iti_code, a.email_id) AS email_cnt
+                    FROM admissions.iti_admissions a
+                    WHERE a.year_of_admission = ?
+                ) a
+                GROUP BY a.iti_code
             )
-            SELECT d.dist_code, d.dist_name,
-                   COALESCE(sc.total_seats, 0) AS no_of_seats,
-                   COALESCE(fs.total_filled, 0) AS fill,
-                   (COALESCE(sc.total_seats, 0) - COALESCE(fs.total_filled, 0)) AS vacant
+            SELECT d.dist_name, i.iti_name, i.iti_code,
+                   COALESCE(id.total, 0) AS total,
+                   COALESCE(id.success, 0) AS success,
+                   COALESCE(id.pending_sid, 0) AS pending_sid,
+                   COALESCE(id.verified, 0) AS verified,
+                   COALESCE(id.to_be_verified, 0) AS to_be_verified,
+                   COALESCE(id.to_be_updated, 0) AS to_be_updated,
+                   COALESCE(id.phone_duplicate_records, 0) AS phone_duplicate_records,
+                   COALESCE(id.aadhar_duplicate_records, 0) AS aadhar_duplicate_records,
+                   COALESCE(id.email_duplicate_records, 0) AS email_duplicate_records
             FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
-            LEFT JOIN seat_capacity sc ON d.dist_code = sc.dist_code
-            LEFT JOIN filled_seats fs ON d.dist_code = fs.dist_code
-            ORDER BY d.dist_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new OpenSeatsAbstractResponse(
-                rs.getString("dist_code"),
+            JOIN public.iti i ON d.dist_code = i.dist_code
+            LEFT JOIN iti_data id ON i.iti_code = id.iti_code
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+
+        sql.append(" ORDER BY d.dist_name, i.iti_name LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((long) page * size);
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ItiWiseStatusResponse(
                 rs.getString("dist_name"),
-                rs.getInt("no_of_seats"),
-                rs.getInt("fill"),
-                rs.getInt("vacant")
-        ), year, year);
-    }
-
-    // 3. College Wise Open Seats
-    @Override
-    public List<CollegeWiseOpenSeatsResponse> getCollegeWiseOpenSeats(String year, String distCode) {
-        String sql = """
-            WITH individual_seats AS (
-                SELECT sm.iti_code, (svals(sm.strength))::int AS strength_val
-                FROM public.iti_seatmatrix sm
-                JOIN public.iti i ON sm.iti_code = i.iti_code
-                WHERE sm.year::text = ?::text AND i.dist_code = ?
-            ),
-            college_capacity AS (
-                SELECT iti_code, SUM(strength_val) AS total_seats
-                FROM individual_seats GROUP BY iti_code
-            ),
-            filled_seats AS (
-                SELECT iti_code, COUNT(*) AS total_filled
-                FROM admissions.iti_admissions
-                WHERE year_of_admission::text = ?::text AND dist_code = ?
-                GROUP BY iti_code
-            )
-            SELECT i.iti_code, i.iti_name,
-                   COALESCE(cc.total_seats, 0) AS no_of_seats,
-                   COALESCE(fs.total_filled, 0) AS fill,
-                   (COALESCE(cc.total_seats, 0) - COALESCE(fs.total_filled, 0)) AS vacant
-            FROM public.iti i
-            LEFT JOIN college_capacity cc ON i.iti_code = cc.iti_code
-            LEFT JOIN filled_seats fs ON i.iti_code = fs.iti_code
-            WHERE i.dist_code = ? AND (cc.total_seats > 0 OR fs.total_filled > 0)
-            ORDER BY i.iti_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new CollegeWiseOpenSeatsResponse(
-                rs.getString("iti_code"),
                 rs.getString("iti_name"),
-                rs.getInt("no_of_seats"),
-                rs.getInt("fill"),
-                rs.getInt("vacant")
-        ), year, distCode, year, distCode, distCode);
+                rs.getString("iti_code"),
+                rs.getInt("total"),
+                rs.getInt("success"),
+                rs.getInt("pending_sid"),
+                rs.getInt("verified"),
+                rs.getInt("to_be_verified"),
+                rs.getInt("to_be_updated"),
+                rs.getInt("phone_duplicate_records"),
+                rs.getInt("aadhar_duplicate_records"),
+                rs.getInt("email_duplicate_records")
+        ), params.toArray());
     }
 
-    // 4. Trade Duration Seats Abstract
+    // 2. Applicant Report by Phase
     @Override
-    public List<TradeDurationSeatsResponse> getTradeDurationSeats(String year, String durationMonths, String itiType) {
-        String durationyrs = String.valueOf(Integer.parseInt(durationMonths) / 12);
-        String sql = """
-            WITH unique_iti AS (
-                SELECT DISTINCT ON (iti_code) iti_code, govt FROM public.iti
-            ),
-            unique_trades AS (
-                SELECT DISTINCT ON (trade_code) trade_code, trade_name, durationyrs FROM public.ititrade_master
-            ),
-            individual_seats AS (
-                SELECT sm.trade_code, ut.trade_name, (svals(sm.strength))::int AS strength_val
-                FROM public.iti_seatmatrix sm
-                JOIN unique_iti ui ON sm.iti_code = ui.iti_code
-                JOIN unique_trades ut ON sm.trade_code::text = ut.trade_code::text
-                WHERE sm.year::text = ?::text
-                  AND ut.durationyrs::text LIKE ? || '%'
-                  AND ui.govt = ?
-            ),
-            trade_seats AS (
-                SELECT trade_code, trade_name, SUM(strength_val) AS strength
-                FROM individual_seats GROUP BY trade_code, trade_name
-            ),
-            trade_filled AS (
-                SELECT a.trade_code, COUNT(DISTINCT a.adm_num) AS fill
-                FROM admissions.iti_admissions a
-                JOIN unique_iti ui ON a.iti_code = ui.iti_code
-                JOIN unique_trades ut ON a.trade_code::text = ut.trade_code::text
-                WHERE a.year_of_admission::text = ?::text
-                  AND ut.durationyrs::text LIKE ? || '%'
-                  AND ui.govt = ?
-                GROUP BY a.trade_code
-            )
-            SELECT ts.trade_code, ts.trade_name, ts.strength,
-                   COALESCE(tf.fill, 0) AS fill,
-                   (ts.strength - COALESCE(tf.fill, 0)) AS vacant,
-                   CASE WHEN ts.strength > 0
-                        THEN ROUND((COALESCE(tf.fill, 0)::numeric / ts.strength::numeric) * 100, 2)
-                        ELSE 0 END AS fill_percentage
-            FROM trade_seats ts
-            LEFT JOIN trade_filled tf ON ts.trade_code::text = tf.trade_code::text
-            ORDER BY ts.trade_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new TradeDurationSeatsResponse(
-                rs.getString("trade_code"),
-                rs.getString("trade_name"),
-                rs.getInt("strength"),
-                rs.getInt("fill"),
-                rs.getInt("vacant"),
-                rs.getDouble("fill_percentage")
-        ), year, durationyrs, itiType, year, durationyrs, itiType);
+    public List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode, int page, int size) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT sa.ssc_regno, sa.phno AS mobile_no, sa.regid AS reg_id,
+                   sa.name, sa.fname AS father_name, sa.mname AS mother_name
+            FROM public.application sa
+            LEFT JOIN public.iti i ON sa.user_id = i.iti_code
+            WHERE sa.phase::text ILIKE '%\"' || ? || '\"=>\"true\"%'
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(phase);
+
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND sa.year::text = ?::text");
+            params.add(year);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND i.iti_code = ?");
+            params.add(itiCode);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND i.dist_code = ?");
+            params.add(distCode);
+        }
+
+        sql.append(" ORDER BY sa.name LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((long) page * size);
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ApplicantReportResponse(
+                rs.getString("ssc_regno"),
+                rs.getString("mobile_no"),
+                rs.getString("reg_id"),
+                rs.getString("name"),
+                rs.getString("father_name"),
+                rs.getString("mother_name")
+        ), params.toArray());
     }
 
-    // 5. Admission Report (Trade wise - boys/girls)
+    // 3. Admission Report (Trade wise)
     @Override
     public List<AdmissionReportResponse> getAdmissionReport(String year, String caste, String pwd) {
         StringBuilder sql = new StringBuilder("""
@@ -262,95 +195,7 @@ public class ReportServiceImpl implements ReportService {
         ), params.toArray());
     }
 
-    // 6. Applicant Count Nodal
-    @Override
-    public ApplicantCountResponse getApplicantCount(String year, String phase) {
-        String sql = """
-            SELECT d.dist_code, d.dist_name,
-                   COUNT(sa.regid) FILTER (WHERE i.govt = 'G') AS govt_count,
-                   COUNT(sa.regid) FILTER (WHERE i.govt != 'G') AS pvt_count,
-                   COUNT(sa.regid) AS total_count
-            FROM public.dist_mst d
-            LEFT JOIN public.iti i ON d.dist_code = i.dist_code
-            LEFT JOIN public.application sa ON i.iti_code = sa.user_id
-                AND sa.year::text = ?::text
-                AND sa.phase::text ILIKE '%\"' || ? || '\"=>\"true\"%'
-            GROUP BY d.dist_code, d.dist_name
-            ORDER BY d.dist_name
-            """;
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, year, phase);
-
-        List<ApplicantCountResponse.DistCountRow> govtPvt = new ArrayList<>();
-        List<ApplicantCountResponse.DistCountRow> govt = new ArrayList<>();
-        List<ApplicantCountResponse.DistCountRow> pvt = new ArrayList<>();
-        int govtPvtTotal = 0, govtTotal = 0, pvtTotal = 0;
-
-        for (Map<String, Object> row : rows) {
-            String distName = str(row.get("dist_name"));
-            int totalVal = ((Number) row.get("total_count")).intValue();
-            int govtVal = ((Number) row.get("govt_count")).intValue();
-            int pvtVal = ((Number) row.get("pvt_count")).intValue();
-
-            govtPvt.add(new ApplicantCountResponse.DistCountRow(distName, totalVal));
-            govt.add(new ApplicantCountResponse.DistCountRow(distName, govtVal));
-            pvt.add(new ApplicantCountResponse.DistCountRow(distName, pvtVal));
-            govtPvtTotal += totalVal;
-            govtTotal += govtVal;
-            pvtTotal += pvtVal;
-        }
-
-        return new ApplicantCountResponse(govtPvt, govt, pvt, govtPvtTotal, govtTotal, pvtTotal);
-    }
-
-    // 7. ITI Admissions Report
-    @Override
-    public List<ITIAdmissionsReportResponse> getITIAdmissionsReport(String year, String distCode, String govt,
-            String caste, String gender, String ncvtScvt, int page, int size) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT DISTINCT a.adm_num AS admission_number, a.name, a.ssc_regno, a.year_of_admission
-            FROM admissions.iti_admissions a
-            LEFT JOIN public.iti i ON TRIM(a.iti_code::text) = TRIM(i.iti_code::text)
-            WHERE a.year_of_admission::text = ?::text
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(year);
-
-        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
-            sql.append(" AND TRIM(a.dist_code::text) = TRIM(?::text)");
-            params.add(distCode);
-        }
-        if (govt != null && !"All".equalsIgnoreCase(govt)) {
-            sql.append(" AND i.govt = ?");
-            params.add("Govt".equalsIgnoreCase(govt) ? "G" : "P");
-        }
-        if (caste != null && !"All".equalsIgnoreCase(caste)) {
-            sql.append(" AND TRIM(a.res_category) = ?");
-            params.add(caste);
-        }
-        if (gender != null && !"All".equalsIgnoreCase(gender)) {
-            String genderVal = gender.toUpperCase().startsWith("M") ? "M%" : "F%";
-            sql.append(" AND a.gender ILIKE ?");
-            params.add(genderVal);
-        }
-        if (ncvtScvt != null && !"All".equalsIgnoreCase(ncvtScvt)) {
-            String typeVal = ncvtScvt.toUpperCase().startsWith("N") ? "N" : "S";
-            sql.append(" AND TRIM(a.type_admission) = ?");
-            params.add(typeVal);
-        }
-
-        sql.append(" ORDER BY a.name LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add((long) page * size);
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ITIAdmissionsReportResponse(
-                rs.getString("admission_number"),
-                rs.getString("name"),
-                rs.getString("ssc_regno"),
-                rs.getString("year_of_admission")
-        ), params.toArray());
-    }
-
-    // 8. DSC Full Report
+    // 4. DSC Full Report
     @Override
     public DscFullReportResponse getDscFullReport(String distCode, String itiCode, String tradeCode,
             String phase, String year, String modeAdm) {
@@ -455,7 +300,98 @@ public class ReportServiceImpl implements ReportService {
         return c != null ? c.replaceAll("[\\s\\-_]", "").toUpperCase() : "UNKNOWN";
     }
 
-    // 9. API Dashboard
+    // 5. Caste Wise Admissions Abstract
+    @Override
+    public List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(String year, String distCode, String govt, String phase, String gender) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT d.dist_code AS "District Code", d.dist_name AS "District Name",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-A%') AS "BC-A",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-B%') AS "BC-B",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-C%') AS "BC-C",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-D%') AS "BC-D",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-E%') AS "BC-E",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'EWS%') AS "EWS",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'EX-S%') AS "EX-S",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'IM%') AS "IM",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'OC%') AS "OC",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'PH%') AS "PH",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-I%') AS "SC-I",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-II%') AS "SC-II",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-III%') AS "SC-III",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SP%') AS "SP",
+                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'ST%') AS "ST"
+            FROM public.dist_mst d
+            LEFT JOIN admissions.iti_admissions a ON d.dist_code = a.dist_code AND a.year_of_admission::text = ?::text
+            LEFT JOIN public.iti i ON a.iti_code = i.iti_code
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (govt != null && !"All".equalsIgnoreCase(govt)) {
+            sql.append(" AND i.govt = ?");
+            params.add(govt);
+        }
+        if (phase != null && !"All".equalsIgnoreCase(phase) && !"0".equals(phase)) {
+            sql.append(" AND a.phase = ?");
+            params.add(Integer.parseInt(phase));
+        }
+        if (gender != null && !"All".equalsIgnoreCase(gender)) {
+            sql.append(" AND a.gender = ?");
+            params.add(gender);
+        }
+
+        sql.append(" GROUP BY d.dist_code, d.dist_name ORDER BY d.dist_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new CasteWiseAdmissionsResponse(
+                rs.getString("District Code"),
+                rs.getString("District Name"),
+                rs.getInt("BC-A"), rs.getInt("BC-B"), rs.getInt("BC-C"),
+                rs.getInt("BC-D"), rs.getInt("BC-E"), rs.getInt("EWS"),
+                rs.getInt("EX-S"), rs.getInt("IM"), rs.getInt("OC"),
+                rs.getInt("PH"), rs.getInt("SC-I"), rs.getInt("SC-II"),
+                rs.getInt("SC-III"), rs.getInt("SP"), rs.getInt("ST")
+        ), params.toArray());
+    }
+
+    // 6. Applicant Address With Mobile
+    @Override
+    public List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode, int page, int size) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT a.regid, a.name, a.fname, a.phno, a.addr, d.dist_name
+            FROM public.application a
+            LEFT JOIN public.iti i ON a.user_id = i.iti_code
+            LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code
+            WHERE a.year::text = ?::text
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND i.dist_code::text = ?::text");
+            params.add(distCode.trim());
+        }
+
+        sql.append(" ORDER BY a.name");
+        sql.append(" LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((long) page * size);
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ApplicantMobileAddressResponse(
+                rs.getString("regid"),
+                rs.getString("name"),
+                rs.getString("fname"),
+                rs.getString("phno"),
+                rs.getString("addr"),
+                rs.getString("dist_name")
+        ), params.toArray());
+    }
+
+    // 7. API Dashboard (District)
     @Override
     public List<ApiDashboardResponse> getApiDashboard(String year) {
         String sql = """
@@ -510,7 +446,321 @@ public class ReportServiceImpl implements ReportService {
         ), year, year, year, year);
     }
 
-    // 10. Student Complete Details
+    // 8. Verified Application Count
+    @Override
+    public List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(String year, String distCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT d.dist_name AS "District Name",
+                   COUNT(a.regid) AS "Total Applications",
+                   COUNT(a.regid) FILTER (WHERE a.app_status = 'A') AS "Approved",
+                   COUNT(a.regid) FILTER (WHERE a.app_status = 'R') AS "Rejected",
+                   COUNT(a.regid) FILTER (WHERE a.app_status IS NULL OR a.app_status NOT IN ('A', 'R')) AS "Unverified"
+            FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
+            LEFT JOIN public.iti i ON d.dist_code = i.dist_code
+            LEFT JOIN public.application a ON i.iti_code = a.user_id AND a.year::text = ?::text
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+
+        sql.append(" GROUP BY d.dist_name ORDER BY d.dist_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new VerifiedApplicationCountResponse(
+                rs.getString("District Name"),
+                rs.getInt("Total Applications"),
+                rs.getInt("Approved"),
+                rs.getInt("Rejected"),
+                rs.getInt("Unverified")
+        ), params.toArray());
+    }
+
+    // 9. State Dashboard
+    @Override
+    public List<StateDashboardResponse> getStateDashboard(String year, String govt) {
+        String govtFilter = (govt != null && !"All".equalsIgnoreCase(govt)) ? govt : "G";
+        String sql = """
+            SELECT a.iti_code, a.iti_name, d.dist_name,
+                   COALESCE(a.strength, 0) AS strength,
+                   COALESCE(a.strength_fill, 0) AS strength_fill
+            FROM (
+                SELECT iti.iti_code, iti.iti_name, iti.dist_code,
+                    (SELECT SUM(value::DECIMAL)
+                     FROM public.iti_seatmatrix sm, EACH(sm.strength)
+                     WHERE sm.iti_code = iti.iti_code
+                       AND sm.year::text = ?::text
+                       AND iti.govt = ?) AS strength,
+                    (SELECT COUNT(*)
+                     FROM admissions.iti_admissions b
+                     WHERE b.year_of_admission::text = ?::text
+                       AND b.iti_code = iti.iti_code
+                       AND iti.govt = ?) AS strength_fill
+                FROM public.iti iti
+                WHERE iti.govt = ?
+            ) a
+            LEFT JOIN public.dist_mst d ON a.dist_code = d.dist_code
+            WHERE a.strength > 0 OR a.strength_fill > 0
+            ORDER BY d.dist_name, a.iti_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            int strength = rs.getInt("strength");
+            int fill = rs.getInt("strength_fill");
+            double pct = strength > 0 ? Math.round(((double) fill / strength) * 10000.0) / 100.0 : 0.0;
+            return new StateDashboardResponse(
+                rs.getString("iti_code"),
+                rs.getString("iti_name"),
+                rs.getString("dist_name"),
+                strength, fill, pct
+            );
+        }, year, govtFilter, year, govtFilter, govtFilter);
+    }
+
+    // 10. Phase Wise Abstract
+    @Override
+    public List<PhaseWiseReportResponse> getPhaseWiseReport(String year) {
+        String sql = """
+            SELECT d.dist_name,
+                   COUNT(a.*) FILTER (WHERE a.phase = 1) AS phase_i,
+                   COUNT(a.*) FILTER (WHERE a.phase = 2) AS phase_ii,
+                   COUNT(a.*) FILTER (WHERE a.phase = 3) AS phase_iii,
+                   COUNT(a.*) FILTER (WHERE a.phase = 4) AS phase_iv,
+                   COUNT(a.*) FILTER (WHERE a.phase = 5) AS phase_v,
+                   COUNT(a.*) AS total,
+                   COUNT(a.*) FILTER (WHERE a.date_of_admission = CURRENT_DATE) AS today
+            FROM public.dist_mst d
+            LEFT JOIN admissions.iti_admissions a
+              ON d.dist_code = a.dist_code
+              AND a.year_of_admission = ?
+            GROUP BY d.dist_name
+            ORDER BY d.dist_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new PhaseWiseReportResponse(
+                rs.getString("dist_name"),
+                rs.getInt("phase_i"),
+                rs.getInt("phase_ii"),
+                rs.getInt("phase_iii"),
+                rs.getInt("phase_iv"),
+                rs.getInt("phase_v"),
+                rs.getInt("total"),
+                rs.getInt("today")
+        ), year);
+    }
+
+    // 11. Today Schedule ITIs
+    @Override
+    public List<TodayScheduleResponse> getTodaySchedule() {
+        String sql = """
+            SELECT d.dist_name, i.iti_name,
+                   a.merit_from, a.merit_to, a.cal_date, a.cal_time
+            FROM public.admission_timings a
+            JOIN public.iti i ON a.iti_code = i.iti_code
+            JOIN public.dist_mst d ON i.dist_code = d.dist_code
+            WHERE a.cal_date::text = CURRENT_DATE::text
+            ORDER BY d.dist_name, i.iti_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new TodayScheduleResponse(
+                rs.getString("dist_name"),
+                rs.getString("iti_name"),
+                rs.getInt("merit_from"),
+                rs.getInt("merit_to"),
+                rs.getString("cal_date"),
+                rs.getString("cal_time")
+        ));
+    }
+
+    // 12. Trade Wise Report
+    @Override
+    public List<TradeWiseReportResponse> getTradeWiseReport(String year, String distCode, String itiType) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT tm.trade_name, tm.trade_code::text AS trade_code,
+                   COUNT(a.adm_num) AS filled,
+                   SUM(COALESCE((
+                       SELECT SUM(svals(sm.strength)::int)
+                       FROM public.iti_seatmatrix sm
+                       WHERE sm.iti_code = it.iti_code
+                         AND sm.trade_code::text = tm.trade_code::text
+                         AND sm.year::text = ?::text
+                   ), 0)) AS total_strength
+            FROM public.ititrade_master tm
+            JOIN public.iti_trade it ON it.trade_code::text = tm.trade_code::text
+            JOIN public.iti i ON it.iti_code = i.iti_code
+            LEFT JOIN admissions.iti_admissions a ON a.iti_code = i.iti_code
+                AND a.trade_code::text = tm.trade_code::text
+                AND a.year_of_admission::text = ?::text
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (itiType != null && !"All".equalsIgnoreCase(itiType)) {
+            sql.append(" AND i.govt = ?");
+            params.add(itiType);
+        }
+
+        sql.append(" GROUP BY tm.trade_name, tm.trade_code ORDER BY tm.trade_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
+            int filled = rs.getInt("filled");
+            int total = rs.getInt("total_strength");
+            int vacant = Math.max(0, total - filled);
+            return new TradeWiseReportResponse(
+                rs.getString("trade_name"),
+                rs.getString("trade_code"),
+                total,
+                filled,
+                vacant
+            );
+        }, params.toArray());
+    }
+
+    // 13. Applicant Report by Phase (State Wise - same as #2)
+    // Note: Uses same implementation as #2
+
+    // 14. Open Seats Abstract (District wise)
+    @Override
+    public List<OpenSeatsAbstractResponse> getOpenSeatsAbstract(String year) {
+        String sql = """
+            WITH individual_seats AS (
+                SELECT i.dist_code, (svals(sm.strength))::int AS strength_val
+                FROM public.iti_seatmatrix sm
+                JOIN public.iti i ON sm.iti_code = i.iti_code
+                WHERE sm.year::text = ?::text
+            ),
+            seat_capacity AS (
+                SELECT dist_code, SUM(strength_val) AS total_seats
+                FROM individual_seats GROUP BY dist_code
+            ),
+            filled_seats AS (
+                SELECT dist_code, COUNT(*) AS total_filled
+                FROM admissions.iti_admissions
+                WHERE year_of_admission::text = ?::text
+                GROUP BY dist_code
+            )
+            SELECT d.dist_code, d.dist_name,
+                   COALESCE(sc.total_seats, 0) AS no_of_seats,
+                   COALESCE(fs.total_filled, 0) AS fill,
+                   (COALESCE(sc.total_seats, 0) - COALESCE(fs.total_filled, 0)) AS vacant
+            FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
+            LEFT JOIN seat_capacity sc ON d.dist_code = sc.dist_code
+            LEFT JOIN filled_seats fs ON d.dist_code = fs.dist_code
+            ORDER BY d.dist_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new OpenSeatsAbstractResponse(
+                rs.getString("dist_code"),
+                rs.getString("dist_name"),
+                rs.getInt("no_of_seats"),
+                rs.getInt("fill"),
+                rs.getInt("vacant")
+        ), year, year);
+    }
+
+    // 15. Trade Duration Seats Abstract
+    @Override
+    public List<TradeDurationSeatsResponse> getTradeDurationSeats(String year, String durationMonths, String itiType) {
+        String durationyrs = String.valueOf(Integer.parseInt(durationMonths) / 12);
+        String sql = """
+            WITH unique_iti AS (
+                SELECT DISTINCT ON (iti_code) iti_code, govt FROM public.iti
+            ),
+            unique_trades AS (
+                SELECT DISTINCT ON (trade_code) trade_code, trade_name, durationyrs FROM public.ititrade_master
+            ),
+            individual_seats AS (
+                SELECT sm.trade_code, ut.trade_name, (svals(sm.strength))::int AS strength_val
+                FROM public.iti_seatmatrix sm
+                JOIN unique_iti ui ON sm.iti_code = ui.iti_code
+                JOIN unique_trades ut ON sm.trade_code::text = ut.trade_code::text
+                WHERE sm.year::text = ?::text
+                  AND ut.durationyrs::text LIKE ? || '%'
+                  AND ui.govt = ?
+            ),
+            trade_seats AS (
+                SELECT trade_code, trade_name, SUM(strength_val) AS strength
+                FROM individual_seats GROUP BY trade_code, trade_name
+            ),
+            trade_filled AS (
+                SELECT a.trade_code, COUNT(DISTINCT a.adm_num) AS fill
+                FROM admissions.iti_admissions a
+                JOIN unique_iti ui ON a.iti_code = ui.iti_code
+                JOIN unique_trades ut ON a.trade_code::text = ut.trade_code::text
+                WHERE a.year_of_admission::text = ?::text
+                  AND ut.durationyrs::text LIKE ? || '%'
+                  AND ui.govt = ?
+                GROUP BY a.trade_code
+            )
+            SELECT ts.trade_code, ts.trade_name, ts.strength,
+                   COALESCE(tf.fill, 0) AS fill,
+                   (ts.strength - COALESCE(tf.fill, 0)) AS vacant,
+                   CASE WHEN ts.strength > 0
+                        THEN ROUND((COALESCE(tf.fill, 0)::numeric / ts.strength::numeric) * 100, 2)
+                        ELSE 0 END AS fill_percentage
+            FROM trade_seats ts
+            LEFT JOIN trade_filled tf ON ts.trade_code::text = tf.trade_code::text
+            ORDER BY ts.trade_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new TradeDurationSeatsResponse(
+                rs.getString("trade_code"),
+                rs.getString("trade_name"),
+                rs.getInt("strength"),
+                rs.getInt("fill"),
+                rs.getInt("vacant"),
+                rs.getDouble("fill_percentage")
+        ), year, durationyrs, itiType, year, durationyrs, itiType);
+    }
+
+    // 16. Govt/Pvt District Wise Seats Abstract
+    @Override
+    public List<GovtPvtSeatsAbstractResponse> getGovtPvtSeatsAbstract(String year) {
+        String sql = """
+            WITH govt_seats AS (
+                SELECT i.dist_code,
+                    SUM((SELECT SUM(value::DECIMAL) FROM public.iti_seatmatrix sm, EACH(sm.strength)
+                         WHERE sm.iti_code = i.iti_code AND sm.year::text = ?::text))::int AS strength,
+                    (SELECT COUNT(*) FROM admissions.iti_admissions a
+                     WHERE a.iti_code = i.iti_code AND a.year_of_admission::text = ?::text) AS fill
+                FROM public.iti i WHERE i.govt = 'G' GROUP BY i.dist_code
+            ),
+            pvt_seats AS (
+                SELECT i.dist_code,
+                    SUM((SELECT SUM(value::DECIMAL) FROM public.iti_seatmatrix sm, EACH(sm.strength)
+                         WHERE sm.iti_code = i.iti_code AND sm.year::text = ?::text))::int AS strength,
+                    (SELECT COUNT(*) FROM admissions.iti_admissions a
+                     WHERE a.iti_code = i.iti_code AND a.year_of_admission::text = ?::text) AS fill
+                FROM public.iti i WHERE i.govt = 'P' GROUP BY i.dist_code
+            )
+            SELECT d.dist_code, d.dist_name,
+                   COALESCE(g.strength, 0) AS govt_strength, COALESCE(g.fill, 0) AS govt_fill,
+                   COALESCE(p.strength, 0) AS pvt_strength, COALESCE(p.fill, 0) AS pvt_fill
+            FROM public.dist_mst d
+            LEFT JOIN govt_seats g ON d.dist_code = g.dist_code
+            LEFT JOIN pvt_seats p ON d.dist_code = p.dist_code
+            ORDER BY d.dist_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            int gs = rs.getInt("govt_strength");
+            int gf = rs.getInt("govt_fill");
+            int ps = rs.getInt("pvt_strength");
+            int pf = rs.getInt("pvt_fill");
+            return new GovtPvtSeatsAbstractResponse(
+                rs.getString("dist_code"), rs.getString("dist_name"),
+                gs, gf, Math.max(0, gs - gf),
+                ps, pf, Math.max(0, ps - pf),
+                gs + ps, gf + pf,
+                Math.max(0, (gs + ps) - (gf + pf))
+            );
+        }, year, year, year, year);
+    }
+
+    // 17. Student Complete Details
     @Override
     public StudentCompleteDetailsResponse getStudentCompleteDetails(String regid, String admNum) {
         StudentCompleteDetailsResponse response = new StudentCompleteDetailsResponse();
@@ -693,68 +943,10 @@ public class ReportServiceImpl implements ReportService {
         return response;
     }
 
-    // 11. Caste Wise Admissions Abstract
+    // 18. District Wise Application Count
     @Override
-    public List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(String year, String distCode, String govt, String phase, String gender) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT d.dist_code AS "District Code", d.dist_name AS "District Name",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-A%') AS "BC-A",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-B%') AS "BC-B",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-C%') AS "BC-C",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-D%') AS "BC-D",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'BC-E%') AS "BC-E",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'EWS%') AS "EWS",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'EX-S%') AS "EX-S",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'IM%') AS "IM",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'OC%') AS "OC",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'PH%') AS "PH",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-I%') AS "SC-I",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-II%') AS "SC-II",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SC-III%') AS "SC-III",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'SP%') AS "SP",
-                   COUNT(*) FILTER (WHERE a.res_category ILIKE 'ST%') AS "ST"
-            FROM public.dist_mst d
-            LEFT JOIN admissions.iti_admissions a ON d.dist_code = a.dist_code AND a.year_of_admission::text = ?::text
-            LEFT JOIN public.iti i ON a.iti_code = i.iti_code
-            WHERE 1=1
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(year);
-
-        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
-            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
-            params.add(distCode);
-        }
-        if (govt != null && !"All".equalsIgnoreCase(govt)) {
-            sql.append(" AND i.govt = ?");
-            params.add(govt);
-        }
-        if (phase != null && !"All".equalsIgnoreCase(phase) && !"0".equals(phase)) {
-            sql.append(" AND a.phase = ?");
-            params.add(Integer.parseInt(phase));
-        }
-        if (gender != null && !"All".equalsIgnoreCase(gender)) {
-            sql.append(" AND a.gender = ?");
-            params.add(gender);
-        }
-
-        sql.append(" GROUP BY d.dist_code, d.dist_name ORDER BY d.dist_name");
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new CasteWiseAdmissionsResponse(
-                rs.getString("District Code"),
-                rs.getString("District Name"),
-                rs.getInt("BC-A"), rs.getInt("BC-B"), rs.getInt("BC-C"),
-                rs.getInt("BC-D"), rs.getInt("BC-E"), rs.getInt("EWS"),
-                rs.getInt("EX-S"), rs.getInt("IM"), rs.getInt("OC"),
-                rs.getInt("PH"), rs.getInt("SC-I"), rs.getInt("SC-II"),
-                rs.getInt("SC-III"), rs.getInt("SP"), rs.getInt("ST")
-        ), params.toArray());
-    }
-
-    // 12. Verified Application Count
-    @Override
-    public List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(String year, String distCode) {
-        StringBuilder sql = new StringBuilder("""
+    public List<DistrictWiseApplicationCountResponse> getDistrictWiseApplicationCount(String year) {
+        String sql = """
             SELECT d.dist_name AS "District Name",
                    COUNT(a.regid) AS "Total Applications",
                    COUNT(a.regid) FILTER (WHERE a.app_status = 'A') AS "Approved",
@@ -763,292 +955,16 @@ public class ReportServiceImpl implements ReportService {
             FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
             LEFT JOIN public.iti i ON d.dist_code = i.dist_code
             LEFT JOIN public.application a ON i.iti_code = a.user_id AND a.year::text = ?::text
-            WHERE 1=1
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(year);
-
-        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
-            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
-            params.add(distCode);
-        }
-
-        sql.append(" GROUP BY d.dist_name ORDER BY d.dist_name");
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new VerifiedApplicationCountResponse(
+            GROUP BY d.dist_name
+            ORDER BY d.dist_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new DistrictWiseApplicationCountResponse(
                 rs.getString("District Name"),
                 rs.getInt("Total Applications"),
                 rs.getInt("Approved"),
                 rs.getInt("Rejected"),
                 rs.getInt("Unverified")
-        ), params.toArray());
-    }
-
-    // 13. Permitted Shift Unit Report
-    @Override
-    public List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode, int page, int size) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT i.iti_name, i.govt AS iti_type, tm.trade_name, sup.strength,
-                   sup.shift_allowed AS shift, sup.unit_allowed AS unit
-            FROM public.shift_unit_permitted sup
-            JOIN public.iti i ON sup.iti_code::text = i.iti_code::text
-            JOIN public.ititrade_master tm ON sup.trade_code::text = tm.trade_code::text
-            WHERE TRIM(i.dist_code::text) = TRIM(?::text)
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(distCode);
-
-        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
-            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
-            params.add(itiCode);
-        }
-
-        sql.append(" ORDER BY i.iti_name, tm.trade_name LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add((long) page * size);
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ShiftUnitResponse(
-                rs.getString("iti_name"),
-                rs.getString("iti_type"),
-                rs.getString("trade_name"),
-                rs.getInt("strength"),
-                rs.getString("shift"),
-                rs.getString("unit")
-        ), params.toArray());
-    }
-
-    // 14. Applicant Report by Phase
-    @Override
-    public List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode, int page, int size) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT sa.ssc_regno, sa.phno AS mobile_no, sa.regid AS reg_id,
-                   sa.name, sa.fname AS father_name, sa.mname AS mother_name
-            FROM public.application sa
-            LEFT JOIN public.iti i ON sa.user_id = i.iti_code
-            WHERE sa.phase::text ILIKE '%\"' || ? || '\"=>\"true\"%'
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(phase);
-
-        if (year != null && !year.isEmpty()) {
-            sql.append(" AND sa.year::text = ?::text");
-            params.add(year);
-        }
-        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
-            sql.append(" AND i.iti_code = ?");
-            params.add(itiCode);
-        }
-        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
-            sql.append(" AND i.dist_code = ?");
-            params.add(distCode);
-        }
-
-        sql.append(" ORDER BY sa.name LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add((long) page * size);
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ApplicantReportResponse(
-                rs.getString("ssc_regno"),
-                rs.getString("mobile_no"),
-                rs.getString("reg_id"),
-                rs.getString("name"),
-                rs.getString("father_name"),
-                rs.getString("mother_name")
-        ), params.toArray());
-    }
-
-    // 15. ITI Wise Status Report
-    @Override
-    public List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size) {
-        StringBuilder sql = new StringBuilder("""
-            WITH iti_data AS (
-                SELECT
-                    a.iti_code,
-                    COUNT(*) AS total,
-                    COUNT(*) FILTER (WHERE a.rec_status = 'S') AS success,
-                    COUNT(*) FILTER (WHERE a.rec_status = 'N') AS pending_sid,
-                    COUNT(*) FILTER (WHERE a.rec_status = 'D') AS verified,
-                    COUNT(*) FILTER (WHERE a.rec_status = 'E') AS to_be_verified,
-                    COUNT(*) FILTER (WHERE a.rec_status IS NULL OR a.rec_status = '') AS to_be_updated,
-                    COUNT(DISTINCT CASE WHEN phone_cnt > 1 AND a.phno IS NOT NULL THEN a.phno END) AS phone_duplicate_records,
-                    COUNT(DISTINCT CASE WHEN aadhar_cnt > 1 AND a.adarno IS NOT NULL AND a.adarno != '' THEN a.adarno END) AS aadhar_duplicate_records,
-                    COUNT(DISTINCT CASE WHEN email_cnt > 1 AND a.email_id IS NOT NULL AND a.email_id != '' THEN a.email_id END) AS email_duplicate_records
-                FROM (
-                    SELECT a.*,
-                        COUNT(*) OVER (PARTITION BY a.iti_code, a.phno) AS phone_cnt,
-                        COUNT(*) OVER (PARTITION BY a.iti_code, a.adarno) AS aadhar_cnt,
-                        COUNT(*) OVER (PARTITION BY a.iti_code, a.email_id) AS email_cnt
-                    FROM admissions.iti_admissions a
-                    WHERE a.year_of_admission = ?
-                ) a
-                GROUP BY a.iti_code
-            )
-            SELECT d.dist_name, i.iti_name, i.iti_code,
-                   COALESCE(id.total, 0) AS total,
-                   COALESCE(id.success, 0) AS success,
-                   COALESCE(id.pending_sid, 0) AS pending_sid,
-                   COALESCE(id.verified, 0) AS verified,
-                   COALESCE(id.to_be_verified, 0) AS to_be_verified,
-                   COALESCE(id.to_be_updated, 0) AS to_be_updated,
-                   COALESCE(id.phone_duplicate_records, 0) AS phone_duplicate_records,
-                   COALESCE(id.aadhar_duplicate_records, 0) AS aadhar_duplicate_records,
-                   COALESCE(id.email_duplicate_records, 0) AS email_duplicate_records
-            FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
-            JOIN public.iti i ON d.dist_code = i.dist_code
-            LEFT JOIN iti_data id ON i.iti_code = id.iti_code
-            WHERE 1=1
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(year);
-
-        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
-            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
-            params.add(distCode);
-        }
-        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
-            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
-            params.add(itiCode);
-        }
-
-        sql.append(" ORDER BY d.dist_name, i.iti_name LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add((long) page * size);
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ItiWiseStatusResponse(
-                rs.getString("dist_name"),
-                rs.getString("iti_name"),
-                rs.getString("iti_code"),
-                rs.getInt("total"),
-                rs.getInt("success"),
-                rs.getInt("pending_sid"),
-                rs.getInt("verified"),
-                rs.getInt("to_be_verified"),
-                rs.getInt("to_be_updated"),
-                rs.getInt("phone_duplicate_records"),
-                rs.getInt("aadhar_duplicate_records"),
-                rs.getInt("email_duplicate_records")
-        ), params.toArray());
-    }
-
-    // 16. ITI Student List
-    @Override
-    public List<StudentListResponse> getItiStudentList(String year, String itiCode, String distCode, int page, int size) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT a.adm_num AS admission_no, a.trade_code AS trade_code, a.ssc_regno AS ssc_hall_ticket,
-                   a.name, a.fname AS father_name, a.mname AS mother_name,
-                   TO_CHAR(a.dob, 'DD-MM-YYYY') AS date_of_birth,
-                   a.phno AS mobile_no, a.email_id AS email,
-                   a.shift, a.unit, a.pwd_category AS pwd_category,
-                   CASE WHEN a.economic_weaker_section = true THEN 'YES' ELSE 'NO' END AS economic_weaker_section,
-                   CASE WHEN a.is_trainee_dual_mode = true THEN 'YES' ELSE 'NO' END AS is_trainee_dual_mode
-            FROM admissions.iti_admissions a
-            LEFT JOIN (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d ON TRIM(a.dist_code::text) = TRIM(d.dist_code::text)
-            WHERE a.year_of_admission::text = ?::text
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(year);
-
-        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
-            sql.append(" AND TRIM(a.dist_code::text) = TRIM(?::text)");
-            params.add(distCode);
-        }
-        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
-            sql.append(" AND TRIM(a.iti_code::text) = TRIM(?::text)");
-            params.add(itiCode);
-        }
-
-        sql.append(" ORDER BY a.name LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add((long) page * size);
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new StudentListResponse(
-                rs.getString("admission_no"),
-                rs.getString("trade_code"),
-                rs.getString("ssc_hall_ticket"),
-                rs.getString("name"),
-                rs.getString("father_name"),
-                rs.getString("mother_name"),
-                rs.getString("date_of_birth"),
-                rs.getString("mobile_no"),
-                rs.getString("email"),
-                rs.getString("shift"),
-                rs.getString("unit"),
-                rs.getString("pwd_category"),
-                rs.getString("economic_weaker_section"),
-                rs.getString("is_trainee_dual_mode")
-        ), params.toArray());
-    }
-
-    // 17. Trade Wise Report
-    @Override
-    public List<TradeWiseReportResponse> getTradeWiseReport(String year, String distCode, String itiType) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT tm.trade_name, tm.trade_code::text AS trade_code,
-                   COUNT(a.adm_num) AS filled,
-                   SUM(COALESCE((
-                       SELECT SUM(svals(sm.strength)::int)
-                       FROM public.iti_seatmatrix sm
-                       WHERE sm.iti_code = it.iti_code
-                         AND sm.trade_code::text = tm.trade_code::text
-                         AND sm.year::text = ?::text
-                   ), 0)) AS total_strength
-            FROM public.ititrade_master tm
-            JOIN public.iti_trade it ON it.trade_code::text = tm.trade_code::text
-            JOIN public.iti i ON it.iti_code = i.iti_code
-            LEFT JOIN admissions.iti_admissions a ON a.iti_code = i.iti_code
-                AND a.trade_code::text = tm.trade_code::text
-                AND a.year_of_admission::text = ?::text
-            WHERE 1=1
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(year);
-        params.add(year);
-
-        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
-            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
-            params.add(distCode);
-        }
-        if (itiType != null && !"All".equalsIgnoreCase(itiType)) {
-            sql.append(" AND i.govt = ?");
-            params.add(itiType);
-        }
-
-        sql.append(" GROUP BY tm.trade_name, tm.trade_code ORDER BY tm.trade_name");
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
-            int filled = rs.getInt("filled");
-            int total = rs.getInt("total_strength");
-            int vacant = Math.max(0, total - filled);
-            return new TradeWiseReportResponse(
-                rs.getString("trade_name"),
-                rs.getString("trade_code"),
-                total,
-                filled,
-                vacant
-            );
-        }, params.toArray());
-    }
-
-    // 18. Today Schedule ITIs
-    @Override
-    public List<TodayScheduleResponse> getTodaySchedule() {
-        String sql = """
-            SELECT d.dist_name, i.iti_name,
-                   a.merit_from, a.merit_to, a.cal_date, a.cal_time
-            FROM public.admission_timings a
-            JOIN public.iti i ON a.iti_code = i.iti_code
-            JOIN public.dist_mst d ON i.dist_code = d.dist_code
-            WHERE a.cal_date::text = CURRENT_DATE::text
-            ORDER BY d.dist_name, i.iti_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new TodayScheduleResponse(
-                rs.getString("dist_name"),
-                rs.getString("iti_name"),
-                rs.getInt("merit_from"),
-                rs.getInt("merit_to"),
-                rs.getString("cal_date"),
-                rs.getString("cal_time")
-        ));
+        ), year);
     }
 
     // 19. District Schedule
@@ -1087,7 +1003,88 @@ public class ReportServiceImpl implements ReportService {
         ), params.toArray());
     }
 
-    // 20. All Resource Role
+    // 20. Permitted Shift Unit Report
+    @Override
+    public List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode, int page, int size) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT i.iti_name, i.govt AS iti_type, tm.trade_name, sup.strength,
+                   sup.shift_allowed AS shift, sup.unit_allowed AS unit
+            FROM public.shift_unit_permitted sup
+            JOIN public.iti i ON sup.iti_code::text = i.iti_code::text
+            JOIN public.ititrade_master tm ON sup.trade_code::text = tm.trade_code::text
+            WHERE TRIM(i.dist_code::text) = TRIM(?::text)
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(distCode);
+
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+
+        sql.append(" ORDER BY i.iti_name, tm.trade_name LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((long) page * size);
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ShiftUnitResponse(
+                rs.getString("iti_name"),
+                rs.getString("iti_type"),
+                rs.getString("trade_name"),
+                rs.getInt("strength"),
+                rs.getString("shift"),
+                rs.getString("unit")
+        ), params.toArray());
+    }
+
+    // 21. ITI Admissions Report
+    @Override
+    public List<ITIAdmissionsReportResponse> getITIAdmissionsReport(String year, String distCode, String govt,
+            String caste, String gender, String ncvtScvt, int page, int size) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT DISTINCT a.adm_num AS admission_number, a.name, a.ssc_regno, a.year_of_admission
+            FROM admissions.iti_admissions a
+            LEFT JOIN public.iti i ON TRIM(a.iti_code::text) = TRIM(i.iti_code::text)
+            WHERE a.year_of_admission::text = ?::text
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(a.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (govt != null && !"All".equalsIgnoreCase(govt)) {
+            sql.append(" AND i.govt = ?");
+            params.add("Govt".equalsIgnoreCase(govt) ? "G" : "P");
+        }
+        if (caste != null && !"All".equalsIgnoreCase(caste)) {
+            sql.append(" AND TRIM(a.res_category) = ?");
+            params.add(caste);
+        }
+        if (gender != null && !"All".equalsIgnoreCase(gender)) {
+            String genderVal = gender.toUpperCase().startsWith("M") ? "M%" : "F%";
+            sql.append(" AND a.gender ILIKE ?");
+            params.add(genderVal);
+        }
+        if (ncvtScvt != null && !"All".equalsIgnoreCase(ncvtScvt)) {
+            String typeVal = ncvtScvt.toUpperCase().startsWith("N") ? "N" : "S";
+            sql.append(" AND TRIM(a.type_admission) = ?");
+            params.add(typeVal);
+        }
+
+        sql.append(" ORDER BY a.name LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((long) page * size);
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ITIAdmissionsReportResponse(
+                rs.getString("admission_number"),
+                rs.getString("name"),
+                rs.getString("ssc_regno"),
+                rs.getString("year_of_admission")
+        ), params.toArray());
+    }
+
+    // 22. All Resource Role
     @Override
     public List<AllResourceRoleResponse> getAllResourceRoles(int page, int size) {
         String sql = """
@@ -1115,147 +1112,7 @@ public class ReportServiceImpl implements ReportService {
         ), size, (long) page * size);
     }
 
-    // 21. Applicant Address With Mobile
-    @Override
-    public List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode, int page, int size) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT a.regid, a.name, a.fname, a.phno, a.addr, d.dist_name
-            FROM public.application a
-            LEFT JOIN public.iti i ON a.user_id = i.iti_code
-            LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code
-            WHERE a.year::text = ?::text
-            """);
-        List<Object> params = new ArrayList<>();
-        params.add(year);
-
-        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
-            sql.append(" AND i.dist_code::text = ?::text");
-            params.add(distCode.trim());
-        }
-
-        sql.append(" ORDER BY a.name");
-        sql.append(" LIMIT ? OFFSET ?");
-        params.add(size);
-        params.add((long) page * size);
-
-        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> new ApplicantMobileAddressResponse(
-                rs.getString("regid"),
-                rs.getString("name"),
-                rs.getString("fname"),
-                rs.getString("phno"),
-                rs.getString("addr"),
-                rs.getString("dist_name")
-        ), params.toArray());
-    }
-
-    // 22. District Wise Application Count
-    @Override
-    public List<DistrictWiseApplicationCountResponse> getDistrictWiseApplicationCount(String year) {
-        String sql = """
-            SELECT d.dist_name AS "District Name",
-                   COUNT(a.regid) AS "Total Applications",
-                   COUNT(a.regid) FILTER (WHERE a.app_status = 'A') AS "Approved",
-                   COUNT(a.regid) FILTER (WHERE a.app_status = 'R') AS "Rejected",
-                   COUNT(a.regid) FILTER (WHERE a.app_status IS NULL OR a.app_status NOT IN ('A', 'R')) AS "Unverified"
-            FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d
-            LEFT JOIN public.iti i ON d.dist_code = i.dist_code
-            LEFT JOIN public.application a ON i.iti_code = a.user_id AND a.year::text = ?::text
-            GROUP BY d.dist_name
-            ORDER BY d.dist_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new DistrictWiseApplicationCountResponse(
-                rs.getString("District Name"),
-                rs.getInt("Total Applications"),
-                rs.getInt("Approved"),
-                rs.getInt("Rejected"),
-                rs.getInt("Unverified")
-        ), year);
-    }
-
-    // === #9 - State Dashboard ===
-    @Override
-    public List<StateDashboardResponse> getStateDashboard(String year, String govt) {
-        String govtFilter = (govt != null && !"All".equalsIgnoreCase(govt)) ? govt : "G";
-        String sql = """
-            SELECT a.iti_code, a.iti_name, d.dist_name,
-                   COALESCE(a.strength, 0) AS strength,
-                   COALESCE(a.strength_fill, 0) AS strength_fill
-            FROM (
-                SELECT iti.iti_code, iti.iti_name, iti.dist_code,
-                    (SELECT SUM(value::DECIMAL)
-                     FROM public.iti_seatmatrix sm, EACH(sm.strength)
-                     WHERE sm.iti_code = iti.iti_code
-                       AND sm.year::text = ?::text
-                       AND iti.govt = ?) AS strength,
-                    (SELECT COUNT(*)
-                     FROM admissions.iti_admissions b
-                     WHERE b.year_of_admission::text = ?::text
-                       AND b.iti_code = iti.iti_code
-                       AND iti.govt = ?) AS strength_fill
-                FROM public.iti iti
-                WHERE iti.govt = ?
-            ) a
-            LEFT JOIN public.dist_mst d ON a.dist_code = d.dist_code
-            WHERE a.strength > 0 OR a.strength_fill > 0
-            ORDER BY d.dist_name, a.iti_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            int strength = rs.getInt("strength");
-            int fill = rs.getInt("strength_fill");
-            double pct = strength > 0 ? Math.round(((double) fill / strength) * 10000.0) / 100.0 : 0.0;
-            return new StateDashboardResponse(
-                rs.getString("iti_code"),
-                rs.getString("iti_name"),
-                rs.getString("dist_name"),
-                strength, fill, pct
-            );
-        }, year, govtFilter, year, govtFilter, govtFilter);
-    }
-
-    // === #16 - Govt/Pvt District Wise Seats Abstract ===
-    @Override
-    public List<GovtPvtSeatsAbstractResponse> getGovtPvtSeatsAbstract(String year) {
-        String sql = """
-            WITH govt_seats AS (
-                SELECT i.dist_code,
-                    SUM((SELECT SUM(value::DECIMAL) FROM public.iti_seatmatrix sm, EACH(sm.strength)
-                         WHERE sm.iti_code = i.iti_code AND sm.year::text = ?::text))::int AS strength,
-                    (SELECT COUNT(*) FROM admissions.iti_admissions a
-                     WHERE a.iti_code = i.iti_code AND a.year_of_admission::text = ?::text) AS fill
-                FROM public.iti i WHERE i.govt = 'G' GROUP BY i.dist_code
-            ),
-            pvt_seats AS (
-                SELECT i.dist_code,
-                    SUM((SELECT SUM(value::DECIMAL) FROM public.iti_seatmatrix sm, EACH(sm.strength)
-                         WHERE sm.iti_code = i.iti_code AND sm.year::text = ?::text))::int AS strength,
-                    (SELECT COUNT(*) FROM admissions.iti_admissions a
-                     WHERE a.iti_code = i.iti_code AND a.year_of_admission::text = ?::text) AS fill
-                FROM public.iti i WHERE i.govt = 'P' GROUP BY i.dist_code
-            )
-            SELECT d.dist_code, d.dist_name,
-                   COALESCE(g.strength, 0) AS govt_strength, COALESCE(g.fill, 0) AS govt_fill,
-                   COALESCE(p.strength, 0) AS pvt_strength, COALESCE(p.fill, 0) AS pvt_fill
-            FROM public.dist_mst d
-            LEFT JOIN govt_seats g ON d.dist_code = g.dist_code
-            LEFT JOIN pvt_seats p ON d.dist_code = p.dist_code
-            ORDER BY d.dist_name
-            """;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            int gs = rs.getInt("govt_strength");
-            int gf = rs.getInt("govt_fill");
-            int ps = rs.getInt("pvt_strength");
-            int pf = rs.getInt("pvt_fill");
-            return new GovtPvtSeatsAbstractResponse(
-                rs.getString("dist_code"), rs.getString("dist_name"),
-                gs, gf, Math.max(0, gs - gf),
-                ps, pf, Math.max(0, ps - pf),
-                gs + ps, gf + pf,
-                Math.max(0, (gs + ps) - (gf + pf))
-            );
-        }, year, year, year, year);
-    }
-
-    // === #23 - DistWise Strength+Filled Seats Abstract ===
+    // 23. DistWise Strength+Filled Seats Abstract
     @Override
     public List<StrengthFilledSeatsResponse> getStrengthFilledSeatsAbstract(String year, String distCode) {
         StringBuilder sql = new StringBuilder("""
@@ -1296,7 +1153,10 @@ public class ReportServiceImpl implements ReportService {
         }, params.toArray());
     }
 
-    // === #25 - TradeWise Vacant Positions ===
+    // 24. Admission Report (Trade wise - same as #3)
+    // Note: Uses same implementation as #3
+
+    // 25. TradeWise Vacant Position
     @Override
     public List<TradeWiseVacantResponse> getTradeWiseVacantPositions(String year, String distCode) {
         StringBuilder sql = new StringBuilder("""

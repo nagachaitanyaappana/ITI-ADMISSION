@@ -3,8 +3,6 @@ package com.server.backend.controller.Reports;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,29 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Reports.AdmissionReportResponse;
 import com.server.backend.DTO.Reports.AllResourceRoleResponse;
 import com.server.backend.DTO.Reports.ApiDashboardResponse;
-import com.server.backend.DTO.Reports.ApplicantCountResponse;
 import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
 import com.server.backend.DTO.Reports.ApplicantReportResponse;
 import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
-import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
 import com.server.backend.DTO.Reports.DistrictOptionResponse;
 import com.server.backend.DTO.Reports.DistrictScheduleResponse;
 import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
 import com.server.backend.DTO.Reports.GovtPvtSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
-import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
 import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
-import com.server.backend.DTO.Reports.MetadataResponse;
 import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
 import com.server.backend.DTO.Reports.ShiftUnitResponse;
 import com.server.backend.DTO.Reports.StateDashboardResponse;
 import com.server.backend.DTO.Reports.StrengthFilledSeatsResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
-import com.server.backend.DTO.Reports.StudentListResponse;
 import com.server.backend.DTO.Reports.TodayScheduleResponse;
-import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
 import com.server.backend.DTO.Reports.TradeWiseVacantResponse;
@@ -317,9 +309,6 @@ public class ReportRestController {
         return reportService.getTradeWiseVacantPositions(year, distCode);
     }
 
-    // ======================================================================
-    // ADDITIONAL ENDPOINTS
-    // ======================================================================
 
     // ========== TRADE DISPLAY ==========
     @Operation(summary = "Trade Display - District Options")
@@ -328,48 +317,4 @@ public class ReportRestController {
         return tradeDisplayReportService.getDistrictOptions();
     }
 
-    @Operation(summary = "Trade Display Report")
-    @PostMapping("/trade-display")
-    public List<ItiTradeDisplayResponse> getTradeDisplayReport(
-            @RequestBody TradeDisplayReportRequest request) {
-        return tradeDisplayReportService.getTradeDisplayReport(request);
-    }
-
-    // ========== METADATA ==========
-    @Operation(summary = "Metadata")
-    @GetMapping("/metadata")
-    public MetadataResponse getMetadata() {
-        return reportService.getMetadata();
-    }
-
-    // ========== COLLEGE WISE OPEN SEATS ==========
-    @Operation(summary = "College Wise Open Seats")
-    @GetMapping("/open-seats/college")
-    public List<CollegeWiseOpenSeatsResponse> getCollegeWiseOpenSeats(
-            @RequestParam String year,
-            @RequestParam String distCode) {
-        return reportService.getCollegeWiseOpenSeats(year, distCode);
-    }
-
-    // ========== APPLICANT COUNT ==========
-    @Operation(summary = "Applicant Count")
-    @GetMapping("/applicant-count")
-    public ApplicantCountResponse getApplicantCount(
-            @RequestParam String year,
-            @RequestParam String phase) {
-        return reportService.getApplicantCount(year, phase);
-    }
-
-    // ========== ITI STUDENT LIST ==========
-    @Operation(summary = "ITI Student List")
-    @GetMapping("/iti-student-list")
-    public List<StudentListResponse> getItiStudentList(
-            @RequestParam String year,
-            @RequestParam(required = false, defaultValue = "All") String itiCode,
-            @RequestParam(required = false, defaultValue = "All") String distCode,
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 500);
-        return reportService.getItiStudentList(year, itiCode, distCode, page, safeSize);
-    }
 }
