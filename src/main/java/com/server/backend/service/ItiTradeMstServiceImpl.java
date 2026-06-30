@@ -12,7 +12,7 @@ import com.server.backend.entity.Iti_trade_mst;
 public class ItiTradeMstServiceImpl
         implements ItiTradeMstService {
 
-    private ItiTradeMstRepo repository;
+    private final ItiTradeMstRepo repository;
     public ItiTradeMstServiceImpl(ItiTradeMstRepo respository){
         this.repository = respository;
     }

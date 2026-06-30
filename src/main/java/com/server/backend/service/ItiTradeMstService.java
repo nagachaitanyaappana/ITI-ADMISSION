@@ -5,6 +5,10 @@ import java.util.List;
 import com.server.backend.DTO.Institute.ItiTradeMstDto;
 import com.server.backend.entity.Iti_trade_mst;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.validation.Valid;
+
+
 public interface ItiTradeMstService {
 
 
