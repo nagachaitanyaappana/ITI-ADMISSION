@@ -51,7 +51,7 @@ public class ReportRestController {
     }
 
     // ========== 1 - API Dashboard (ITI) ==========
-    @Operation(summary = "1 - API Dashboard (ITI)")
+    @Operation(summary = "1 - API Dashboard (ITI)", operationId = "01-iti-wise-status")
     @GetMapping("/iti-wise-status")
     public List<ItiWiseStatusResponse> getItiWiseStatus(
             @RequestParam String year,
@@ -64,7 +64,7 @@ public class ReportRestController {
     }
 
     // ========== 2 - Applicant Report ==========
-    @Operation(summary = "2 - Applicant Report")
+    @Operation(summary = "2 - Applicant Report", operationId = "02-applicant-report-by-phase")
     @GetMapping("/applicant-report-by-phase")
     public List<ApplicantReportResponse> getApplicantReportByPhase(
             @RequestParam String phase,
@@ -78,7 +78,7 @@ public class ReportRestController {
     }
 
     // ========== 3 - Admission Report (ITI) ==========
-    @Operation(summary = "3 - Admission Report (ITI)")
+    @Operation(summary = "3 - Admission Report (ITI)", operationId = "03-admission-report-iti")
     @GetMapping("/admission-report-iti")
     public List<AdmissionReportResponse> getAdmissionReportIti(
             @RequestParam String year,
@@ -88,7 +88,7 @@ public class ReportRestController {
     }
 
     // ========== 4 - DSC List ==========
-    @Operation(summary = "4 - DSC List")
+    @Operation(summary = "4 - DSC List", operationId = "04-dsc-full")
     @GetMapping("/dsc-full")
     public DscFullReportResponse getDscFullReport(
             @RequestParam String distCode,
@@ -101,7 +101,7 @@ public class ReportRestController {
     }
 
     // ========== 5 - Caste Wise Admissions Abstract ==========
-    @Operation(summary = "5 - Caste Wise Admissions Abstract")
+    @Operation(summary = "5 - Caste Wise Admissions Abstract", operationId = "05-caste-wise-admissions")
     @GetMapping("/caste-wise-admissions")
     public List<CasteWiseAdmissionsResponse> getCasteWiseAdmissions(
             @RequestParam String year,
@@ -113,7 +113,7 @@ public class ReportRestController {
     }
 
     // ========== 6 - Applicant Address With Mobile ==========
-    @Operation(summary = "6 - Applicant Address With Mobile")
+    @Operation(summary = "6 - Applicant Address With Mobile", operationId = "06-applicant-mobile-address")
     @GetMapping("/applicant-mobile-address")
     public List<ApplicantMobileAddressResponse> getApplicantMobileAddress(
             @RequestParam String year,
@@ -125,7 +125,7 @@ public class ReportRestController {
     }
 
     // ========== 7 - API Dashboard (District) ==========
-    @Operation(summary = "7 - API Dashboard (District)")
+    @Operation(summary = "7 - API Dashboard (District)", operationId = "07-api-dashboard")
     @GetMapping("/api-dashboard")
     public List<ApiDashboardResponse> getApiDashboard(
             @RequestParam String year) {
@@ -133,7 +133,7 @@ public class ReportRestController {
     }
 
     // ========== 8 - Verification Report (District) ==========
-    @Operation(summary = "8 - Verification Report (District)")
+    @Operation(summary = "8 - Verification Report (District)", operationId = "08-verified-application-count")
     @GetMapping("/verified-application-count")
     public List<VerifiedApplicationCountResponse> getVerifiedApplicationCount(
             @RequestParam String year,
@@ -142,7 +142,7 @@ public class ReportRestController {
     }
 
     // ========== 9 - State Dashboard ==========
-    @Operation(summary = "9 - State Dashboard")
+    @Operation(summary = "9 - State Dashboard", operationId = "09-state-dashboard")
     @GetMapping("/state-dashboard")
     public List<StateDashboardResponse> getStateDashboard(
             @RequestParam String year,
@@ -151,7 +151,7 @@ public class ReportRestController {
     }
 
     // ========== 10 - Phase Wise Admissions Details ==========
-    @Operation(summary = "10 - Phase Wise Admissions Details")
+    @Operation(summary = "10 - Phase Wise Admissions Details", operationId = "10-phase-wise")
     @GetMapping("/phase-wise")
     public List<PhaseWiseReportResponse> getPhaseWiseReport(
             @RequestParam String year) {
@@ -159,14 +159,14 @@ public class ReportRestController {
     }
 
     // ========== 11 - Today Schedule ITIs ==========
-    @Operation(summary = "11 - Today Schedule ITIs")
+    @Operation(summary = "11 - Today Schedule ITIs", operationId = "11-today-schedule")
     @GetMapping("/today-schedule")
     public List<TodayScheduleResponse> getTodaySchedule() {
         return reportService.getTodaySchedule();
     }
 
     // ========== 12 - Trade Wise Report ==========
-    @Operation(summary = "12 - Trade Wise Report")
+    @Operation(summary = "12 - Trade Wise Report", operationId = "12-trade-wise-report")
     @GetMapping("/trade-wise-report")
     public List<TradeWiseReportResponse> getTradeWiseReport(
             @RequestParam String year,
@@ -176,7 +176,7 @@ public class ReportRestController {
     }
 
     // ========== 13 - Applicant Report Dist Wise ==========
-    @Operation(summary = "13 - Applicant Report Dist Wise")
+    @Operation(summary = "13 - Applicant Report Dist Wise", operationId = "13-applicant-report-state-wise")
     @GetMapping("/applicant-report-state-wise")
     public List<ApplicantReportResponse> getApplicantReportStateWise(
             @RequestParam String phase,
@@ -190,7 +190,7 @@ public class ReportRestController {
     }
 
     // ========== 14 - DIST/ITI/Trade Wise Seats Abstract ==========
-    @Operation(summary = "14 - DIST/ITI/Trade Wise Seats Abstract")
+    @Operation(summary = "14 - DIST/ITI/Trade Wise Seats Abstract", operationId = "14-open-seats")
     @GetMapping("/open-seats")
     public List<OpenSeatsAbstractResponse> getOpenSeatsAbstract(
             @RequestParam String year) {
@@ -198,7 +198,7 @@ public class ReportRestController {
     }
 
     // ========== 15 - Duration Wise Trade Seats Abstract ==========
-    @Operation(summary = "15 - Duration Wise Trade Seats Abstract")
+    @Operation(summary = "15 - Duration Wise Trade Seats Abstract", operationId = "15-trade-duration-seats")
     @GetMapping("/trade-duration-seats")
     public List<TradeDurationSeatsResponse> getTradeDurationSeats(
             @RequestParam String year,
@@ -208,7 +208,7 @@ public class ReportRestController {
     }
 
     // ========== 16 - Govt/Pvt District Wise Seats Abstract ==========
-    @Operation(summary = "16 - Govt/Pvt District Wise Seats Abstract")
+    @Operation(summary = "16 - Govt/Pvt District Wise Seats Abstract", operationId = "16-govt-pvt-seats")
     @GetMapping("/govt-pvt-seats")
     public List<GovtPvtSeatsAbstractResponse> getGovtPvtSeatsAbstract(
             @RequestParam String year) {
@@ -216,7 +216,7 @@ public class ReportRestController {
     }
 
     // ========== 17 - Student Reg Details ==========
-    @Operation(summary = "17 - Student Reg Details")
+    @Operation(summary = "17 - Student Reg Details", operationId = "17-student-details")
     @GetMapping("/student-details")
     public StudentCompleteDetailsResponse getStudentCompleteDetails(
             @RequestParam(required = false) String regid,
@@ -225,7 +225,7 @@ public class ReportRestController {
     }
 
     // ========== 18 - Verification Report (District) ==========
-    @Operation(summary = "18 - Verification Report (District)")
+    @Operation(summary = "18 - Verification Report (District)", operationId = "18-district-wise-application-count")
     @GetMapping("/district-wise-application-count")
     public List<DistrictWiseApplicationCountResponse> getDistrictWiseApplicationCount(
             @RequestParam String year) {
@@ -233,7 +233,7 @@ public class ReportRestController {
     }
 
     // ========== 19 - District Schedule ==========
-    @Operation(summary = "19 - District Schedule")
+    @Operation(summary = "19 - District Schedule", operationId = "19-district-schedule")
     @GetMapping("/district-schedule")
     public List<DistrictScheduleResponse> getDistrictSchedule(
             @RequestParam(required = false, defaultValue = "All") String distCode,
@@ -244,7 +244,7 @@ public class ReportRestController {
     }
 
     // ========== 20 - Shift Unit Report ==========
-    @Operation(summary = "20 - Shift Unit Report")
+    @Operation(summary = "20 - Shift Unit Report", operationId = "20-permitted-shift-unit")
     @GetMapping("/permitted-shift-unit")
     public List<ShiftUnitResponse> getPermittedShiftUnit(
             @RequestParam String distCode,
@@ -256,7 +256,7 @@ public class ReportRestController {
     }
 
     // ========== 21 - Admitted Seats Abstract ==========
-    @Operation(summary = "21 - Admitted Seats Abstract")
+    @Operation(summary = "21 - Admitted Seats Abstract", operationId = "21-iti-admissions")
     @GetMapping("/iti-admissions")
     public List<ITIAdmissionsReportResponse> getITIAdmissionsReport(
             @RequestParam String year,
@@ -272,7 +272,7 @@ public class ReportRestController {
     }
 
     // ========== 22 - All Resource Role ==========
-    @Operation(summary = "22 - All Resource Role")
+    @Operation(summary = "22 - All Resource Role", operationId = "22-all-resource-roles")
     @GetMapping("/all-resource-roles")
     public List<AllResourceRoleResponse> getAllResourceRoles(
             @RequestParam(required = false, defaultValue = "0") int page,
@@ -282,7 +282,7 @@ public class ReportRestController {
     }
 
     // ========== 23 - DistWise Admitted Seats Abstract ==========
-    @Operation(summary = "23 - DistWise Admitted Seats Abstract")
+    @Operation(summary = "23 - DistWise Admitted Seats Abstract", operationId = "23-strength-filled-seats")
     @GetMapping("/strength-filled-seats")
     public List<StrengthFilledSeatsResponse> getStrengthFilledSeats(
             @RequestParam String year,
@@ -291,7 +291,7 @@ public class ReportRestController {
     }
 
     // ========== 24 - Trade/Dist Wise Admission Report ==========
-    @Operation(summary = "24 - Trade/Dist Wise Admission Report")
+    @Operation(summary = "24 - Trade/Dist Wise Admission Report", operationId = "24-admission-report")
     @GetMapping("/admission-report")
     public List<AdmissionReportResponse> getAdmissionReport(
             @RequestParam String year,
@@ -301,7 +301,7 @@ public class ReportRestController {
     }
 
     // ========== 25 - TradeWise Vacant Position ==========
-    @Operation(summary = "25 - TradeWise Vacant Position")
+    @Operation(summary = "25 - TradeWise Vacant Position", operationId = "25-trade-vacant-positions")
     @GetMapping("/trade-vacant-positions")
     public List<TradeWiseVacantResponse> getTradeWiseVacantPositions(
             @RequestParam String year,
@@ -311,7 +311,7 @@ public class ReportRestController {
 
 
     // ========== TRADE DISPLAY ==========
-    @Operation(summary = "Trade Display - District Options")
+    @Operation(summary = "Trade Display - District Options", operationId = "26-trade-display-districts")
     @GetMapping("/trade-display/districts")
     public List<DistrictOptionResponse> getDistrictOptions() {
         return tradeDisplayReportService.getDistrictOptions();

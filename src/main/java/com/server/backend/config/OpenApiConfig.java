@@ -1,4 +1,6 @@
 package com.server.backend.config;
+import java.util.Comparator;
+
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +53,17 @@ public class OpenApiConfig {
                 }
             }
             return operation;
+        };
+    }
+
+    @Bean
+    public Comparator<io.swagger.v3.oas.models.PathItem.HttpMethod> operationSorter() {
+        return (method1, method2) -> {
+            // Sort by HTTP method: GET first, then others
+            if (method1 == method2) return 0;
+            if (method1 == io.swagger.v3.oas.models.PathItem.HttpMethod.GET) return -1;
+            if (method2 == io.swagger.v3.oas.models.PathItem.HttpMethod.GET) return 1;
+            return method1.name().compareTo(method2.name());
         };
     }
 }
