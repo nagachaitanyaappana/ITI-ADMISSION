@@ -19,12 +19,15 @@ import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
 import com.server.backend.DTO.Reports.DistrictScheduleResponse;
 import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
+import com.server.backend.DTO.Reports.GovtPvtSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
 import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
 import com.server.backend.DTO.Reports.MetadataResponse;
 import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
 import com.server.backend.DTO.Reports.ShiftUnitResponse;
+import com.server.backend.DTO.Reports.StateDashboardResponse;
+import com.server.backend.DTO.Reports.StrengthFilledSeatsResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.AdmissionDetail;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.AppliedIti;
@@ -36,6 +39,7 @@ import com.server.backend.DTO.Reports.StudentListResponse;
 import com.server.backend.DTO.Reports.TodayScheduleResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
+import com.server.backend.DTO.Reports.TradeWiseVacantResponse;
 import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
 
 @Service
@@ -1166,6 +1170,173 @@ public class ReportServiceImpl implements ReportService {
                 rs.getInt("Rejected"),
                 rs.getInt("Unverified")
         ), year);
+    }
+
+    // === #9 - State Dashboard ===
+    @Override
+    public List<StateDashboardResponse> getStateDashboard(String year, String govt) {
+        String govtFilter = (govt != null && !"All".equalsIgnoreCase(govt)) ? govt : "G";
+        String sql = """
+            SELECT a.iti_code, a.iti_name, d.dist_name,
+                   COALESCE(a.strength, 0) AS strength,
+                   COALESCE(a.strength_fill, 0) AS strength_fill
+            FROM (
+                SELECT iti.iti_code, iti.iti_name, iti.dist_code,
+                    (SELECT SUM(value::DECIMAL)
+                     FROM public.iti_seatmatrix sm, EACH(sm.strength)
+                     WHERE sm.iti_code = iti.iti_code
+                       AND sm.year::text = ?::text
+                       AND iti.govt = ?) AS strength,
+                    (SELECT COUNT(*)
+                     FROM admissions.iti_admissions b
+                     WHERE b.year_of_admission::text = ?::text
+                       AND b.iti_code = iti.iti_code
+                       AND iti.govt = ?) AS strength_fill
+                FROM public.iti iti
+                WHERE iti.govt = ?
+            ) a
+            LEFT JOIN public.dist_mst d ON a.dist_code = d.dist_code
+            WHERE a.strength > 0 OR a.strength_fill > 0
+            ORDER BY d.dist_name, a.iti_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            int strength = rs.getInt("strength");
+            int fill = rs.getInt("strength_fill");
+            double pct = strength > 0 ? Math.round(((double) fill / strength) * 10000.0) / 100.0 : 0.0;
+            return new StateDashboardResponse(
+                rs.getString("iti_code"),
+                rs.getString("iti_name"),
+                rs.getString("dist_name"),
+                strength, fill, pct
+            );
+        }, year, govtFilter, year, govtFilter, govtFilter);
+    }
+
+    // === #16 - Govt/Pvt District Wise Seats Abstract ===
+    @Override
+    public List<GovtPvtSeatsAbstractResponse> getGovtPvtSeatsAbstract(String year) {
+        String sql = """
+            WITH govt_seats AS (
+                SELECT i.dist_code,
+                    SUM((SELECT SUM(value::DECIMAL) FROM public.iti_seatmatrix sm, EACH(sm.strength)
+                         WHERE sm.iti_code = i.iti_code AND sm.year::text = ?::text))::int AS strength,
+                    (SELECT COUNT(*) FROM admissions.iti_admissions a
+                     WHERE a.iti_code = i.iti_code AND a.year_of_admission::text = ?::text) AS fill
+                FROM public.iti i WHERE i.govt = 'G' GROUP BY i.dist_code
+            ),
+            pvt_seats AS (
+                SELECT i.dist_code,
+                    SUM((SELECT SUM(value::DECIMAL) FROM public.iti_seatmatrix sm, EACH(sm.strength)
+                         WHERE sm.iti_code = i.iti_code AND sm.year::text = ?::text))::int AS strength,
+                    (SELECT COUNT(*) FROM admissions.iti_admissions a
+                     WHERE a.iti_code = i.iti_code AND a.year_of_admission::text = ?::text) AS fill
+                FROM public.iti i WHERE i.govt = 'P' GROUP BY i.dist_code
+            )
+            SELECT d.dist_code, d.dist_name,
+                   COALESCE(g.strength, 0) AS govt_strength, COALESCE(g.fill, 0) AS govt_fill,
+                   COALESCE(p.strength, 0) AS pvt_strength, COALESCE(p.fill, 0) AS pvt_fill
+            FROM public.dist_mst d
+            LEFT JOIN govt_seats g ON d.dist_code = g.dist_code
+            LEFT JOIN pvt_seats p ON d.dist_code = p.dist_code
+            ORDER BY d.dist_name
+            """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            int gs = rs.getInt("govt_strength");
+            int gf = rs.getInt("govt_fill");
+            int ps = rs.getInt("pvt_strength");
+            int pf = rs.getInt("pvt_fill");
+            return new GovtPvtSeatsAbstractResponse(
+                rs.getString("dist_code"), rs.getString("dist_name"),
+                gs, gf, Math.max(0, gs - gf),
+                ps, pf, Math.max(0, ps - pf),
+                gs + ps, gf + pf,
+                Math.max(0, (gs + ps) - (gf + pf))
+            );
+        }, year, year, year, year);
+    }
+
+    // === #23 - DistWise Strength+Filled Seats Abstract ===
+    @Override
+    public List<StrengthFilledSeatsResponse> getStrengthFilledSeatsAbstract(String year, String distCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT i.iti_code, i.iti_name, d.dist_name,
+                   COALESCE((
+                       SELECT SUM(value::DECIMAL) FROM public.iti_seatmatrix sm, EACH(sm.strength)
+                       WHERE sm.iti_code = i.iti_code AND sm.year::text = ?::text
+                   ), 0)::int AS strength,
+                   COALESCE((
+                       SELECT COUNT(*) FROM admissions.iti_admissions a
+                       WHERE a.iti_code = i.iti_code AND a.year_of_admission::text = ?::text
+                   ), 0)::int AS strength_fill
+            FROM public.iti i
+            JOIN public.dist_mst d ON i.dist_code = d.dist_code
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+
+        sql.append(" ORDER BY d.dist_name, i.iti_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
+            int strength = rs.getInt("strength");
+            int fill = rs.getInt("strength_fill");
+            double pct = strength > 0 ? Math.round(((double) fill / strength) * 10000.0) / 100.0 : 0.0;
+            return new StrengthFilledSeatsResponse(
+                rs.getString("iti_code"),
+                rs.getString("iti_name"),
+                rs.getString("dist_name"),
+                strength, fill, Math.max(0, strength - fill), pct
+            );
+        }, params.toArray());
+    }
+
+    // === #25 - TradeWise Vacant Positions ===
+    @Override
+    public List<TradeWiseVacantResponse> getTradeWiseVacantPositions(String year, String distCode) {
+        StringBuilder sql = new StringBuilder("""
+            SELECT tm.trade_name, tm.trade_code::text AS trade_code,
+                   SUM(COALESCE((
+                       SELECT SUM(svals(sm.strength)::int)
+                       FROM public.iti_seatmatrix sm
+                       WHERE sm.iti_code = it.iti_code
+                         AND sm.trade_code::text = tm.trade_code::text
+                         AND sm.year::text = ?::text
+                   ), 0)) AS total_strength,
+                   COUNT(a.adm_num) AS total_filled
+            FROM public.ititrade_master tm
+            JOIN public.iti_trade it ON it.trade_code::text = tm.trade_code::text
+            JOIN public.iti i ON it.iti_code = i.iti_code
+            LEFT JOIN admissions.iti_admissions a ON a.iti_code = i.iti_code
+                AND a.trade_code::text = tm.trade_code::text
+                AND a.year_of_admission::text = ?::text
+            WHERE 1=1
+            """);
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+
+        sql.append(" GROUP BY tm.trade_name, tm.trade_code ORDER BY tm.trade_name");
+
+        return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
+            int strength = rs.getInt("total_strength");
+            int filled = rs.getInt("total_filled");
+            return new TradeWiseVacantResponse(
+                rs.getString("trade_code"),
+                rs.getString("trade_name"),
+                strength, filled, Math.max(0, strength - filled)
+            );
+        }, params.toArray());
     }
 
     private String str(Object o) {

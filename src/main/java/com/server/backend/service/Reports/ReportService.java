@@ -13,20 +13,25 @@ import com.server.backend.DTO.Reports.CollegeWiseOpenSeatsResponse;
 import com.server.backend.DTO.Reports.DistrictScheduleResponse;
 import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
 import com.server.backend.DTO.Reports.DscFullReportResponse;
+import com.server.backend.DTO.Reports.GovtPvtSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
 import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
 import com.server.backend.DTO.Reports.MetadataResponse;
 import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
 import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
 import com.server.backend.DTO.Reports.ShiftUnitResponse;
+import com.server.backend.DTO.Reports.StateDashboardResponse;
+import com.server.backend.DTO.Reports.StrengthFilledSeatsResponse;
 import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
 import com.server.backend.DTO.Reports.StudentListResponse;
 import com.server.backend.DTO.Reports.TodayScheduleResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
+import com.server.backend.DTO.Reports.TradeWiseVacantResponse;
 import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
 
 public interface ReportService {
+
     // Metadata
     MetadataResponse getMetadata();
 
@@ -54,7 +59,7 @@ public interface ReportService {
     // 8. DSC Full Report
     DscFullReportResponse getDscFullReport(String distCode, String itiCode, String tradeCode, String phase, String year, String modeAdm);
 
-    // 9. API Dashboard
+    // 9. API Dashboard (District)
     List<ApiDashboardResponse> getApiDashboard(String year);
 
     // 10. Student Complete Details
@@ -95,4 +100,18 @@ public interface ReportService {
 
     // 22. District Wise Application Count
     List<DistrictWiseApplicationCountResponse> getDistrictWiseApplicationCount(String year);
+
+    // === NEW 4 Reports (Legacy #9, #16, #23, #25) ===
+
+    // #9 - State Dashboard (Jdgetdasboardreport.jsp) - Roles: 10, 1
+    List<StateDashboardResponse> getStateDashboard(String year, String govt);
+
+    // #16 - Govt/Pvt District Wise Seats Abstract (govt_pvt_dist_seats_abstract.jsp) - Roles: 10, 1
+    List<GovtPvtSeatsAbstractResponse> getGovtPvtSeatsAbstract(String year);
+
+    // #23 - DistWise Strength+Filled Seats Abstract (Seats_Abstract_Strength_filled_Interface.jsp) - Role: 1
+    List<StrengthFilledSeatsResponse> getStrengthFilledSeatsAbstract(String year, String distCode);
+
+    // #25 - TradeWise Vacant Position (tradewise_vacant_position.jsp) - Role: 1
+    List<TradeWiseVacantResponse> getTradeWiseVacantPositions(String year, String distCode);
 }
