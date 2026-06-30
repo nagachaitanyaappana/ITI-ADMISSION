@@ -8,7 +8,7 @@ import com.server.backend.entity.Iti_trade_mst;
 public interface ItiTradeMstService {
 
 
-  Iti_trade_mst createTrade(ItiTradeMstDto dto);
+  Iti_trade_mst createTrade(@Valid @RequestBody ItiTradeMstDto dto);
 
 
     List<Iti_trade_mst> getAllTrades();

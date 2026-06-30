@@ -13,7 +13,9 @@ public class ItiTradeMstServiceImpl
         implements ItiTradeMstService {
 
     private ItiTradeMstRepo repository;
-
+    public ItiTradeMstServiceImpl(ItiTradeMstRepo respository){
+        this.repository = respository;
+    }
     @Override
     public Iti_trade_mst createTrade(
             ItiTradeMstDto dto) {
