@@ -2,14 +2,19 @@ package com.server.backend.controller.Implant;
 
 import com.server.backend.DTO.Implant.IndustryPartnerDetailsRequest;
 import com.server.backend.DTO.Implant.IndustryPartnerDetailsResponse;
+import com.server.backend.service.Implant.IndustryPartnerDetailsExcelService;
 import com.server.backend.service.Implant.IndustryPartnerDetailsService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,18 +26,19 @@ import java.util.List;
 public class IndustryPartnerDetailsController {
 
     private final IndustryPartnerDetailsService service;
+    private final IndustryPartnerDetailsExcelService excelService;
 
     public IndustryPartnerDetailsController(
-            IndustryPartnerDetailsService service) {
+            IndustryPartnerDetailsService service,
+            IndustryPartnerDetailsExcelService excelService) {
 
         this.service = service;
+        this.excelService = excelService;
     }
-
 
     // CREATE
     @PostMapping
-    public ResponseEntity<IndustryPartnerDetailsResponse>
-    createDetails(
+    public ResponseEntity<IndustryPartnerDetailsResponse> createDetails(
             @RequestBody IndustryPartnerDetailsRequest request) {
 
         return ResponseEntity
@@ -40,22 +46,18 @@ public class IndustryPartnerDetailsController {
                 .body(service.createDetails(request));
     }
 
-
     // GET ALL
     @GetMapping
-    public ResponseEntity<List<IndustryPartnerDetailsResponse>>
-    getAllDetails() {
+    public ResponseEntity<List<IndustryPartnerDetailsResponse>> getAllDetails() {
 
         return ResponseEntity.ok(
                 service.getAllDetails()
         );
     }
 
-
     // GET ONE
     @GetMapping("/{pid}")
-    public ResponseEntity<IndustryPartnerDetailsResponse>
-    getDetailsById(
+    public ResponseEntity<IndustryPartnerDetailsResponse> getDetailsById(
             @PathVariable Long pid) {
 
         return ResponseEntity.ok(
@@ -63,11 +65,9 @@ public class IndustryPartnerDetailsController {
         );
     }
 
-
     // UPDATE
     @PutMapping("/{pid}")
-    public ResponseEntity<IndustryPartnerDetailsResponse>
-    updateDetails(
+    public ResponseEntity<IndustryPartnerDetailsResponse> updateDetails(
             @PathVariable Long pid,
             @RequestBody IndustryPartnerDetailsRequest request) {
 
@@ -75,7 +75,6 @@ public class IndustryPartnerDetailsController {
                 service.updateDetails(pid, request)
         );
     }
-
 
     // DELETE
     @DeleteMapping("/{pid}")
@@ -85,5 +84,24 @@ public class IndustryPartnerDetailsController {
         service.deleteDetails(pid);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // DOWNLOAD EXCEL
+    @GetMapping("/download-excel")
+    public ResponseEntity<byte[]> downloadExcel() throws IOException {
+
+        byte[] excelFile = excelService.generateExcel();
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=Industry_Partner_Details.xlsx"
+                )
+                .contentType(
+                        MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                )
+                .body(excelFile);
     }
 }

@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-import com.server.backend.entity.Placements.IndustryPartnerDetails;
+import com.server.backend.DTO.Implant.IndustryPartnerExcelRow;
 import com.server.backend.Repository.PlacementsRepositories.IndustryPartnerDetailsRepository;
 
 @Service
@@ -25,12 +25,15 @@ public class IndustryPartnerDetailsExcelService {
 
     public byte[] generateExcel() throws IOException {
 
-        List<IndustryPartnerDetails> details = repository.findAll();
+        List<IndustryPartnerExcelRow> details =
+                repository.findIndustryPartnerExcelRows();
 
         try (Workbook workbook = new XSSFWorkbook();
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+             ByteArrayOutputStream outputStream =
+                     new ByteArrayOutputStream()) {
 
-            Sheet sheet = workbook.createSheet("Industry Partner Details");
+            Sheet sheet =
+                    workbook.createSheet("Industry Partner Details");
 
             // Header row
             Row header = sheet.createRow(0);
@@ -38,29 +41,31 @@ public class IndustryPartnerDetailsExcelService {
             header.createCell(0).setCellValue("SNO");
             header.createCell(1).setCellValue("DIST");
             header.createCell(2).setCellValue("ITI");
-            header.createCell(3).setCellValue("REVISED LEAD SECTOR");
-            header.createCell(4).setCellValue("PROPOSED NEW TRADE");
-            header.createCell(5).setCellValue(
-                    "REVISED LEAD INDUSTRY PARTNER");
+            header.createCell(3)
+                    .setCellValue("REVISED LEAD SECTOR");
+            header.createCell(4)
+                    .setCellValue("PROPOSED NEW TRADE");
+            header.createCell(5)
+                    .setCellValue("REVISED LEAD INDUSTRY PARTNER");
 
             // Data rows
             int rowNumber = 1;
             int sno = 1;
 
-            for (IndustryPartnerDetails detail : details) {
+            for (IndustryPartnerExcelRow detail : details) {
 
                 Row row = sheet.createRow(rowNumber++);
 
                 row.createCell(0).setCellValue(sno++);
 
                 row.createCell(1).setCellValue(
-                        detail.getDistCode() != null
-                                ? detail.getDistCode()
+                        detail.getDistName() != null
+                                ? detail.getDistName()
                                 : "");
 
                 row.createCell(2).setCellValue(
-                        detail.getItiCode() != null
-                                ? detail.getItiCode()
+                        detail.getItiName() != null
+                                ? detail.getItiName()
                                 : "");
 
                 row.createCell(3).setCellValue(
