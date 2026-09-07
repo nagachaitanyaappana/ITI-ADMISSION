@@ -40,4 +40,7 @@ public interface ImplantService {
     List<Map<String, Object>> getTraineesByType(String type);
     List<ImplantReportResponse> getDatewiseReport(String fromDate, String toDate);
     List<Map<String, Object>> getYearwiseReport(int year, String itiType);
+
+    byte[] downloadExcel(String itiCode);
 }
+

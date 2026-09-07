@@ -1,5 +1,8 @@
 package com.server.backend.service.Implant;
 import com.server.backend.DTO.Implant.ImplantReportResponse;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import com.server.backend.DTO.Implant.ImplantCreateRequest;
@@ -9,12 +12,14 @@ import com.server.backend.DTO.Implant.ImplantResponse;
 import com.server.backend.DTO.Implant.InplantDashboardResponse;
 import com.server.backend.Repository.PlacementsRepositories.ImplantRepository;
 import com.server.backend.Repository.PlacementsRepositories.IndustriesRepository;
-
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
+import org.apache.poi.ss.usermodel.Sheet;
+import java.io.IOException;
 @Service
 public class ImplantServiceImpl implements ImplantService {
 
@@ -396,7 +401,7 @@ dto.setDescription((String) row[14]);
         }
         sql.append(" ORDER BY i.implant_id ");
 
-        List<Object[]> rows = jdbcTemplate.query(sql.toString(), params.toArray(), (rs, rowNum) -> {
+        List<Object[]> rows = jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
             Object[] row = new Object[15];
             row[0] = rs.getLong("implant_id");
             row[1] = rs.getString("iti_name");
@@ -414,7 +419,9 @@ dto.setDescription((String) row[14]);
             row[13] = rs.getString("location");
             row[14] = rs.getString("description");
             return row;
-        });
+        },
+        params.toArray()
+        );
 
         List<ImplantReportResponse> response = new ArrayList<>();
         for (Object[] row : rows) {
@@ -647,4 +654,87 @@ dto.setDescription((String) row[14]);
                 throw new IllegalArgumentException("Unknown trainees report type.");
         }
     }
+
+@Override
+public byte[] downloadExcel(String itiCode) {
+
+    try{
+    List<ImplantReportResponse> records =
+            getReport(itiCode);
+
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("Inplant Report");
+
+    Row header = sheet.createRow(0);
+    header.createCell(0).setCellValue("Implant ID");
+header.createCell(1).setCellValue("ITI Name");
+header.createCell(2).setCellValue("Industry Name");
+header.createCell(3).setCellValue("Faculty Name");
+header.createCell(4).setCellValue("Trade Name");
+header.createCell(5).setCellValue("Industry Address");
+header.createCell(6).setCellValue("HR No");
+header.createCell(7).setCellValue("From Date");
+header.createCell(8).setCellValue("To Date");
+header.createCell(9).setCellValue("No Of Days");
+header.createCell(10).setCellValue("No Of Students");
+header.createCell(11).setCellValue("State");
+header.createCell(12).setCellValue("District");
+header.createCell(13).setCellValue("Location");
+header.createCell(14).setCellValue("Description");
+
+    int rowNum = 1;
+
+   for (ImplantReportResponse r : records) {
+
+    Row row = sheet.createRow(rowNum++);
+
+    row.createCell(0).setCellValue(r.getImplantId());
+    row.createCell(1).setCellValue(r.getItiName());
+    row.createCell(2).setCellValue(r.getIndustryName());
+    row.createCell(3).setCellValue(r.getFacultyName());
+    row.createCell(4).setCellValue(r.getTradeName());
+    row.createCell(5).setCellValue(r.getIndustryAddress());
+
+    if (r.getHrNo() != null) {
+        row.createCell(6).setCellValue(r.getHrNo());
+    }
+
+    row.createCell(7).setCellValue(
+            r.getFromDate() != null ? r.getFromDate().toString() : "");
+
+    row.createCell(8).setCellValue(
+            r.getToDate() != null ? r.getToDate().toString() : "");
+
+    if (r.getNoOfDays() != null) {
+        row.createCell(9).setCellValue(r.getNoOfDays());
+    }
+
+    if (r.getNoOfStudents() != null) {
+        row.createCell(10).setCellValue(r.getNoOfStudents());
+    }
+
+    row.createCell(11).setCellValue(
+            r.getStateName() != null ? r.getStateName() : "");
+
+    row.createCell(12).setCellValue(
+            r.getDistrictName() != null ? r.getDistrictName() : "");
+
+    row.createCell(13).setCellValue(
+            r.getLocation() != null ? r.getLocation() : "");
+
+    row.createCell(14).setCellValue(
+            r.getDescription() != null ? r.getDescription() : "");
+}
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+    workbook.write(out);
+    workbook.close();
+
+    return out.toByteArray();
+}catch(IOException e) {
+    throw new RuntimeException("Failed to generate Excel file", e);
+
+}
+}
 }
