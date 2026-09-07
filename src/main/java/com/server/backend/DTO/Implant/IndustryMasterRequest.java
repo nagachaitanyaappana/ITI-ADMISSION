@@ -5,6 +5,7 @@ public class IndustryMasterRequest {
     private String industryName;
     private String industryType;
     private String industryAddress;
+    private String entryBy;
 
     public String getIndustryName() {
         return industryName;
@@ -28,5 +29,13 @@ public class IndustryMasterRequest {
 
     public void setIndustryAddress(String industryAddress) {
         this.industryAddress = industryAddress;
+    }
+
+    public String getEntryBy() {
+        return entryBy;
+    }
+
+    public void setEntryBy(String entryBy) {
+        this.entryBy = entryBy;
     }
 }

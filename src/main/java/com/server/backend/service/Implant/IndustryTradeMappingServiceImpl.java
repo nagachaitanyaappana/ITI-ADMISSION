@@ -9,7 +9,7 @@ import com.server.backend.Repository.PlacementsRepositories.IndustryMasterReposi
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.List;
 import java.sql.Timestamp;
 
 @Service
@@ -245,5 +245,24 @@ public void deleteIndustryTradeMapping(Long slno) {
                     );
 
  industriesRepository.delete(mapping);
+}
+@Override
+@Transactional(readOnly = true)
+public List<IndustryTradeMappingResponse> getAllIndustryTradeMappings() {
+
+    return industriesRepository.findAll()
+            .stream()
+            .map(mapping -> new IndustryTradeMappingResponse(
+                    mapping.getSlno(),
+                    mapping.getItiCode(),
+                    mapping.getIndustryId(),
+                    mapping.getIndustryName(),
+                    mapping.getIndustryType(),
+                    mapping.getTradeCode(),
+                    mapping.getTradeName(),
+                    mapping.getTradeShort(),
+                    mapping.getEntryTime()
+            ))
+            .toList();
 }
 }

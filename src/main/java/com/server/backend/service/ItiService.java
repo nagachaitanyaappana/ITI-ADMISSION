@@ -22,6 +22,6 @@ public interface ItiService {
              String distCode,
              ItiPatchDto dto);
 
-    Iti getItiByCodeAndDistCode(String itiCode,
-                            String distCode);
+    Iti getItiByCodeAndDistCode(String itiCode, String distCode);
+     List<Iti> getItisByDistrict(String distCode);
 }

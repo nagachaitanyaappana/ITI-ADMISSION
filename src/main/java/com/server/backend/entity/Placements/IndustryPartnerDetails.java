@@ -1,18 +1,28 @@
 package com.server.backend.entity.Placements;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import java.sql.Timestamp;
 import lombok.Data;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 @Entity
 @Table(name="industry_partner_details" ,schema="implant")
 @Data
 public class IndustryPartnerDetails {
-    @Id
-    @Column(name="pid")
-    private Long pid;
-
+   @Id
+@GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "industry_partner_details_seq")
+@SequenceGenerator(
+        name = "industry_partner_details_seq",
+        sequenceName = "industry_partner_details_pid_seq",
+        schema = "implant",
+        allocationSize = 1)
+@Column(name = "pid")
+private Long pid;
     @Column(name="dist_code")
     private String distCode;
 
