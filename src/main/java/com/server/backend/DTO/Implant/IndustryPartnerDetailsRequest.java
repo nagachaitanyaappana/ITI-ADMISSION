@@ -18,4 +18,5 @@ public class IndustryPartnerDetailsRequest {
     private String proposedNewTrade;
 
     private String revisedLeadIndustryPartner;
+    private String entryBy;
 }

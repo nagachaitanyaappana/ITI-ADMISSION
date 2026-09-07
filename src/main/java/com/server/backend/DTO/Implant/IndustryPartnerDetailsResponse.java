@@ -17,6 +17,10 @@ public class IndustryPartnerDetailsResponse {
 
     private String itiCode;
 
+    private String distName;
+
+    private String itiName;
+
     private String revisedLeadSector;
 
     private String proposedNewTrade;

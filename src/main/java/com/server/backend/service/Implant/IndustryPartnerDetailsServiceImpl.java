@@ -7,9 +7,11 @@ import com.server.backend.Repository.PlacementsRepositories.IndustryPartnerDetai
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,11 +19,14 @@ public class IndustryPartnerDetailsServiceImpl
         implements IndustryPartnerDetailsService {
 
     private final IndustryPartnerDetailsRepository repository;
+    private final JdbcTemplate jdbcTemplate;
 
     public IndustryPartnerDetailsServiceImpl(
-            IndustryPartnerDetailsRepository repository) {
+            IndustryPartnerDetailsRepository repository,
+            JdbcTemplate jdbcTemplate) {
 
         this.repository = repository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     // CREATE
@@ -50,6 +55,8 @@ public class IndustryPartnerDetailsServiceImpl
         entity.setEntryDate(
                 new Timestamp(System.currentTimeMillis())
         );
+
+        entity.setEntryBy(request.getEntryBy());
 
         IndustryPartnerDetails saved =
                 repository.save(entity);
@@ -148,16 +155,37 @@ public class IndustryPartnerDetailsServiceImpl
     private IndustryPartnerDetailsResponse convertToResponse(
             IndustryPartnerDetails entity) {
 
-        return new IndustryPartnerDetailsResponse(
-                entity.getPid(),
-                entity.getDistCode(),
-                entity.getItiCode(),
-                entity.getRevisedLeadSector(),
-                entity.getProposedNewTrade(),
-                entity.getRevisedLeadIndustryPartner(),
-                entity.getEntryBy(),
-                entity.getEntryDate()
-        );
+        IndustryPartnerDetailsResponse response =
+                new IndustryPartnerDetailsResponse();
+
+        response.setPid(entity.getPid());
+        response.setDistCode(entity.getDistCode());
+        response.setItiCode(entity.getItiCode());
+        response.setRevisedLeadSector(entity.getRevisedLeadSector());
+        response.setProposedNewTrade(entity.getProposedNewTrade());
+        response.setRevisedLeadIndustryPartner(entity.getRevisedLeadIndustryPartner());
+        response.setEntryBy(entity.getEntryBy());
+        response.setEntryDate(entity.getEntryDate());
+
+        try {
+            List<Map<String, Object>> dist = jdbcTemplate.queryForList(
+                    "SELECT dist_name FROM public2.dist_mst WHERE dist_code = ?",
+                    entity.getDistCode());
+            if (!dist.isEmpty()) {
+                response.setDistName((String) dist.get(0).get("dist_name"));
+            }
+        } catch (Exception ignored) { /* leave blank */ }
+
+        try {
+            List<Map<String, Object>> iti = jdbcTemplate.queryForList(
+                    "SELECT iti_name FROM public2.iti WHERE iti_code = ?",
+                    entity.getItiCode());
+            if (!iti.isEmpty()) {
+                response.setItiName((String) iti.get(0).get("iti_name"));
+            }
+        } catch (Exception ignored) { /* leave blank */ }
+
+        return response;
     }
 
 

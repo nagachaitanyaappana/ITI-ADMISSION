@@ -1,5 +1,6 @@
 package com.server.backend.controller.Implant;
 
+import java.util.Map;
 import java.util.List;
 import com.server.backend.DTO.Implant.ImplantReportResponse;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Implant.ImplantCreateRequest;
 import com.server.backend.DTO.Implant.ImplantResponse;
 import com.server.backend.DTO.Implant.InplantDashboardResponse;
+import com.server.backend.DTO.Implant.IndustryMappingRequest;
 import com.server.backend.service.Implant.ImplantService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -116,6 +118,93 @@ public ResponseEntity<List<Object[]>> getIndustries(
             implantService.getIndustries(itiCode));
 }
 //report endpoint to fetch the report based on itiCode
+    // ========== ITI - INDUSTRY MAPPING ==========
+    @GetMapping("/mapping/masters")
+    public ResponseEntity<Map<String, Object>> getMappingMasters() {
+        return ResponseEntity.ok(implantService.getMappingMasters());
+    }
+
+    @GetMapping("/mapping")
+    public ResponseEntity<List<Map<String, Object>>> getMappings(
+            @RequestParam Integer itiCode) {
+        return ResponseEntity.ok(implantService.getMappings(itiCode));
+    }
+
+    @PostMapping("/mapping")
+    public ResponseEntity<Map<String, Object>> saveMapping(
+            @RequestParam Integer itiCode,
+            @RequestBody IndustryMappingRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(implantService.saveMapping(itiCode, request));
+    }
+
+    @GetMapping("/mapping/{slno}")
+    public ResponseEntity<Map<String, Object>> getMappingBySlno(@PathVariable Long slno) {
+        return ResponseEntity.ok(implantService.getMappingBySlno(slno));
+    }
+
+    @PutMapping("/mapping/{slno}")
+    public ResponseEntity<Map<String, Object>> updateMapping(
+            @PathVariable Long slno,
+            @RequestBody IndustryMappingRequest request) {
+        return ResponseEntity.ok(implantService.updateMapping(slno, request));
+    }
+
+    @DeleteMapping("/mapping/{slno}")
+    public ResponseEntity<Map<String, Object>> deleteMapping(@PathVariable Long slno) {
+        implantService.deleteMapping(slno);
+        return ResponseEntity.ok(Map.of("message", "Mapping deleted successfully."));
+    }
+
+    // ========== INDUSTRY MASTER (Nodal) ==========
+    // NOTE: full CRUD already exists in IndustryMasterController (/api/implant/industry-master)
+
+    @GetMapping("/mapping/districts")
+    public ResponseEntity<List<Map<String, Object>>> getMappingDistricts() {
+        return ResponseEntity.ok(implantService.getMappingDistricts());
+    }
+
+    @GetMapping("/mapping/itis")
+    public ResponseEntity<List<Map<String, Object>>> getMappingItis(
+            @RequestParam String distCode) {
+        return ResponseEntity.ok(implantService.getMappingItis(distCode));
+    }
+
+    @GetMapping("/mapping-report")
+    public ResponseEntity<List<Map<String, Object>>> getNodalMappingReport() {
+        return ResponseEntity.ok(implantService.getNodalMappingReport());
+    }
+
+    @GetMapping("/trainees/counts")
+    public ResponseEntity<Map<String, Object>> getTraineesCounts() {
+        return ResponseEntity.ok(implantService.getTraineesCounts());
+    }
+
+    @GetMapping("/trainees")
+    public ResponseEntity<List<Map<String, Object>>> getTraineesByType(
+            @RequestParam String type) {
+        return ResponseEntity.ok(implantService.getTraineesByType(type));
+    }
+
+    @GetMapping("/nodal-report")
+    public ResponseEntity<List<ImplantReportResponse>> getNodalReport() {
+        return ResponseEntity.ok(implantService.getNodalReport());
+    }
+
+    @GetMapping("/datewise-report")
+    public ResponseEntity<List<ImplantReportResponse>> getDatewiseReport(
+            @RequestParam String fromDate, @RequestParam String toDate) {
+        return ResponseEntity.ok(implantService.getDatewiseReport(fromDate, toDate));
+    }
+
+    @GetMapping("/yearwise-report")
+    public ResponseEntity<?> getYearwiseReport(@RequestParam int year, @RequestParam(required = false) String itiType) {
+        if (itiType != null && !itiType.isEmpty() && !"M".equals(itiType) && !"A".equals(itiType) && !"L".equals(itiType)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid ITI type. Use M/A/L or leave empty."));
+        }
+        return ResponseEntity.ok(implantService.getYearwiseReport(year, itiType == null ? "" : itiType));
+    }
+
     @GetMapping("/report")
 public ResponseEntity<List<ImplantReportResponse>> getReport(
         @RequestParam String itiCode) {
@@ -124,4 +213,28 @@ public ResponseEntity<List<ImplantReportResponse>> getReport(
             implantService.getReport(itiCode)
     );
 }
+
+    @GetMapping("/district/itis")
+    public ResponseEntity<List<Object[]>> getDistrictItis(
+            @RequestParam String distCode) {
+        return ResponseEntity.ok(implantService.getDistrictItis(distCode));
+    }
+
+    @GetMapping("/district/report")
+    public ResponseEntity<List<ImplantReportResponse>> getDistrictReport(
+            @RequestParam(required = false) String itiCode,
+            @RequestParam(required = false) Integer industryId) {
+        return ResponseEntity.ok(implantService.getDistrictReport(itiCode, industryId));
+    }
+
+    @GetMapping("/master/states")
+    public ResponseEntity<List<Map<String, Object>>> getStates() {
+        return ResponseEntity.ok(implantService.getStates());
+    }
+
+    @GetMapping("/master/districts")
+    public ResponseEntity<List<Map<String, Object>>> getDistricts(
+            @RequestParam String stateCode) {
+        return ResponseEntity.ok(implantService.getDistrictsByState(stateCode));
+    }
 }
