@@ -32,4 +32,20 @@ public ResponseEntity<?> getReport(
     return ResponseEntity.ok(
             service.getImplantReportByIndustry(industryId));
 }
+
+@GetMapping("/download-excel")
+public ResponseEntity<byte[]> downloadExcel(
+        @RequestParam Integer industryId) {
+
+    byte[] excel = service.downloadExcel(industryId);
+
+    return ResponseEntity.ok()
+            .header(
+                    "Content-Disposition",
+                    "attachment; filename=inplant-report.xlsx")
+            .header(
+                    "Content-Type",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            .body(excel);
+}
 }
