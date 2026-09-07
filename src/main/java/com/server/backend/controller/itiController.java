@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.Institute.ItiDto;
@@ -92,4 +93,11 @@ public ResponseEntity<Iti> patchIti(
 
     return ResponseEntity.ok(updatedIti);
   }
+  @GetMapping("/by-district")
+@Operation(summary = "Get ITIs by district")
+public List<Iti> getItisByDistrict(
+        @RequestParam String distCode) {
+
+    return itiService.getItisByDistrict(distCode);
+}
 }

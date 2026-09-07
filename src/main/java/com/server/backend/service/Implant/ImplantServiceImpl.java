@@ -1,18 +1,25 @@
 package com.server.backend.service.Implant;
 import com.server.backend.DTO.Implant.ImplantReportResponse;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import com.server.backend.DTO.Implant.ImplantCreateRequest;
+import com.server.backend.DTO.Implant.IndustryMappingRequest;
 import com.server.backend.entity.Placements.ImplantEntity;
 import com.server.backend.DTO.Implant.ImplantResponse;
 import com.server.backend.DTO.Implant.InplantDashboardResponse;
 import com.server.backend.Repository.PlacementsRepositories.ImplantRepository;
 import com.server.backend.Repository.PlacementsRepositories.IndustriesRepository;
-
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.List;
+import org.apache.poi.ss.usermodel.Sheet;
+import java.io.IOException;
 @Service
 public class ImplantServiceImpl implements ImplantService {
 
@@ -164,6 +171,19 @@ public void deleteImplant(Long implantId) {
     }
     
      
+
+    @Override
+    public List<Map<String, Object>> getStates() {
+        String sql = "SELECT statecode, statename FROM states_mast ORDER BY statename";
+        return jdbcTemplate.queryForList(sql);
+    }
+
+    @Override
+    public List<Map<String, Object>> getDistrictsByState(String stateCode) {
+        String sql = "SELECT dist_code, dist_name FROM dist_mst WHERE statecode = ? ORDER BY dist_name";
+        return jdbcTemplate.queryForList(sql, stateCode);
+    }
+
     @Override
 public List<ImplantReportResponse> getReport(String itiCode) {
 
@@ -196,6 +216,525 @@ dto.setDescription((String) row[14]);
 
     return response;
 }
+
+    @Override
+    public List<Object[]> getDistrictItis(String distCode) {
+        String sql = "SELECT iti_code, iti_name FROM public.iti WHERE dist_code = ? ORDER BY iti_name";
+        return jdbcTemplate.queryForList(sql, distCode).stream()
+                .map(m -> new Object[]{m.get("iti_code"), m.get("iti_name")})
+                .toList();
+    }
+
+    @Override
+    public List<ImplantReportResponse> getNodalReport() {
+        String sql = """
+            SELECT
+                i.implant_id,
+                it.iti_name,
+                ind.industry_name,
+                i.faculty_name,
+                ind.trade_name,
+                i.industry_address,
+                i.hr_no,
+                i.from_date,
+                i.to_date,
+                i.no_of_days,
+                i.no_of_students,
+                sm.statename,
+                dm.dist_name,
+                i.location,
+                i.description
+            FROM implant.implant i
+            LEFT JOIN implant.industries ind
+                ON CAST(i.iti_code AS INTEGER) = ind.iti_code
+               AND i.trade_short = ind.trade_short
+            LEFT JOIN public2.iti it
+                ON i.iti_code = it.iti_code
+            LEFT JOIN public2.dist_mst dm
+                ON it.dist_code = dm.dist_code
+            LEFT JOIN public2.states_mast sm
+                ON dm.statecode = sm.statecode
+            ORDER BY i.implant_id
+            """;
+
+        List<ImplantReportResponse> response = new ArrayList<>();
+        jdbcTemplate.query(sql, rs -> {
+            ImplantReportResponse dto = new ImplantReportResponse();
+            dto.setImplantId(rs.getLong("implant_id"));
+            dto.setItiName(rs.getString("iti_name"));
+            dto.setIndustryName(rs.getString("industry_name"));
+            dto.setFacultyName(rs.getString("faculty_name"));
+            dto.setTradeName(rs.getString("trade_name"));
+            dto.setIndustryAddress(rs.getString("industry_address"));
+            dto.setHrNo(rs.getObject("hr_no") == null ? null : rs.getLong("hr_no"));
+            java.sql.Date fd = rs.getDate("from_date");
+            java.sql.Date td = rs.getDate("to_date");
+            dto.setFromDate(fd == null ? null : fd.toLocalDate());
+            dto.setToDate(td == null ? null : td.toLocalDate());
+            dto.setNoOfDays(rs.getObject("no_of_days") == null ? null : rs.getInt("no_of_days"));
+            dto.setNoOfStudents(rs.getObject("no_of_students") == null ? null : rs.getInt("no_of_students"));
+            dto.setStateName(rs.getString("statename"));
+            dto.setDistrictName(rs.getString("dist_name"));
+            dto.setLocation(rs.getString("location"));
+            dto.setDescription(rs.getString("description"));
+            response.add(dto);
+        });
+        return response;
+    }
+
+    @Override
+    public List<Map<String, Object>> getYearwiseReport(int year, String itiType) {
+        String sql = "SELECT i.iti_code, it.iti_name, dm.dist_name as district_name, " +
+                "COUNT(*) as trainee_admitted, " +
+                "SUM(CASE WHEN i.to_date < CURRENT_DATE THEN 1 ELSE 0 END) as completed, " +
+                "SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN 1 ELSE 0 END) as under_training, " +
+                "SUM(CASE WHEN i.from_date > CURRENT_DATE THEN 1 ELSE 0 END) as balance, " +
+                "COALESCE(SUM(i.no_of_students), 0) as total_students " +
+                "FROM implant.implant i " +
+                "LEFT JOIN public2.iti it ON i.iti_code = it.iti_code " +
+                "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code " +
+                "WHERE EXTRACT(YEAR FROM i.from_date) = ? " +
+                "AND it.iti_type = ? " +
+                "GROUP BY i.iti_code, it.iti_name, dm.dist_name " +
+                "ORDER BY dm.dist_name, it.iti_name";
+        return jdbcTemplate.queryForList(sql, year, itiType);
+    }
+
+    @Override
+    public List<ImplantReportResponse> getDatewiseReport(String fromDate, String toDate) {
+        String sql = """
+            SELECT
+                i.implant_id,
+                it.iti_name,
+                ind.industry_name,
+                i.faculty_name,
+                ind.trade_name,
+                i.industry_address,
+                i.hr_no,
+                i.from_date,
+                i.to_date,
+                i.no_of_days,
+                i.no_of_students,
+                sm.statename,
+                dm.dist_name,
+                i.location,
+                i.description
+            FROM implant.implant i
+            LEFT JOIN implant.industries ind
+                ON CAST(i.iti_code AS INTEGER) = ind.iti_code
+               AND i.trade_short = ind.trade_short
+            LEFT JOIN public2.iti it
+                ON i.iti_code = it.iti_code
+            LEFT JOIN public2.dist_mst dm
+                ON it.dist_code = dm.dist_code
+            LEFT JOIN public2.states_mast sm
+                ON dm.statecode = sm.statecode
+                        WHERE i.from_date <= ?::date AND i.to_date >= ?::date
+            ORDER BY i.implant_id
+            """;
+
+        List<ImplantReportResponse> response = new ArrayList<>();
+        jdbcTemplate.query(sql, rs -> {
+            ImplantReportResponse dto = new ImplantReportResponse();
+            dto.setImplantId(rs.getLong("implant_id"));
+            dto.setItiName(rs.getString("iti_name"));
+            dto.setIndustryName(rs.getString("industry_name"));
+            dto.setFacultyName(rs.getString("faculty_name"));
+            dto.setTradeName(rs.getString("trade_name"));
+            dto.setIndustryAddress(rs.getString("industry_address"));
+            dto.setHrNo(rs.getObject("hr_no") == null ? null : rs.getLong("hr_no"));
+            java.sql.Date fd = rs.getDate("from_date");
+            java.sql.Date td = rs.getDate("to_date");
+            dto.setFromDate(fd == null ? null : fd.toLocalDate());
+            dto.setToDate(td == null ? null : td.toLocalDate());
+            dto.setNoOfDays(rs.getObject("no_of_days") == null ? null : rs.getInt("no_of_days"));
+            dto.setNoOfStudents(rs.getObject("no_of_students") == null ? null : rs.getInt("no_of_students"));
+            dto.setStateName(rs.getString("statename"));
+            dto.setDistrictName(rs.getString("dist_name"));
+            dto.setLocation(rs.getString("location"));
+            dto.setDescription(rs.getString("description"));
+            response.add(dto);
+        }, fromDate, toDate);
+        return response;
+    }
+
+    @Override
+    public List<ImplantReportResponse> getDistrictReport(String itiCode, Integer industryId) {
+        StringBuilder sql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        sql.append("""
+            SELECT
+                i.implant_id,
+                it.iti_name,
+                ind.industry_name,
+                i.faculty_name,
+                ind.trade_name,
+                i.industry_address,
+                i.hr_no,
+                i.from_date,
+                i.to_date,
+                i.no_of_days,
+                i.no_of_students,
+                sm.statename,
+                dm.dist_name,
+                i.location,
+                i.description
+            FROM implant.implant i
+            JOIN implant.industries ind
+                ON CAST(i.iti_code AS INTEGER) = ind.iti_code
+               AND i.trade_short = ind.trade_short
+            LEFT JOIN iti it
+                ON i.iti_code = it.iti_code
+            LEFT JOIN dist_mst dm
+                ON it.dist_code = dm.dist_code
+            LEFT JOIN states_mast sm
+                ON dm.statecode = sm.statecode
+            WHERE 1=1
+        """);
+        if (itiCode != null && !itiCode.isBlank()) {
+            sql.append(" AND CAST(i.iti_code AS INTEGER) = ? ");
+            params.add(Integer.parseInt(itiCode));
+        }
+        if (industryId != null) {
+            sql.append(" AND ind.industry_id = ? ");
+            params.add(industryId);
+        }
+        sql.append(" ORDER BY i.implant_id ");
+
+        List<Object[]> rows = jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
+            Object[] row = new Object[15];
+            row[0] = rs.getLong("implant_id");
+            row[1] = rs.getString("iti_name");
+            row[2] = rs.getString("industry_name");
+            row[3] = rs.getString("faculty_name");
+            row[4] = rs.getString("trade_name");
+            row[5] = rs.getString("industry_address");
+            row[6] = rs.getObject("hr_no");
+            row[7] = rs.getObject("from_date");
+            row[8] = rs.getObject("to_date");
+            row[9] = rs.getObject("no_of_days");
+            row[10] = rs.getObject("no_of_students");
+            row[11] = rs.getString("statename");
+            row[12] = rs.getString("dist_name");
+            row[13] = rs.getString("location");
+            row[14] = rs.getString("description");
+            return row;
+        },
+        params.toArray()
+        );
+
+        List<ImplantReportResponse> response = new ArrayList<>();
+        for (Object[] row : rows) {
+            ImplantReportResponse dto = new ImplantReportResponse();
+            dto.setImplantId(((Number) row[0]).longValue());
+            dto.setItiName((String) row[1]);
+            dto.setIndustryName((String) row[2]);
+            dto.setFacultyName((String) row[3]);
+            dto.setTradeName((String) row[4]);
+            dto.setIndustryAddress((String) row[5]);
+            dto.setHrNo(row[6] == null ? null : ((Number) row[6]).longValue());
+            dto.setFromDate(row[7] == null ? null : ((java.sql.Date) row[7]).toLocalDate());
+            dto.setToDate(row[8] == null ? null : ((java.sql.Date) row[8]).toLocalDate());
+            dto.setNoOfDays(row[9] == null ? null : ((Number) row[9]).intValue());
+            dto.setNoOfStudents(row[10] == null ? null : ((Number) row[10]).intValue());
+            dto.setStateName((String) row[11]);
+            dto.setDistrictName((String) row[12]);
+            dto.setLocation((String) row[13]);
+            dto.setDescription((String) row[14]);
+            response.add(dto);
+        }
+        return response;
+    }
+
+    // ========== ITI - INDUSTRY MAPPING ==========
+
+    @Override
+    public Map<String, Object> getMappingMasters() {
+        Map<String, Object> masters = new java.util.HashMap<>();
+        masters.put("industries", jdbcTemplate.queryForList(
+                "SELECT industry_id, industry_name, industry_type FROM implant.industry_master ORDER BY industry_name"));
+        masters.put("trades", jdbcTemplate.queryForList(
+                "SELECT trade_code, trade_short, trade_name FROM public2.ititrade_master ORDER BY trade_name"));
+        return masters;
+    }
+
+    @Override
+    public List<Map<String, Object>> getMappings(Integer itiCode) {
+        String sql = "SELECT slno, industry_id, industry_name, industry_type, trade_code, trade_short, trade_name, "
+                + "no_of_units, entry_by, entry_time FROM implant.industries "
+                + "WHERE iti_code = ? ORDER BY slno DESC";
+        return jdbcTemplate.queryForList(sql, itiCode);
+    }
+
+    @Override
+    public Map<String, Object> saveMapping(Integer itiCode, IndustryMappingRequest request) {
+        if (request.getIndustryId() == null || request.getTradeCode() == null) {
+            throw new IllegalArgumentException("Industry and Trade are required.");
+        }
+
+        // industry details from master
+        List<Map<String, Object>> ind = jdbcTemplate.queryForList(
+                "SELECT industry_name, industry_type FROM implant.industry_master WHERE industry_id = ?",
+                request.getIndustryId());
+        if (ind.isEmpty()) {
+            throw new IllegalArgumentException("Selected industry does not exist.");
+        }
+
+        // trade details from master
+        List<Map<String, Object>> trd = jdbcTemplate.queryForList(
+                "SELECT trade_short, trade_name FROM public2.ititrade_master WHERE trade_code = ?",
+                request.getTradeCode());
+        if (trd.isEmpty()) {
+            throw new IllegalArgumentException("Selected trade does not exist.");
+        }
+
+        // ITI details
+        List<Map<String, Object>> iti = jdbcTemplate.queryForList(
+                "SELECT iti_name, dist_code FROM public2.iti WHERE iti_code = ?", String.valueOf(itiCode));
+        if (iti.isEmpty()) {
+            throw new IllegalArgumentException("ITI details not found for code " + itiCode);
+        }
+
+        // duplicate check
+        Integer dup = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM implant.industries WHERE iti_code = ? AND industry_id = ? AND trade_code = ?",
+                Integer.class, itiCode, request.getIndustryId(), request.getTradeCode());
+        if (dup != null && dup > 0) {
+            throw new IllegalArgumentException("This industry is already mapped to your ITI for the selected trade.");
+        }
+
+        String itiName = (String) iti.get(0).get("iti_name");
+        Object distObj = iti.get(0).get("dist_code");
+        Integer distCode = distObj instanceof Number
+                ? ((Number) distObj).intValue()
+                : Integer.parseInt(String.valueOf(distObj).trim());
+        List<Map<String, Object>> dist = jdbcTemplate.queryForList(
+                "SELECT dist_name FROM public2.dist_mst WHERE dist_code = ?", String.valueOf(distCode));
+        String distName = dist.isEmpty() ? "" : (String) dist.get(0).get("dist_name");
+
+        jdbcTemplate.update(
+                "INSERT INTO implant.industries (slno, dist_code, dist_name, industry_id, industry_name, industry_type, "
+                + "iti_code, iti_name, trade_code, trade_name, trade_short, entry_by, entry_time) "
+                + "VALUES ((SELECT COALESCE(MAX(slno), 0) + 1 FROM implant.industries), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())",
+                distCode, distName, request.getIndustryId(), ind.get(0).get("industry_name"),
+                ind.get(0).get("industry_type"), itiCode, itiName, request.getTradeCode(),
+                trd.get(0).get("trade_name"), trd.get(0).get("trade_short"),
+                request.getEntryBy() == null ? String.valueOf(itiCode) : request.getEntryBy());
+
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("message", "Industry mapped to your ITI successfully!");
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getMappingBySlno(Long slno) {
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                "SELECT slno, iti_code, industry_id, industry_name, industry_type, trade_code, trade_short, trade_name "
+                + "FROM implant.industries WHERE slno = ?", slno);
+        if (rows.isEmpty()) {
+            throw new IllegalArgumentException("Mapping not found.");
+        }
+        return rows.get(0);
+    }
+
+    @Override
+    public Map<String, Object> updateMapping(Long slno, IndustryMappingRequest request) {
+        if (request.getIndustryId() == null || request.getTradeCode() == null) {
+            throw new IllegalArgumentException("Industry and Trade are required.");
+        }
+
+        List<Map<String, Object>> current = jdbcTemplate.queryForList(
+                "SELECT iti_code FROM implant.industries WHERE slno = ?", slno);
+        if (current.isEmpty()) {
+            throw new IllegalArgumentException("Mapping not found.");
+        }
+
+        List<Map<String, Object>> ind = jdbcTemplate.queryForList(
+                "SELECT industry_name, industry_type FROM implant.industry_master WHERE industry_id = ?",
+                request.getIndustryId());
+        if (ind.isEmpty()) {
+            throw new IllegalArgumentException("Selected industry does not exist.");
+        }
+
+        List<Map<String, Object>> trd = jdbcTemplate.queryForList(
+                "SELECT trade_short, trade_name FROM public2.ititrade_master WHERE trade_code = ?",
+                request.getTradeCode());
+        if (trd.isEmpty()) {
+            throw new IllegalArgumentException("Selected trade does not exist.");
+        }
+
+        Integer itiCode = Integer.parseInt(String.valueOf(current.get(0).get("iti_code")).trim());
+        Integer dup = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM implant.industries WHERE iti_code = ? AND industry_id = ? AND trade_code = ? AND slno <> ?",
+                Integer.class, itiCode, request.getIndustryId(), request.getTradeCode(), slno);
+        if (dup != null && dup > 0) {
+            throw new IllegalArgumentException("This industry is already mapped to your ITI for the selected trade.");
+        }
+
+        jdbcTemplate.update(
+                "UPDATE implant.industries SET industry_id = ?, industry_name = ?, industry_type = ?, "
+                + "trade_code = ?, trade_name = ?, trade_short = ? WHERE slno = ?",
+                request.getIndustryId(), ind.get(0).get("industry_name"), ind.get(0).get("industry_type"),
+                request.getTradeCode(), trd.get(0).get("trade_name"), trd.get(0).get("trade_short"), slno);
+
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("message", "Industry details updated successfully!");
+        return result;
+    }
+
+    @Override
+    public void deleteMapping(Long slno) {
+        int deleted = jdbcTemplate.update("DELETE FROM implant.industries WHERE slno = ?", slno);
+        if (deleted == 0) {
+            throw new IllegalArgumentException("Mapping not found.");
+        }
+    }
+
+    // ========== NODAL MAPPING LOOKUPS ==========
+
+    @Override
+    public List<Map<String, Object>> getMappingDistricts() {
+        return jdbcTemplate.queryForList(
+                "SELECT DISTINCT d.dist_code, d.dist_name FROM public2.dist_mst d "
+                + "WHERE EXISTS (SELECT 1 FROM public2.iti i WHERE i.dist_code = d.dist_code) "
+                + "ORDER BY d.dist_name");
+    }
+
+    @Override
+    public List<Map<String, Object>> getMappingItis(String distCode) {
+        return jdbcTemplate.queryForList(
+                "SELECT iti_code, iti_name FROM public2.iti WHERE dist_code = ? ORDER BY iti_name",
+                distCode);
+    }
+
+    @Override
+    public List<Map<String, Object>> getNodalMappingReport() {
+        return jdbcTemplate.queryForList(
+                "SELECT slno, dist_code, dist_name, iti_code, iti_name, industry_id, industry_name, "
+                + "industry_type, trade_code, trade_name FROM implant.industries ORDER BY dist_name, iti_name, industry_name");
+    }
+
+    @Override
+    public Map<String, Object> getTraineesCounts() {
+        Map<String, Object> counts = new java.util.HashMap<>();
+        Integer itis = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT iti_code) FROM implant.implant", Integer.class);
+        Integer trades = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT trade_short) FROM implant.implant WHERE trade_short IS NOT NULL", Integer.class);
+        Integer inds = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT CAST(i.iti_code AS INTEGER) * 100000 + ind.industry_id) "
+                + "FROM implant.implant i JOIN implant.industries ind "
+                + "ON CAST(i.iti_code AS INTEGER)=ind.iti_code AND i.trade_short=ind.trade_short", Integer.class);
+        Long trainees = jdbcTemplate.queryForObject(
+                "SELECT COALESCE(SUM(no_of_students),0) FROM implant.implant", Long.class);
+        counts.put("itis", itis);
+        counts.put("industries", inds);
+        counts.put("trades", trades);
+        counts.put("trainees", trainees);
+        return counts;
+    }
+
+    @Override
+    public List<Map<String, Object>> getTraineesByType(String type) {
+        switch (type) {
+            case "itis":
+                return jdbcTemplate.queryForList(
+                        "SELECT DISTINCT iti_code, iti_name FROM public2.iti WHERE iti_code IN "
+                        + "(SELECT DISTINCT iti_code FROM implant.implant) ORDER BY iti_name");
+            case "trades":
+                return jdbcTemplate.queryForList(
+                        "SELECT DISTINCT trade_short, trade_name FROM public2.ititrade_master "
+                        + "WHERE trade_short IN (SELECT DISTINCT trade_short FROM implant.implant WHERE trade_short IS NOT NULL) ORDER BY trade_name");
+            case "industries":
+                return jdbcTemplate.queryForList(
+                        "SELECT DISTINCT ind.industry_id, ind.industry_name FROM implant.implant i "
+                        + "JOIN implant.industries ind ON CAST(i.iti_code AS INTEGER)=ind.iti_code AND i.trade_short=ind.trade_short "
+                        + "ORDER BY ind.industry_name");
+            default:
+                throw new IllegalArgumentException("Unknown trainees report type.");
+        }
+    }
+
+@Override
+public byte[] downloadExcel(String itiCode) {
+
+    try{
+    List<ImplantReportResponse> records =
+            getReport(itiCode);
+
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("Inplant Report");
+
+    Row header = sheet.createRow(0);
+    header.createCell(0).setCellValue("Implant ID");
+header.createCell(1).setCellValue("ITI Name");
+header.createCell(2).setCellValue("Industry Name");
+header.createCell(3).setCellValue("Faculty Name");
+header.createCell(4).setCellValue("Trade Name");
+header.createCell(5).setCellValue("Industry Address");
+header.createCell(6).setCellValue("HR No");
+header.createCell(7).setCellValue("From Date");
+header.createCell(8).setCellValue("To Date");
+header.createCell(9).setCellValue("No Of Days");
+header.createCell(10).setCellValue("No Of Students");
+header.createCell(11).setCellValue("State");
+header.createCell(12).setCellValue("District");
+header.createCell(13).setCellValue("Location");
+header.createCell(14).setCellValue("Description");
+
+    int rowNum = 1;
+
+   for (ImplantReportResponse r : records) {
+
+    Row row = sheet.createRow(rowNum++);
+
+    row.createCell(0).setCellValue(r.getImplantId());
+    row.createCell(1).setCellValue(r.getItiName());
+    row.createCell(2).setCellValue(r.getIndustryName());
+    row.createCell(3).setCellValue(r.getFacultyName());
+    row.createCell(4).setCellValue(r.getTradeName());
+    row.createCell(5).setCellValue(r.getIndustryAddress());
+
+    if (r.getHrNo() != null) {
+        row.createCell(6).setCellValue(r.getHrNo());
+    }
+
+    row.createCell(7).setCellValue(
+            r.getFromDate() != null ? r.getFromDate().toString() : "");
+
+    row.createCell(8).setCellValue(
+            r.getToDate() != null ? r.getToDate().toString() : "");
+
+    if (r.getNoOfDays() != null) {
+        row.createCell(9).setCellValue(r.getNoOfDays());
+    }
+
+    if (r.getNoOfStudents() != null) {
+        row.createCell(10).setCellValue(r.getNoOfStudents());
+    }
+
+    row.createCell(11).setCellValue(
+            r.getStateName() != null ? r.getStateName() : "");
+
+    row.createCell(12).setCellValue(
+            r.getDistrictName() != null ? r.getDistrictName() : "");
+
+    row.createCell(13).setCellValue(
+            r.getLocation() != null ? r.getLocation() : "");
+
+    row.createCell(14).setCellValue(
+            r.getDescription() != null ? r.getDescription() : "");
 }
 
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
 
+    workbook.write(out);
+    workbook.close();
+
+    return out.toByteArray();
+}catch(IOException e) {
+    throw new RuntimeException("Failed to generate Excel file", e);
+
+}
+}
+}

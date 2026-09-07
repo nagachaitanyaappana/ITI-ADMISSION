@@ -18,7 +18,7 @@ public class ImplantEntity{
 @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "implant_id_seq")
 @SequenceGenerator(
     name = "implant_id_seq",
-    sequenceName = "implant.implant_implant_id_seq",
+    sequenceName = "public2.implant_seq",
     allocationSize = 1
 )
 @Column(name = "implant_id", nullable = false)

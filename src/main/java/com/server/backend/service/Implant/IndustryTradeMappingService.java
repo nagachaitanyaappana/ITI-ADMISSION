@@ -2,7 +2,7 @@ package com.server.backend.service.Implant;
 
 import com.server.backend.DTO.Implant.IndustryTradeMappingRequest;
 import com.server.backend.DTO.Implant.IndustryTradeMappingResponse;
-
+import java.util.List;
 public interface IndustryTradeMappingService {
 
     String saveIndustryTradeMapping(
@@ -14,4 +14,5 @@ public interface IndustryTradeMappingService {
     );
     IndustryTradeMappingResponse getIndustryTradeMapping(Long slno);
     void deleteIndustryTradeMapping(Long slno);
+     List<IndustryTradeMappingResponse> getAllIndustryTradeMappings();
 }

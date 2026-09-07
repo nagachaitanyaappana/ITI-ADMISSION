@@ -169,5 +169,9 @@ public Iti patchIti(String itiCode,
 
     return repository.save(iti);
  }
+ @Override
+public List<Iti> getItisByDistrict(String distCode) {
+    return repository.findByDistCode(distCode);
+}
 }
     

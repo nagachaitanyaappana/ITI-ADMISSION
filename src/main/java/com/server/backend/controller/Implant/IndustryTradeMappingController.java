@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.lang.Long;
-
+import java.util.List;
 @RestController
 @RequestMapping("/api/placements/industry-trade-mapping")
 @Tag(
@@ -44,6 +44,14 @@ public ResponseEntity<String> updateMapping(
                     slno,
                     request
             )
+    );
+}
+@GetMapping
+public ResponseEntity<List<IndustryTradeMappingResponse>>
+getAllMappings() {
+
+    return ResponseEntity.ok(
+            mappingService.getAllIndustryTradeMappings()
     );
 }
 @GetMapping("/{slno}")
