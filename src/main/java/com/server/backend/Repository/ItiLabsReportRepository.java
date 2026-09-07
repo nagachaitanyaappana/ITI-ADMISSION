@@ -1,7 +1,4 @@
 package com.server.backend.Repository;
-
-
-
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.server.backend.entity.labs.Labs;
 
-public interface LabsReportRepository extends JpaRepository<Labs, Long> {
+public interface ItiLabsReportRepository extends JpaRepository<Labs, Long> {
 
     @Query(value = """
             SELECT
@@ -26,11 +23,10 @@ public interface LabsReportRepository extends JpaRepository<Labs, Long> {
             FROM labs.labs l
             LEFT JOIN labs.labitems li
                 ON l.lab_id = li.lab_id
-            WHERE (:itiCode IS NULL OR l.iti_code = :itiCode)
-              AND (:industryName IS NULL OR l.industry_name = :industryName)
+            WHERE l.iti_code = :itiCode
             """, nativeQuery = true)
-    List<Object[]> getLabsReport(
-            @Param("itiCode") String itiCode,
-            @Param("industryName") String industryName);
+    List<Object[]> getItiLabsReport(
+            @Param("itiCode") String itiCode);
 
+    
 }
