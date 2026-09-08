@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import com.server.backend.DTO.Implant.ImplantCreateRequest;
 import com.server.backend.DTO.Implant.ImplantResponse;
 import com.server.backend.DTO.Implant.InplantDashboardResponse;
@@ -248,4 +249,24 @@ public ResponseEntity<List<ImplantReportResponse>> getReport(
             @RequestParam String stateCode) {
         return ResponseEntity.ok(implantService.getDistrictsByState(stateCode));
     }
+
+
+    @GetMapping("/download-excel")
+public ResponseEntity<byte[]> downloadExcel(
+        @RequestParam String itiCode) {
+
+    byte[] excel = implantService.downloadExcel(itiCode);
+
+    return ResponseEntity.ok()
+            .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=inplant_report.xlsx"
+            )
+            .contentType(
+                MediaType.parseMediaType(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+            )
+            .body(excel);
+}
 }

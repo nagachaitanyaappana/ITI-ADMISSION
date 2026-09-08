@@ -7,4 +7,6 @@ public interface ImplantReportService {
 
     List<ImplantIndustryResponse> getIndustries(Integer itiCode);
     List<ImplantReportDTO> getImplantReportByIndustry(Integer industryId);
+
+    byte[] downloadExcel(Integer industryId);
 }

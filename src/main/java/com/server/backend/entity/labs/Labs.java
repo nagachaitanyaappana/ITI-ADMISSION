@@ -3,16 +3,19 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "labs")
+@Table(name = "labs",schema="labs")
 public class Labs {
 
     @Id
-    @Column(name = "lab_id")
-    private Long labId;
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+@Column(name = "lab_id")
+private Long labId;
 
     @Column(name = "entry_by")
     private String entryBy;
