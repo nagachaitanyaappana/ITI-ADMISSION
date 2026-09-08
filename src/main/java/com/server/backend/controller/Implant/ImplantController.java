@@ -197,15 +197,26 @@ public ResponseEntity<List<Object[]>> getIndustries(
         return ResponseEntity.ok(implantService.getDatewiseReport(fromDate, toDate));
     }
 
-    @GetMapping("/yearwise-report")
-    public ResponseEntity<?> getYearwiseReport(@RequestParam int year, @RequestParam(required = false) String itiType) {
-        if (itiType != null && !itiType.isEmpty() && !"M".equals(itiType) && !"A".equals(itiType) && !"L".equals(itiType)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid ITI type. Use M/A/L or leave empty."));
-        }
-        return ResponseEntity.ok(implantService.getYearwiseReport(year, itiType == null ? "" : itiType));
+   @GetMapping("/yearwise-report")
+public ResponseEntity<?> getYearwiseReport(
+        @RequestParam int year,
+        @RequestParam(required = false) String itiType) {
+
+    if (itiType != null && !itiType.isEmpty()
+            && !"G".equals(itiType)
+            && !"P".equals(itiType)) {
+
+        return ResponseEntity.badRequest()
+                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
     }
 
-    @GetMapping("/report")
+    return ResponseEntity.ok(
+            implantService.getYearwiseReport(
+                    year,
+                    itiType == null ? "" : itiType
+            )
+    ); 
+}    @GetMapping("/report")
 public ResponseEntity<List<ImplantReportResponse>> getReport(
         @RequestParam String itiCode) {
 
