@@ -34,6 +34,24 @@ public class ImplantController {
         this.implantService = implantService;
     }
 
+    // Normalizes the itiType filter sent by the frontend. Production sends
+    // human-readable values ("Govt" / "Private") while the DB stores 'G'/'P'
+    // in public2.iti.govt. Accept both (case-insensitive); return null when the
+    // value is invalid so callers can respond with 400.
+    private static String normalizeItiType(String itiType) {
+        if (itiType == null || itiType.trim().isEmpty()) {
+            return "";
+        }
+        String v = itiType.trim().toUpperCase();
+        if ("G".equals(v) || "GOVT".equals(v) || "GOVERNMENT".equals(v)) {
+            return "G";
+        }
+        if ("P".equals(v) || "PVT".equals(v) || "PRIVATE".equals(v)) {
+            return "P";
+        }
+        return null;
+    }
+
     @GetMapping("/overviewdetails")
     public ResponseEntity<InplantDashboardResponse> overviewdetails() {
 
@@ -203,20 +221,14 @@ public ResponseEntity<?> getYearwiseReport(
         @RequestParam int year,
         @RequestParam(required = false) String itiType) {
 
-    if (itiType != null && !itiType.isEmpty()
-            && !"G".equals(itiType)
-            && !"P".equals(itiType)) {
-
+    String normalized = normalizeItiType(itiType);
+    if (normalized == null) {
         return ResponseEntity.badRequest()
-                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
+                .body(Map.of("message", "Invalid ITI type. Use Govt/Private (or G/P), or leave empty."));
     }
 
     return ResponseEntity.ok(
-            implantService.getYearwiseReport(
-                    year,
-                    itiType == null ? "" : itiType
-            )
-    ); 
+            implantService.getYearwiseReport(year, normalized));
 }
 
 
@@ -225,20 +237,13 @@ public ResponseEntity<?> getTwoYearReport(
         @RequestParam int year,
         @RequestParam(required = false) String itiType) {
 
-    if (itiType != null && !itiType.isEmpty()
-            && !"G".equals(itiType)
-            && !"P".equals(itiType)) {
-
+    String normalized = normalizeItiType(itiType);
+    if (normalized == null) {
         return ResponseEntity.badRequest()
-                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
+                .body(Map.of("message", "Invalid ITI type. Use Govt/Private (or G/P), or leave empty."));
     }
 
-    return ResponseEntity.ok(
-            implantService.getTwoYearReport(
-                    year,
-                    itiType == null ? "" : itiType
-            )
-    );
+    return ResponseEntity.ok(implantService.getTwoYearReport(year, normalized));
 }
 
     @GetMapping("/twelve-24-months-itiwise-report")
@@ -246,20 +251,13 @@ public ResponseEntity<?> getTwelveTwentyFourMonthsItiwiseReport(
         @RequestParam int year,
         @RequestParam(required = false) String itiType) {
 
-    if (itiType != null && !itiType.isEmpty()
-            && !"G".equals(itiType)
-            && !"P".equals(itiType)) {
-
+    String normalized = normalizeItiType(itiType);
+    if (normalized == null) {
         return ResponseEntity.badRequest()
-                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
+                .body(Map.of("message", "Invalid ITI type. Use Govt/Private (or G/P), or leave empty."));
     }
 
-    return ResponseEntity.ok(
-            implantService.getTwelveTwentyFourMonthsItiwiseReport(
-                    year,
-                    itiType == null ? "" : itiType
-            )
-    );
+    return ResponseEntity.ok(implantService.getTwelveTwentyFourMonthsItiwiseReport(year, normalized));
 }
 
     @GetMapping("/district-wise-inplant-report")
@@ -267,20 +265,13 @@ public ResponseEntity<?> getDistrictWiseInplantReport(
         @RequestParam int year,
         @RequestParam(required = false) String itiType) {
 
-    if (itiType != null && !itiType.isEmpty()
-            && !"G".equals(itiType)
-            && !"P".equals(itiType)) {
-
+    String normalized = normalizeItiType(itiType);
+    if (normalized == null) {
         return ResponseEntity.badRequest()
-                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
+                .body(Map.of("message", "Invalid ITI type. Use Govt/Private (or G/P), or leave empty."));
     }
 
-    return ResponseEntity.ok(
-            implantService.getDistrictWiseInplantReport(
-                    year,
-                    itiType == null ? "" : itiType
-            )
-    );
+    return ResponseEntity.ok(implantService.getDistrictWiseInplantReport(year, normalized));
 }
 
     @GetMapping("/report")
