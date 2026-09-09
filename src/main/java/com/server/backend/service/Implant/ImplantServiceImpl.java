@@ -422,8 +422,13 @@ dto.setDescription((String) row[14]);
                 "AND (EXTRACT(YEAR FROM i.from_date) = ? OR EXTRACT(YEAR FROM i.to_date) = ?) " +
                 "GROUP BY dm.dist_code, dm.dist_name " +
                 "ORDER BY dm.dist_name";
+        // NOTE on parameter order: the SELECT list has 5 year placeholders, then the
+        // govt filter placeholder (inside the iti JOIN), then 2 year placeholders in
+        // the implant JOIN. Binding must follow that exact order:
+        //   year x5, itiType, year, year  (when hasType)
+        //   year x7                       (when !hasType)
         return hasType
-                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, itiType.trim())
+                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, itiType.trim(), year, year)
                 : jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
     }
 
