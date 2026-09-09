@@ -40,6 +40,10 @@ public interface ImplantService {
     List<Map<String, Object>> getTraineesByType(String type);
     List<ImplantReportResponse> getDatewiseReport(String fromDate, String toDate);
     List<Map<String, Object>> getYearwiseReport(int year, String itiType);
+    List<Map<String, Object>> getTwoYearReport(int year, String itiType);
+    List<Map<String, Object>> getTwelveTwentyFourMonthsItiwiseReport(int year, String itiType);
+    List<Map<String, Object>> getDistrictWiseInplantReport(int year, String itiType);
+    List<Map<String, Object>> getIndustryNotConnectedTrades();
 
     byte[] downloadExcel(String itiCode);
 }

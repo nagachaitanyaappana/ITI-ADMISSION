@@ -284,20 +284,176 @@ dto.setDescription((String) row[14]);
 
     @Override
     public List<Map<String, Object>> getYearwiseReport(int year, String itiType) {
-        String sql = "SELECT i.iti_code, it.iti_name, dm.dist_name as district_name, " +
-                "COUNT(*) as trainee_admitted, " +
-                "SUM(CASE WHEN i.to_date < CURRENT_DATE THEN 1 ELSE 0 END) as completed, " +
-                "SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN 1 ELSE 0 END) as under_training, " +
-                "SUM(CASE WHEN i.from_date > CURRENT_DATE THEN 1 ELSE 0 END) as balance, " +
+        // Master-driven report: public2.iti is the driver so ITIs of the selected
+        // type appear even with zero implant records for the year.
+        // Government/Private classification comes from public2.iti.govt ('G'/'P'),
+        // NOT from the old iti_type field (which holds 'A'/'M'/'L' or empty).
+        // The YEAR filter lives in the JOIN condition (not WHERE) so zero-record
+        // ITIs are preserved. balance = trainee_admitted - completed - under_training
+        // (reference screen proves it can be negative; not clamped).
+        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        String sql = "SELECT it.iti_code, it.iti_name, dm.dist_name as district_name, " +
+                "COUNT(i.implant_id) as trainee_admitted, " +
+                "COALESCE(SUM(CASE WHEN i.to_date < CURRENT_DATE THEN 1 ELSE 0 END), 0) as completed, " +
+                "COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN 1 ELSE 0 END), 0) as under_training, " +
+                "COUNT(i.implant_id) " +
+                "- COALESCE(SUM(CASE WHEN i.to_date < CURRENT_DATE THEN 1 ELSE 0 END), 0) " +
+                "- COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN 1 ELSE 0 END), 0) as balance, " +
                 "COALESCE(SUM(i.no_of_students), 0) as total_students " +
-                "FROM implant.implant i " +
-                "LEFT JOIN public2.iti it ON i.iti_code = it.iti_code " +
+                "FROM public2.iti it " +
                 "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code " +
-                "WHERE EXTRACT(YEAR FROM i.from_date) = ? " +
-                "AND it.iti_type = ? " +
-                "GROUP BY i.iti_code, it.iti_name, dm.dist_name " +
+                "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
+                "AND EXTRACT(YEAR FROM i.from_date) = ? " +
+                (hasType ? "WHERE it.govt = ? " : "") +
+                "GROUP BY it.iti_code, it.iti_name, dm.dist_name " +
                 "ORDER BY dm.dist_name, it.iti_name";
-        return jdbcTemplate.queryForList(sql, year, itiType);
+        return hasType
+                ? jdbcTemplate.queryForList(sql, year, itiType.trim())
+                : jdbcTemplate.queryForList(sql, year);
+    }
+
+    @Override
+    public List<Map<String, Object>> getTwoYearReport(int year, String itiType) {
+        // Two-Year Trainees Report: master-driven from public2.iti so ITIs of the
+        // selected type appear even with zero records for the year.
+        // Established from DB/code investigation (no prior Two-Year implementation
+        // exists; no_of_days ~90 days avg rules out a duration-based definition):
+        //   trainee_admitted = SUM(no_of_students) for rows STARTING in the year
+        //                      (EXTRACT(YEAR FROM i.from_date) = ?)
+        //   completed        = SUM(no_of_students) for rows ENDING in the year
+        //                      (EXTRACT(YEAR FROM i.to_date) = ?)
+        //   under_training   = SUM(no_of_students) for rows active today
+        //                      (from_date <= CURRENT_DATE <= to_date)
+        //   balance          = trainee_admitted - completed - under_training
+        //                      (reference screen proves it can be negative; not
+        //                      clamped; zero-record ITIs yield 0/0/0/0).
+        // Classification uses public2.iti.govt ('G'/'P'), NOT iti_type (A/M/L).
+        // Year conditions live in the JOIN (not WHERE) so zero-record ITIs survive.
+        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        String sql = "SELECT it.iti_code, it.iti_name, dm.dist_name as district_name, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as trainee_admitted, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) as completed, " +
+                "COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN i.no_of_students ELSE 0 END), 0) as under_training, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) " +
+                "- COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) " +
+                "- COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN i.no_of_students ELSE 0 END), 0) as balance, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as total_students " +
+                "FROM public2.iti it " +
+                "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code " +
+                "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
+                "AND (EXTRACT(YEAR FROM i.from_date) = ? OR EXTRACT(YEAR FROM i.to_date) = ?) " +
+                (hasType ? "WHERE it.govt = ? " : "") +
+                "GROUP BY it.iti_code, it.iti_name, dm.dist_name " +
+                "ORDER BY dm.dist_name, it.iti_name";
+        return hasType
+                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, itiType.trim())
+                : jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+    }
+
+    @Override
+    public List<Map<String, Object>> getTwelveTwentyFourMonthsItiwiseReport(int year, String itiType) {
+        // 12 & 24 Months ITIwise Report: master-driven from public2.iti so ITIs of the
+        // selected type appear even with zero records for the year. Functionally identical
+        // to the Two-Year Trainees Report:
+        //   trainee_admitted = SUM(no_of_students) for rows STARTING in the year
+        //                      (EXTRACT(YEAR FROM i.from_date) = ?)
+        //   completed        = SUM(no_of_students) for rows ENDING in the year
+        //                      (EXTRACT(YEAR FROM i.to_date) = ?)
+        //   under_training   = SUM(no_of_students) for rows active today
+        //                      (from_date <= CURRENT_DATE <= to_date)
+        //   balance          = trainee_admitted - completed - under_training
+        //                      (can be negative; not clamped; zero-record ITIs yield 0/0/0/0).
+        //   total_students   = trainee_admitted
+        // Classification uses public2.iti.govt ('G'/'P'), NOT iti_type (A/M/L).
+        // Year conditions live in the JOIN (not WHERE) so zero-record ITIs survive.
+        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        String sql = "SELECT it.iti_code, it.iti_name, dm.dist_name as district_name, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as trainee_admitted, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) as completed, " +
+                "COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN i.no_of_students ELSE 0 END), 0) as under_training, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) " +
+                "- COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) " +
+                "- COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN i.no_of_students ELSE 0 END), 0) as balance, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as total_students " +
+                "FROM public2.iti it " +
+                "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code " +
+                "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
+                "AND (EXTRACT(YEAR FROM i.from_date) = ? OR EXTRACT(YEAR FROM i.to_date) = ?) " +
+                (hasType ? "WHERE it.govt = ? " : "") +
+                "GROUP BY it.iti_code, it.iti_name, dm.dist_name " +
+                "ORDER BY dm.dist_name, it.iti_name";
+        return hasType
+                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, itiType.trim())
+                : jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+    }
+
+    @Override
+    public List<Map<String, Object>> getDistrictWiseInplantReport(int year, String itiType) {
+        // District Wise IN-PLANT Report: functionally identical to the ITIwise /
+        // Two-Year reports but aggregated at the DISTRICT level.
+        // public2.dist_mst is the driver so districts of the selected ITI type appear
+        // even with zero implant records for the year (they yield 0/0/0/0).
+        // Metrics use SUM(no_of_students) exactly like the ITIwise reports:
+        //   trainee_admitted = students whose implant STARTED in the year
+        //                      (EXTRACT(YEAR FROM i.from_date) = ?)
+        //   completed        = students whose implant ENDED in the year
+        //                      (EXTRACT(YEAR FROM i.to_date) = ?)
+        //   under_training   = students active today
+        //                      (from_date <= CURRENT_DATE <= to_date)
+        //   balance          = trainee_admitted - completed - under_training
+        //                      (can be negative; not clamped)
+        //   total_students   = trainee_admitted
+        // Govt/Private filter uses public2.iti.govt ('G'/'P'), applied inside the
+        // JOIN condition (not WHERE) so zero-record districts survive.
+        // Year conditions live in the implant JOIN (not WHERE) for the same reason.
+        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        String sql = "SELECT dm.dist_code, dm.dist_name, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as trainee_admitted, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) as completed, " +
+                "COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN i.no_of_students ELSE 0 END), 0) as under_training, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) " +
+                "- COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) " +
+                "- COALESCE(SUM(CASE WHEN i.from_date <= CURRENT_DATE AND i.to_date >= CURRENT_DATE THEN i.no_of_students ELSE 0 END), 0) as balance, " +
+                "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as total_students " +
+                "FROM public2.dist_mst dm " +
+                "LEFT JOIN public2.iti it ON it.dist_code = dm.dist_code " +
+                (hasType ? "AND it.govt = ? " : "") +
+                "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
+                "AND (EXTRACT(YEAR FROM i.from_date) = ? OR EXTRACT(YEAR FROM i.to_date) = ?) " +
+                "GROUP BY dm.dist_code, dm.dist_name " +
+                "ORDER BY dm.dist_name";
+        return hasType
+                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, itiType.trim())
+                : jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+    }
+
+    @Override
+    public List<Map<String, Object>> getIndustryNotConnectedTrades() {
+        // Industry-not-connected trades: master-driven from public2.ititrade so ITI+Trade
+        // combinations appear even with zero trainees. Excludes ITI+Trade combos that have
+        // a corresponding row in implant.industries (connected mappings).
+        //   total_trainees = COALESCE(SUM(no_of_students)) from implant.implant
+        //   industry_name  = "-" for every not-connected row
+        //   mapping condition: CAST(t.iti_code AS INTEGER) = ind.iti_code AND t.trade_short = ind.trade_short
+        String sql = "SELECT "
+                + "dm.dist_name as district_name, "
+                + "t.iti_code as iti_code, "
+                + "it.iti_name as iti_name, "
+                + "tm.trade_name as trade_name, "
+                + "COALESCE(SUM(i.no_of_students), 0) as total_trainees, "
+                + "'-' as industry_name "
+                + "FROM public2.ititrade t "
+                + "LEFT JOIN implant.implant i ON t.iti_code = i.iti_code AND t.trade_short = i.trade_short "
+                + "LEFT JOIN public2.iti it ON t.iti_code = it.iti_code "
+                + "LEFT JOIN public2.ititrade_master tm ON t.trade_short = tm.trade_short "
+                + "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code "
+                + "WHERE NOT EXISTS ("
+                + "  SELECT 1 FROM implant.industries ind "
+                + "  WHERE CAST(t.iti_code AS INTEGER) = ind.iti_code AND t.trade_short = ind.trade_short"
+                + ") "
+                + "GROUP BY dm.dist_name, t.iti_code, it.iti_name, tm.trade_name "
+                + "ORDER BY dm.dist_name, t.iti_code, tm.trade_name";
+        return jdbcTemplate.queryForList(sql);
     }
 
     @Override

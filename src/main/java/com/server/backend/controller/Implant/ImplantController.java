@@ -217,7 +217,73 @@ public ResponseEntity<?> getYearwiseReport(
                     itiType == null ? "" : itiType
             )
     ); 
-}    @GetMapping("/report")
+}
+
+
+    @GetMapping("/two-year-report")
+public ResponseEntity<?> getTwoYearReport(
+        @RequestParam int year,
+        @RequestParam(required = false) String itiType) {
+
+    if (itiType != null && !itiType.isEmpty()
+            && !"G".equals(itiType)
+            && !"P".equals(itiType)) {
+
+        return ResponseEntity.badRequest()
+                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
+    }
+
+    return ResponseEntity.ok(
+            implantService.getTwoYearReport(
+                    year,
+                    itiType == null ? "" : itiType
+            )
+    );
+}
+
+    @GetMapping("/twelve-24-months-itiwise-report")
+public ResponseEntity<?> getTwelveTwentyFourMonthsItiwiseReport(
+        @RequestParam int year,
+        @RequestParam(required = false) String itiType) {
+
+    if (itiType != null && !itiType.isEmpty()
+            && !"G".equals(itiType)
+            && !"P".equals(itiType)) {
+
+        return ResponseEntity.badRequest()
+                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
+    }
+
+    return ResponseEntity.ok(
+            implantService.getTwelveTwentyFourMonthsItiwiseReport(
+                    year,
+                    itiType == null ? "" : itiType
+            )
+    );
+}
+
+    @GetMapping("/district-wise-inplant-report")
+public ResponseEntity<?> getDistrictWiseInplantReport(
+        @RequestParam int year,
+        @RequestParam(required = false) String itiType) {
+
+    if (itiType != null && !itiType.isEmpty()
+            && !"G".equals(itiType)
+            && !"P".equals(itiType)) {
+
+        return ResponseEntity.badRequest()
+                .body(Map.of("message", "Invalid ITI type. Use G/P or leave empty."));
+    }
+
+    return ResponseEntity.ok(
+            implantService.getDistrictWiseInplantReport(
+                    year,
+                    itiType == null ? "" : itiType
+            )
+    );
+}
+
+    @GetMapping("/report")
 public ResponseEntity<List<ImplantReportResponse>> getReport(
         @RequestParam String itiCode) {
 
@@ -225,6 +291,11 @@ public ResponseEntity<List<ImplantReportResponse>> getReport(
             implantService.getReport(itiCode)
     );
 }
+
+    @GetMapping("/industry-not-connected-trades")
+    public ResponseEntity<List<Map<String, Object>>> getIndustryNotConnectedTrades() {
+        return ResponseEntity.ok(implantService.getIndustryNotConnectedTrades());
+    }
 
     @GetMapping("/district/itis")
     public ResponseEntity<List<Object[]>> getDistrictItis(
