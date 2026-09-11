@@ -1,4 +1,4 @@
-package com.server.backend.controller.Implant;
+  package com.server.backend.controller.Implant;
 
 import com.server.backend.DTO.Industries.ImplantIndustryResponse;
 import com.server.backend.service.Implant.ImplantReportService;
