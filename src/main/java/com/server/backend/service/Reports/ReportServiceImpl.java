@@ -666,22 +666,17 @@ public class ReportServiceImpl implements ReportService {
 
         List<Object> params = new ArrayList<>();
 
-        int paramIndex = 1;
         if (yearFilter != null) {
             params.add(yearFilter);
-            paramIndex++;
         }
         if (yearFilter != null) {
             params.add(yearFilter);
-            paramIndex++;
         }
         if (yearFilter != null) {
             params.add(yearFilter);
-            paramIndex++;
         }
         if (yearFilter != null) {
             params.add(yearFilter);
-            paramIndex++;
         }
         if (govtFilter != null) {
             params.add(govtFilter);
@@ -912,9 +907,6 @@ public class ReportServiceImpl implements ReportService {
     public List<GovtPvtSeatsAbstractResponse> getGovtPvtSeatsAbstract(String year, String govt) {
         boolean isGovtOnly = "G".equalsIgnoreCase(govt);
         boolean isPvtOnly = "P".equalsIgnoreCase(govt);
-
-        String govtFilter = isGovtOnly ? "'G'" : (isPvtOnly ? "'P'" : "i.govt");
-        String pvtFilter = isGovtOnly ? "'G'" : (isPvtOnly ? "'P'" : "i.govt");
 
         String sql = """
             WITH govt_individual_seats AS (

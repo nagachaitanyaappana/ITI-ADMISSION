@@ -33,7 +33,6 @@ import com.server.backend.DTO.Reports.TodayScheduleResponse;
 import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
 import com.server.backend.DTO.Reports.TradeWiseReportResponse;
 import com.server.backend.DTO.Reports.TradeWiseVacantResponse;
-import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
 import com.server.backend.DTO.Reports.VerifiedApplicationCountReportResponse;
 import com.server.backend.DTO.Reports.ItiListResponse;
 import com.server.backend.DTO.Reports.NotAdmittedStudentResponse;
