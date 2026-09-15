@@ -160,6 +160,15 @@ public void deleteImplant(Long implantId) {
 
     return response;
 }
+
+    // Normalizes the optional ITI-type filter received from the controller.
+    // The Govt/Private classification is stored in public2.iti.govt ('G'/'P'),
+    // so a null/blank value means "no filter". Returning null (rather than a
+    // boolean flag) lets the callers branch on a final local variable, which
+    // the Java null analysis can follow - a flag cannot prove null-safety.
+    private static String normalizeItiTypeFilter(String itiType) {
+        return (itiType == null || itiType.trim().isEmpty()) ? null : itiType.trim();
+    }
  @Override
     public List<Object[]> getItis() {
         return industriesRepository.getItis();
@@ -291,7 +300,10 @@ dto.setDescription((String) row[14]);
         // The YEAR filter lives in the JOIN condition (not WHERE) so zero-record
         // ITIs are preserved. balance = trainee_admitted - completed - under_training
         // (reference screen proves it can be negative; not clamped).
-        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        // typeFilter == null means "no type filter". A final local is used instead
+        // of a boolean flag so the null analysis can prove it is non-null where it
+        // is bound as a query parameter.
+        final String typeFilter = normalizeItiTypeFilter(itiType);
         String sql = "SELECT it.iti_code, it.iti_name, dm.dist_name as district_name, " +
                 "COUNT(i.implant_id) as trainee_admitted, " +
                 "COALESCE(SUM(CASE WHEN i.to_date < CURRENT_DATE THEN 1 ELSE 0 END), 0) as completed, " +
@@ -304,12 +316,13 @@ dto.setDescription((String) row[14]);
                 "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code " +
                 "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
                 "AND EXTRACT(YEAR FROM i.from_date) = ? " +
-                (hasType ? "WHERE it.govt = ? " : "") +
+                (typeFilter != null ? "WHERE it.govt = ? " : "") +
                 "GROUP BY it.iti_code, it.iti_name, dm.dist_name " +
                 "ORDER BY dm.dist_name, it.iti_name";
-        return hasType
-                ? jdbcTemplate.queryForList(sql, year, itiType.trim())
-                : jdbcTemplate.queryForList(sql, year);
+        if (typeFilter == null) {
+            return jdbcTemplate.queryForList(sql, year);
+        }
+        return jdbcTemplate.queryForList(sql, year, typeFilter);
     }
 
     @Override
@@ -329,7 +342,9 @@ dto.setDescription((String) row[14]);
         //                      clamped; zero-record ITIs yield 0/0/0/0).
         // Classification uses public2.iti.govt ('G'/'P'), NOT iti_type (A/M/L).
         // Year conditions live in the JOIN (not WHERE) so zero-record ITIs survive.
-        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        // typeFilter == null means "no type filter"; a final local lets the null
+        // analysis prove it is non-null where it is bound as a query parameter.
+        final String typeFilter = normalizeItiTypeFilter(itiType);
         String sql = "SELECT it.iti_code, it.iti_name, dm.dist_name as district_name, " +
                 "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as trainee_admitted, " +
                 "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) as completed, " +
@@ -342,12 +357,13 @@ dto.setDescription((String) row[14]);
                 "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code " +
                 "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
                 "AND (EXTRACT(YEAR FROM i.from_date) = ? OR EXTRACT(YEAR FROM i.to_date) = ?) " +
-                (hasType ? "WHERE it.govt = ? " : "") +
+                (typeFilter != null ? "WHERE it.govt = ? " : "") +
                 "GROUP BY it.iti_code, it.iti_name, dm.dist_name " +
                 "ORDER BY dm.dist_name, it.iti_name";
-        return hasType
-                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, itiType.trim())
-                : jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+        if (typeFilter == null) {
+            return jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+        }
+        return jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, typeFilter);
     }
 
     @Override
@@ -366,7 +382,9 @@ dto.setDescription((String) row[14]);
         //   total_students   = trainee_admitted
         // Classification uses public2.iti.govt ('G'/'P'), NOT iti_type (A/M/L).
         // Year conditions live in the JOIN (not WHERE) so zero-record ITIs survive.
-        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        // typeFilter == null means "no type filter"; a final local lets the null
+        // analysis prove it is non-null where it is bound as a query parameter.
+        final String typeFilter = normalizeItiTypeFilter(itiType);
         String sql = "SELECT it.iti_code, it.iti_name, dm.dist_name as district_name, " +
                 "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as trainee_admitted, " +
                 "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) as completed, " +
@@ -379,12 +397,13 @@ dto.setDescription((String) row[14]);
                 "LEFT JOIN public2.dist_mst dm ON it.dist_code = dm.dist_code " +
                 "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
                 "AND (EXTRACT(YEAR FROM i.from_date) = ? OR EXTRACT(YEAR FROM i.to_date) = ?) " +
-                (hasType ? "WHERE it.govt = ? " : "") +
+                (typeFilter != null ? "WHERE it.govt = ? " : "") +
                 "GROUP BY it.iti_code, it.iti_name, dm.dist_name " +
                 "ORDER BY dm.dist_name, it.iti_name";
-        return hasType
-                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, itiType.trim())
-                : jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+        if (typeFilter == null) {
+            return jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+        }
+        return jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year, typeFilter);
     }
 
     @Override
@@ -406,7 +425,9 @@ dto.setDescription((String) row[14]);
         // Govt/Private filter uses public2.iti.govt ('G'/'P'), applied inside the
         // JOIN condition (not WHERE) so zero-record districts survive.
         // Year conditions live in the implant JOIN (not WHERE) for the same reason.
-        boolean hasType = itiType != null && !itiType.trim().isEmpty();
+        // typeFilter == null means "no type filter"; a final local lets the null
+        // analysis prove it is non-null where it is bound as a query parameter.
+        final String typeFilter = normalizeItiTypeFilter(itiType);
         String sql = "SELECT dm.dist_code, dm.dist_name, " +
                 "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as trainee_admitted, " +
                 "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.to_date) = ? THEN i.no_of_students ELSE 0 END), 0) as completed, " +
@@ -417,7 +438,7 @@ dto.setDescription((String) row[14]);
                 "COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM i.from_date) = ? THEN i.no_of_students ELSE 0 END), 0) as total_students " +
                 "FROM public2.dist_mst dm " +
                 "LEFT JOIN public2.iti it ON it.dist_code = dm.dist_code " +
-                (hasType ? "AND it.govt = ? " : "") +
+                (typeFilter != null ? "AND it.govt = ? " : "") +
                 "LEFT JOIN implant.implant i ON i.iti_code = it.iti_code " +
                 "AND (EXTRACT(YEAR FROM i.from_date) = ? OR EXTRACT(YEAR FROM i.to_date) = ?) " +
                 "GROUP BY dm.dist_code, dm.dist_name " +
@@ -425,11 +446,12 @@ dto.setDescription((String) row[14]);
         // NOTE on parameter order: the SELECT list has 5 year placeholders, then the
         // govt filter placeholder (inside the iti JOIN), then 2 year placeholders in
         // the implant JOIN. Binding must follow that exact order:
-        //   year x5, itiType, year, year  (when hasType)
-        //   year x7                       (when !hasType)
-        return hasType
-                ? jdbcTemplate.queryForList(sql, year, year, year, year, year, itiType.trim(), year, year)
-                : jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+        //   year x5, typeFilter, year, year  (when a type filter is supplied)
+        //   year x7                          (when no type filter is supplied)
+        if (typeFilter == null) {
+            return jdbcTemplate.queryForList(sql, year, year, year, year, year, year, year);
+        }
+        return jdbcTemplate.queryForList(sql, year, year, year, year, year, typeFilter, year, year);
     }
 
     @Override
