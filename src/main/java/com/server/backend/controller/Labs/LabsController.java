@@ -1,6 +1,7 @@
 package com.server.backend.controller.Labs;
 
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.Labs.LabsDashboardResponse;
 import com.server.backend.service.Labs.LabsService;
 
+@Tag(name = "Labs")
 @RestController
 @RequestMapping("/api/labs")
 public class LabsController {

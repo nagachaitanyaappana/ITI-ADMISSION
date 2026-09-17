@@ -1,6 +1,7 @@
 package com.server.backend.controller.Placements;
 
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import com.server.backend.service.Placements.PlacementsService;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Placements & Industry")
 @RestController
 @RequestMapping("/api/placements")
 public class PlacementsController {

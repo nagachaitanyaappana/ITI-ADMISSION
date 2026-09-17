@@ -11,7 +11,7 @@ import com.server.backend.service.StateService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "states", description = "State management operations")
+@Tag(name = "Student")
 @RestController
 @RequestMapping("/api/master")
 public class StateController {

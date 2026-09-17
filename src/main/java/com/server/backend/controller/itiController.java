@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@Tag(name = "itis", description = "ITI institute management operations")
+@Tag(name = "IT Administration")
 @RestController
 @RequestMapping("/api/itis")
 public class itiController {

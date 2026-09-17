@@ -1,11 +1,13 @@
 package com.server.backend.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.service.CasteMasterService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.Map;
 import java.util.HashMap;
+@Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/api/dsc")
 @CrossOrigin(origins="http://localhost:5052")

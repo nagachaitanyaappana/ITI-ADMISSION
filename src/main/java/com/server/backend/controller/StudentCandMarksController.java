@@ -1,11 +1,13 @@
 package com.server.backend.controller;
 
 import com.server.backend.dto.StudentCandMarksDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.service.StudentCandMarksService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Student")
 @RestController
 @RequestMapping("/api/student/marks")
 @RequiredArgsConstructor

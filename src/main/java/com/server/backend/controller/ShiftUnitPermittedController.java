@@ -1,6 +1,7 @@
 package com.server.backend.controller;
 
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import com.server.backend.DTO.Institute.ShiftUnitPermittedRequestDto;
@@ -10,6 +11,7 @@ import com.server.backend.service.DGTPermittedShiftsUnits;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "IT Administration")
 @RestController
 @RequestMapping("/api/shift-unit-permitted")
 @RequiredArgsConstructor

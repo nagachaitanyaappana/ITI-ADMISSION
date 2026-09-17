@@ -1,5 +1,6 @@
 package com.server.backend.controller.Implant;
 import org.springframework.http.HttpHeaders;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import com.server.backend.DTO.Industries.IndustryConnectedTradesDTO;
 import com.server.backend.service.Implant.IndustryConnectedTradesService;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Placements & Industry")
 @RestController
 @RequestMapping("/api/industry-connected-trades")
 public class IndustryConnectedTradesController {

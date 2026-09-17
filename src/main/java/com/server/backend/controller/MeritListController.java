@@ -23,7 +23,7 @@ import com.server.backend.service.MeritListService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import io.swagger.v3.oas.annotations.tags.Tag;
-@Tag(name = "merit-list", description = "Merit list management operations")
+@Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/api/meritlist")
 @CrossOrigin(origins="http://localhost:5052")

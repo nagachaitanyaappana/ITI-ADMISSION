@@ -1,6 +1,7 @@
 package com.server.backend.controller;
 
 import com.server.backend.dto.StudentApplicationDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.service.StudentApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.server.backend.entity.CasteMaster;
 import com.server.backend.entity.SubCasteMaster;
+@Tag(name = "Student")
 @RestController
 @RequestMapping("/api/student")
 @RequiredArgsConstructor

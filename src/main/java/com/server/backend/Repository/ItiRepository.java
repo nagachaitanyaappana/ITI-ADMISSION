@@ -35,5 +35,8 @@ public interface ItiRepository extends JpaRepository<Iti, String> {
     List<Object[]> findItiListRows(@Param("govt") String govt);
 
     Optional<Iti> findByItiCodeAndDistCode(String itiCode, String distCode);
-    List<Iti> findByDistCode(String distCode);
+        List<Iti> findByDistCode(String distCode);
+
+    // New method for Govt/Pvt API (added from varshitha module)
+    List<Iti> findByGovt(String govt);
 }

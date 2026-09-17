@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.DTO.LabsReportDTO;
 import com.server.backend.service.ItiLabsReportService;
-@Tag(name = "ItiLabsReportController", description = "Controller for ITI Labs Report")
+@Tag(name = "Labs")
 @RestController
 @RequestMapping("/itilogin")
 public class ItiLabsReportController {

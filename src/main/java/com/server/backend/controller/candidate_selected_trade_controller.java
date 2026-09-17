@@ -1,7 +1,7 @@
 package com.server.backend.controller;
 
 import java.util.List;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.admission_process.candidate_selected_trade_dto;
 import com.server.backend.service.candidate_selected_trade_service;
 
+@Tag(name = "Admission Process")
 @RestController
 public class candidate_selected_trade_controller {
 

@@ -17,12 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+@Tag(name = "Placements & Industry")
 @RestController
 @RequestMapping("/api/implant/industry-partner-details")
-@Tag(
-        name = "Industry Partner Details",
-        description = "APIs for Industry Partner Details"
-)
 public class IndustryPartnerDetailsController {
 
     private final IndustryPartnerDetailsService service;

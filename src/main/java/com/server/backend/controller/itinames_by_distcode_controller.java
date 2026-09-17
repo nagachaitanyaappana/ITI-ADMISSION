@@ -11,7 +11,7 @@ import com.server.backend.service.itinames_by_distcode_service;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-@Tag(name = "iti-names", description = "ITI names retrieval operations")
+@Tag(name = "Admission Process")
 @RestController
 @RequestMapping("/admission")
 public class itinames_by_distcode_controller {

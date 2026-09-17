@@ -9,7 +9,7 @@ import com.server.backend.service.trade_iti_names_service;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "trade-iti-names", description = "Trade and ITI names master data operations")
+@Tag(name = "Admission Process")
 @RestController
 @RequestMapping("/admission")
 public class trade_iti_names_controller {

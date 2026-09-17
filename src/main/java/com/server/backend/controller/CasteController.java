@@ -2,7 +2,7 @@ package com.server.backend.controller;
 
 
 import java.util.List;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.server.backend.DTO.student.CasteSubCasteResponseDto;
 import com.server.backend.service.CasteService;
 
+@Tag(name = "Student")
 @RestController
 @RequestMapping("/api/student")
 public class CasteController {

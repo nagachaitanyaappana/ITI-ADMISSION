@@ -1,7 +1,7 @@
 package com.server.backend.controller.MasterData;
 
 import java.util.List;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,7 @@ import com.server.backend.service.MasterData.MasterDataService;
  *
  * Data comes from the placements-side schemas (public2 / see MasterDataServiceImpl).
  */
+@Tag(name = "Placements & Industry")
 @RestController
 @RequestMapping("/masterdata")
 public class MasterDataController {

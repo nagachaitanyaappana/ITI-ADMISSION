@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-@Tag(name = "Industries Controller", description = "Controller for managing industries and trades")
+@Tag(name = "Placements & Industry")
 @RestController
 @RequestMapping("/api/placements/industries")
 public class IndustriesController {

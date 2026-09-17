@@ -46,7 +46,7 @@ import com.server.backend.service.Reports.TradeDisplayReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "reports", description = "REST APIs for generating various reports including admissions, applicants, trade-wise analysis, and district-wise statistics")
+@Tag(name = "Reports")
 @RestController
 @RequestMapping("/api/reports")
 public class ReportRestController {

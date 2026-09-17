@@ -15,7 +15,7 @@ import com.server.backend.service.AdmissionTimingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "admission-timings", description = "Admission timing schedule management")
+@Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/admission-timings")
 public class AdmissionTimingController {

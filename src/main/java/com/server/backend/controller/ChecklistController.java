@@ -16,7 +16,7 @@ import com.server.backend.service.ChecklistService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-@Tag(name = "checklist", description = "Checklist management operations")
+@Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/api/checklist")
 public class ChecklistController {
