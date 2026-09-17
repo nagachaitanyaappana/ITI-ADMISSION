@@ -56,7 +56,7 @@ public Checklist updateChecklist(Integer regid, Checklist checklist) {
     existing.setPhase(checklist.getPhase());
     existing.setItiCode(checklist.getItiCode());
     existing.setAppStatus(checklist.getAppStatus());
-
+    existing.setRank(checklist.getRank());
     return checklistRepository.save(existing);
 }
 

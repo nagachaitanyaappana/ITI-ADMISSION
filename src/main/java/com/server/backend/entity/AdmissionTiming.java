@@ -49,6 +49,6 @@ public class AdmissionTiming {
     private String phase;
 
     @Column(name = "year")
-    private Integer year;
+    private String year;
 
 }
