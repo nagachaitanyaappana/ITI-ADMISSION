@@ -23,6 +23,22 @@ public class SubCasteMaster {
     @JoinColumn(name = "caste_id")
     private CasteMaster casteMaster;
 
+    /* Read-only alias for dilli's student module (SubCasteRepository.findByCasteId) */
+    @Column(name = "caste_id", insertable = false, updatable = false)
+    private Long casteId;
+
+    public Long getCasteId() {
+        return casteId;
+    }
+
+    public Long getSubCasteId() {
+        return subcasteId;
+    }
+
+    public String getSubCasteName() {
+        return subCaste;
+    }
+
     public SubCasteMaster() {
     }
 
