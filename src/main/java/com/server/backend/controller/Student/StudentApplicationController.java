@@ -1,6 +1,6 @@
 package com.server.backend.controller.Student;
 
-import com.server.backend.dto.StudentApplicationDto;
+import com.server.backend.DTO.Student.StudentApplicationDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.service.Student.StudentApplicationService;
 import lombok.RequiredArgsConstructor;

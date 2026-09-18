@@ -1,8 +1,8 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.dto.StudentApplicationDto;
+import com.server.backend.DTO.Student.StudentApplicationDto;
 import com.server.backend.entity.StudentApplication;
-import com.server.backend.repository.StudentApplicationRepository;
+import com.server.backend.Repository.Student.StudentApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.server.backend.entity.CasteMaster;
 import com.server.backend.entity.SubCasteMaster;
-import com.server.backend.repository.CasteRepository;
-import com.server.backend.repository.SubCasteRepository;
+import com.server.backend.Repository.Student.CasteRepository;
+import com.server.backend.Repository.Student.SubCasteRepository;
 @Service
 @RequiredArgsConstructor
 public class StudentApplicationServiceImpl implements StudentApplicationService {

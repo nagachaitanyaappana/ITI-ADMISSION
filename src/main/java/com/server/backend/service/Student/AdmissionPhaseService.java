@@ -1,6 +1,6 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.dto.AdmissionPhaseDto;
+import com.server.backend.DTO.Student.AdmissionPhaseDto;
 import com.server.backend.entity.AdmissionPhase;
 import java.util.List;
 public interface AdmissionPhaseService {

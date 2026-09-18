@@ -1,6 +1,6 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.dto.StudentCandMarksDto;
+import com.server.backend.DTO.Student.StudentCandMarksDto;
 
 public interface StudentCandMarksService {
 

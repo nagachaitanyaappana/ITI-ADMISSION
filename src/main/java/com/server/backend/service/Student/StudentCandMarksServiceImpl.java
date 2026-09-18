@@ -1,10 +1,10 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.dto.StudentCandMarksDto;
+import com.server.backend.DTO.Student.StudentCandMarksDto;
 import com.server.backend.entity.StudentApplication;
 import com.server.backend.entity.StudentCandMarks;
-import com.server.backend.repository.StudentApplicationRepository;
-import com.server.backend.repository.StudentCandMarksRepository;
+import com.server.backend.Repository.Student.StudentApplicationRepository;
+import com.server.backend.Repository.Student.StudentCandMarksRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;

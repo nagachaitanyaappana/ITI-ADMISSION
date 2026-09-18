@@ -1,9 +1,9 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.dto.AdmissionPhaseDto;
+import com.server.backend.DTO.Student.AdmissionPhaseDto;
 import com.server.backend.entity.AdmissionPhase;
 import com.server.backend.entity.AdmissionPhaseId;
-import com.server.backend.repository.AdmissionPhaseRepository;
+import com.server.backend.Repository.Student.AdmissionPhaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
