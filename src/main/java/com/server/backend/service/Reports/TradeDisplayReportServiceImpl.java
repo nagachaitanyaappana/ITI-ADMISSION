@@ -6,11 +6,11 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.Reports.DistrictOptionResponse;
-import com.server.backend.DTO.Reports.ItiListResponse;
-import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
-import com.server.backend.DTO.Reports.ItiTradeDisplayResponse.TradeDetail;
-import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
+import com.server.backend.DTO.DistrictOptionResponse;
+import com.server.backend.DTO.ItiListResponse;
+import com.server.backend.DTO.ItiTradeDisplayResponse;
+import com.server.backend.DTO.ItiTradeDisplayResponse.TradeDetail;
+import com.server.backend.DTO.TradeDisplayReportRequest;
 import com.server.backend.Repository.ITI.DistrictMasterRepository;
 import com.server.backend.Repository.ITI.ItiRepository;
 

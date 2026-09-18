@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.MasterData.DashBoardDataResponse;
-import com.server.backend.DTO.MasterData.ItiDetailResponse;
-import com.server.backend.DTO.MasterData.ItiPercentStatsResponse;
+import com.server.backend.DTO.DashBoardDataResponse;
+import com.server.backend.DTO.ItiDetailResponse;
+import com.server.backend.DTO.ItiPercentStatsResponse;
 import com.server.backend.service.MasterData.MasterDataService;
 
 /**

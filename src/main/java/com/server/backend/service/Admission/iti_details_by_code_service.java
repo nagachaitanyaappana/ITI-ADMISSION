@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.iti_details_by_code_dto;
+import com.server.backend.DTO.iti_details_by_code_dto;
 import com.server.backend.Repository.Admission.iti_details_by_code_repository;
 
 @Service

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.trade_details_by_code_dto;
+import com.server.backend.DTO.trade_details_by_code_dto;
 import com.server.backend.Repository.Admission.trade_details_by_code_repository;
 
 @Service

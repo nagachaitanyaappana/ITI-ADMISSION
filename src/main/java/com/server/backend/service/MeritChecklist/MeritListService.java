@@ -1,7 +1,7 @@
 package com.server.backend.service.MeritChecklist;
 import java.util.List;
-import com.server.backend.DTO.MeritListDTOs.MeritListRow;
-import com.server.backend.DTO.MeritListDTOs.UserPrincipal;
+import com.server.backend.DTO.MeritListRow;
+import com.server.backend.DTO.UserPrincipal;
 import org.springframework.stereotype.Service;
 import com.server.backend.Repository.MeritChecklist.MeritListRepository;
 import com.server.backend.entity.MeritList;

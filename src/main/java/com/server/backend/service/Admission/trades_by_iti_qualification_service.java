@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.trades_by_iti_qualification_dto;
+import com.server.backend.DTO.trades_by_iti_qualification_dto;
 import com.server.backend.Repository.Admission.trades_by_iti_qualification_repository;
 
 @Service

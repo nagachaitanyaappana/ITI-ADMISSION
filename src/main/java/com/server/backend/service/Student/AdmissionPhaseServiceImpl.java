@@ -1,6 +1,6 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.DTO.Student.AdmissionPhaseDto;
+import com.server.backend.DTO.AdmissionPhaseDto;
 import com.server.backend.entity.AdmissionPhase;
 import com.server.backend.entity.AdmissionPhaseId;
 import com.server.backend.Repository.Student.AdmissionPhaseRepository;

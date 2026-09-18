@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.vacant_trades_by_district_dto;
+import com.server.backend.DTO.vacant_trades_by_district_dto;
 import com.server.backend.Repository.Admission.vacant_trades_by_district_repository;
 
 @Service

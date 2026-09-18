@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.candidate_selected_trade_dto;
+import com.server.backend.DTO.candidate_selected_trade_dto;
 import com.server.backend.Repository.Admission.candidate_selected_trade_repository;
 
 @Service

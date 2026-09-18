@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.Labs.LabsDashboardResponse;
+import com.server.backend.DTO.LabsDashboardResponse;
 import com.server.backend.service.Labs.LabsService;
 
 @Tag(name = "Labs")

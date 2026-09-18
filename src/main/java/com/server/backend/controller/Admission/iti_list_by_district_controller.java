@@ -4,7 +4,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-import com.server.backend.DTO.admission_process.iti_list_by_district_dto;
+import com.server.backend.DTO.iti_list_by_district_dto;
 import com.server.backend.service.Admission.iti_list_by_district_service;
 
 @Tag(name = "Admission Process")

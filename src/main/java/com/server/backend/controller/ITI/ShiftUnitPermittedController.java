@@ -4,8 +4,8 @@ import org.springframework.http.ResponseEntity;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-import com.server.backend.DTO.ITI.ShiftUnitPermittedRequestDto;
-import com.server.backend.DTO.ITI.ShiftUnitPermittedResponseDto;
+import com.server.backend.DTO.ShiftUnitPermittedRequestDto;
+import com.server.backend.DTO.ShiftUnitPermittedResponseDto;
 import com.server.backend.service.ITI.DGTPermittedShiftsUnits;
 
 import jakarta.validation.Valid;

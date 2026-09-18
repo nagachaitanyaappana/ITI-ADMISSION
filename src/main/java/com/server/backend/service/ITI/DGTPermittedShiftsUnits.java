@@ -1,7 +1,7 @@
 package com.server.backend.service.ITI;
 
-import com.server.backend.DTO.ITI.ShiftUnitPermittedRequestDto;
-import com.server.backend.DTO.ITI.ShiftUnitPermittedResponseDto;
+import com.server.backend.DTO.ShiftUnitPermittedRequestDto;
+import com.server.backend.DTO.ShiftUnitPermittedResponseDto;
 
 public interface DGTPermittedShiftsUnits {
 

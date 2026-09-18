@@ -1,7 +1,7 @@
 package com.server.backend.service.Implant;
 
-import com.server.backend.DTO.Implant.IndustryMasterRequest;
-import com.server.backend.DTO.Implant.IndustryMasterResponse;
+import com.server.backend.DTO.IndustryMasterRequest;
+import com.server.backend.DTO.IndustryMasterResponse;
 import java.util.List;
 public interface IndustryMasterService {
 

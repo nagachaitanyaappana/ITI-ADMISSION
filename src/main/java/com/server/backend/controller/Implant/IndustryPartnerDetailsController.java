@@ -1,7 +1,7 @@
 package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Implant.IndustryPartnerDetailsRequest;
-import com.server.backend.DTO.Implant.IndustryPartnerDetailsResponse;
+import com.server.backend.DTO.IndustryPartnerDetailsRequest;
+import com.server.backend.DTO.IndustryPartnerDetailsResponse;
 import com.server.backend.service.Implant.IndustryPartnerDetailsExcelService;
 import com.server.backend.service.Implant.IndustryPartnerDetailsService;
 

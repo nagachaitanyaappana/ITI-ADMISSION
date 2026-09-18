@@ -2,7 +2,7 @@ package com.server.backend.service.ITI;
 
 import java.util.List;
 
-import com.server.backend.DTO.ITI.DesignationDto;
+import com.server.backend.DTO.DesignationDto;
 
 public interface DesignationService {
 

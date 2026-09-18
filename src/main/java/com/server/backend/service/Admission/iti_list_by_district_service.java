@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.iti_list_by_district_dto;
+import com.server.backend.DTO.iti_list_by_district_dto;
 import com.server.backend.Repository.Admission.iti_list_by_district_repository;
 
 @Service

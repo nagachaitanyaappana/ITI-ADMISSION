@@ -1,7 +1,7 @@
 package com.server.backend.service.Implant;
 
-import com.server.backend.DTO.Implant.IndustryPartnerDetailsRequest;
-import com.server.backend.DTO.Implant.IndustryPartnerDetailsResponse;
+import com.server.backend.DTO.IndustryPartnerDetailsRequest;
+import com.server.backend.DTO.IndustryPartnerDetailsResponse;
 import com.server.backend.entity.Placements.IndustryPartnerDetails;
 import com.server.backend.Repository.PlacementsRepositories.IndustryPartnerDetailsRepository;
 

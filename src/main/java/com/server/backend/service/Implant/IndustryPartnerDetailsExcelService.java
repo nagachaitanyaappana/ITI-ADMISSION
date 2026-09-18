@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.Implant.IndustryPartnerExcelRow;
+import com.server.backend.DTO.IndustryPartnerExcelRow;
 import com.server.backend.Repository.PlacementsRepositories.IndustryPartnerDetailsRepository;
 
 @Service

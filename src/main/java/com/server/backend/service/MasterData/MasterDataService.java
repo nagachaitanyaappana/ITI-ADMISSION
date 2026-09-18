@@ -2,9 +2,9 @@ package com.server.backend.service.MasterData;
 
 import java.util.List;
 
-import com.server.backend.DTO.MasterData.DashBoardDataResponse;
-import com.server.backend.DTO.MasterData.ItiDetailResponse;
-import com.server.backend.DTO.MasterData.ItiPercentStatsResponse;
+import com.server.backend.DTO.DashBoardDataResponse;
+import com.server.backend.DTO.ItiDetailResponse;
+import com.server.backend.DTO.ItiPercentStatsResponse;
 
 public interface MasterDataService {
 

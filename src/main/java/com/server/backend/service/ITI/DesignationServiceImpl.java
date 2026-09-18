@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.ITI.DesignationDto;
+import com.server.backend.DTO.DesignationDto;
 import com.server.backend.Repository.ITI.DesignationRepository;
 import com.server.backend.entity.ITI.Designation;
 

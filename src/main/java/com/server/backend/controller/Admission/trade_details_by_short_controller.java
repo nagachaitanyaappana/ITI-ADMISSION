@@ -5,7 +5,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-import com.server.backend.DTO.admission_process.trade_details_by_short_dto;
+import com.server.backend.DTO.trade_details_by_short_dto;
 import com.server.backend.service.Admission.trade_details_by_short_service;
 
 @Tag(name = "Admission Process")

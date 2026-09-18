@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.student.CasteSubCasteResponseDto;
-import com.server.backend.DTO.student.SubCasteDto;
+import com.server.backend.DTO.CasteSubCasteResponseDto;
+import com.server.backend.DTO.SubCasteDto;
 import com.server.backend.entity.CasteMaster;
 import com.server.backend.entity.SubCasteMaster;
 import com.server.backend.Repository.Student.CasteMaster_Repo;

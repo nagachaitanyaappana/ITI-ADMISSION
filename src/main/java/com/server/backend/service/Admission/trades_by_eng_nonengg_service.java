@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.iti.trades_by_eng_nonengg_dto;
+import com.server.backend.DTO.trades_by_eng_nonengg_dto;
 import com.server.backend.Repository.Admission.trades_by_eng_nonengg_repository;
 
 @Service

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.admission_process.trades_by_iti_qualification_dto;
+import com.server.backend.DTO.trades_by_iti_qualification_dto;
 import com.server.backend.service.Admission.trades_by_iti_qualification_service;
 
 @Tag(name = "Admission Process")

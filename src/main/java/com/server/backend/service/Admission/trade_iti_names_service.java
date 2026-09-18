@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.iti.trade_iti_names_dto;
+import com.server.backend.DTO.trade_iti_names_dto;
 import com.server.backend.Repository.ITI.trade_iti_names_repository;
 
 @Service

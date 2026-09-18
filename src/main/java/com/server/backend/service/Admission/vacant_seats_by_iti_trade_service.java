@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.iti.vacant_seats_by_iti_trade_dto;
+import com.server.backend.DTO.vacant_seats_by_iti_trade_dto;
 import com.server.backend.Repository.Admission.vacant_seats_by_iti_trade_repository;
 
 @Service

@@ -1,6 +1,6 @@
 package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Implant.IndustryDropdownResponse;
+import com.server.backend.DTO.IndustryDropdownResponse;
 import com.server.backend.service.Implant.IndustriesService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

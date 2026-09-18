@@ -1,9 +1,9 @@
 package com.server.backend.service.ITI;
 import java.util.List;
 
-import com.server.backend.DTO.ITI.ItiDto;
-import com.server.backend.DTO.ITI.ItiPatchDto;
-import com.server.backend.DTO.Reports.DistrictOptionResponse;
+import com.server.backend.DTO.ItiDto;
+import com.server.backend.DTO.ItiPatchDto;
+import com.server.backend.DTO.DistrictOptionResponse;
 import com.server.backend.entity.ITI.Iti;
 
 public interface ItiService {

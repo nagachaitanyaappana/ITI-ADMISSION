@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.ITI.ItiDto;
-import com.server.backend.DTO.ITI.ItiPatchDto;
+import com.server.backend.DTO.ItiDto;
+import com.server.backend.DTO.ItiPatchDto;
 import com.server.backend.entity.ITI.Iti;
 import com.server.backend.service.ITI.ItiService;
 

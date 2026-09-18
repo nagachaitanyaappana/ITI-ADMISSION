@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.Placements.PlacementsDistinctItiResponse;
-import com.server.backend.DTO.Placements.PlacementsGroupedResponse;
-import com.server.backend.DTO.Placements.PlacementsOverviewResponse;
+import com.server.backend.DTO.PlacementsDistinctItiResponse;
+import com.server.backend.DTO.PlacementsGroupedResponse;
+import com.server.backend.DTO.PlacementsOverviewResponse;
 import com.server.backend.service.Placements.PlacementsService;
 import java.util.List;
 import java.util.Map;

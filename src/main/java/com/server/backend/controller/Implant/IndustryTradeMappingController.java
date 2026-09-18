@@ -1,7 +1,7 @@
 package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Implant.IndustryTradeMappingRequest;
-import com.server.backend.DTO.Implant.IndustryTradeMappingResponse;
+import com.server.backend.DTO.IndustryTradeMappingRequest;
+import com.server.backend.DTO.IndustryTradeMappingResponse;
 import com.server.backend.service.Implant.IndustryTradeMappingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

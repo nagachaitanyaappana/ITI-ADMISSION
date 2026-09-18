@@ -13,7 +13,7 @@ import java.util.List;
 import com.server.backend.entity.AdmissionTiming;
 import com.server.backend.Repository.MeritChecklist.AdmissionTimingRepository;
 import com.server.backend.entity.AdmissionTimingId;
-import com.server.backend.DTO.AdmissionTimingsDTOs.*;
+import com.server.backend.DTO.*;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Date;

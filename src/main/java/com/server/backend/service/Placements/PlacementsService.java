@@ -1,8 +1,8 @@
 package com.server.backend.service.Placements;
 
-import com.server.backend.DTO.Placements.PlacementsDistinctItiResponse;
-import com.server.backend.DTO.Placements.PlacementsGroupedResponse;
-import com.server.backend.DTO.Placements.PlacementsOverviewResponse;
+import com.server.backend.DTO.PlacementsDistinctItiResponse;
+import com.server.backend.DTO.PlacementsGroupedResponse;
+import com.server.backend.DTO.PlacementsOverviewResponse;
 import java.util.List;
 import java.util.Map;
 

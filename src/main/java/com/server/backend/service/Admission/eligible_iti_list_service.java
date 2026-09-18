@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.eligible_iti_list_dto;
+import com.server.backend.DTO.eligible_iti_list_dto;
 import com.server.backend.Repository.Admission.eligible_iti_list_repository;
 
 @Service

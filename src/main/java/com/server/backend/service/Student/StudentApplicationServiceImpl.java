@@ -1,6 +1,6 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.DTO.Student.StudentApplicationDto;
+import com.server.backend.DTO.StudentApplicationDto;
 import com.server.backend.entity.StudentApplication;
 import com.server.backend.Repository.Student.StudentApplicationRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.server.backend.service.Student;
 
-import com.server.backend.DTO.Student.StudentApplicationDto;
+import com.server.backend.DTO.StudentApplicationDto;
 import java.util.List;
 import com.server.backend.entity.CasteMaster;
 import com.server.backend.entity.SubCasteMaster;

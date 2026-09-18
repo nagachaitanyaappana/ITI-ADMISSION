@@ -1,7 +1,7 @@
 package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Implant.IndustryMasterRequest;
-import com.server.backend.DTO.Implant.IndustryMasterResponse;
+import com.server.backend.DTO.IndustryMasterRequest;
+import com.server.backend.DTO.IndustryMasterResponse;
 import com.server.backend.service.Implant.IndustryMasterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

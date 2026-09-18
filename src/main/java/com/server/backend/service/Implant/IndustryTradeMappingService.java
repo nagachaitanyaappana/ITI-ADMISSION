@@ -1,7 +1,7 @@
 package com.server.backend.service.Implant;
 
-import com.server.backend.DTO.Implant.IndustryTradeMappingRequest;
-import com.server.backend.DTO.Implant.IndustryTradeMappingResponse;
+import com.server.backend.DTO.IndustryTradeMappingRequest;
+import com.server.backend.DTO.IndustryTradeMappingResponse;
 import java.util.List;
 public interface IndustryTradeMappingService {
 

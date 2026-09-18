@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.candidate_profile_dto;
+import com.server.backend.DTO.candidate_profile_dto;
 import com.server.backend.Repository.Admission.candidate_profile_repository;
 
 @Service

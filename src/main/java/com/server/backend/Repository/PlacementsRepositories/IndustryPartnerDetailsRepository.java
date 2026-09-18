@@ -4,7 +4,7 @@ import com.server.backend.entity.Placements.IndustryPartnerDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;
-import com.server.backend.DTO.Implant.IndustryPartnerExcelRow;
+import com.server.backend.DTO.IndustryPartnerExcelRow;
 public interface IndustryPartnerDetailsRepository
         extends JpaRepository<IndustryPartnerDetails, Long> {
                 @Query(value = """

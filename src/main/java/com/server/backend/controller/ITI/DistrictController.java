@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.Reports.DistrictOptionResponse;
+import com.server.backend.DTO.DistrictOptionResponse;
 import com.server.backend.Repository.ITI.DistrictMasterRepository;
 
 import io.swagger.v3.oas.annotations.Operation;

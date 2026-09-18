@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.server.backend.DTO.ITI.ShiftUnitEntryDto;
-import com.server.backend.DTO.ITI.ShiftUnitPermittedRequestDto;
-import com.server.backend.DTO.ITI.ShiftUnitPermittedResponseDto;
+import com.server.backend.DTO.ShiftUnitEntryDto;
+import com.server.backend.DTO.ShiftUnitPermittedRequestDto;
+import com.server.backend.DTO.ShiftUnitPermittedResponseDto;
 import com.server.backend.entity.ITI.ShiftUnitPermitted;
 import com.server.backend.entity.ITI.ShiftUnitPermittedId;
 import com.server.backend.Repository.ITI.ShiftUnitPermittedRepository;

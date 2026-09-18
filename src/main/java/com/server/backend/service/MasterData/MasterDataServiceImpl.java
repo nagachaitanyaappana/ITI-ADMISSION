@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.MasterData.DashBoardDataResponse;
-import com.server.backend.DTO.MasterData.ItiDetailResponse;
-import com.server.backend.DTO.MasterData.ItiPercentStatsResponse;
-import com.server.backend.DTO.MasterData.SeatStatsResponse;
+import com.server.backend.DTO.DashBoardDataResponse;
+import com.server.backend.DTO.ItiDetailResponse;
+import com.server.backend.DTO.ItiPercentStatsResponse;
+import com.server.backend.DTO.SeatStatsResponse;
 
 /**
  * Placement-portal dashboard aggregation (placementDashboard.jsp widgets).

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.ITI.ItiTradeMstDto;
+import com.server.backend.DTO.ItiTradeMstDto;
 import com.server.backend.Repository.ITI.ItiTradeMstRepo;
 import com.server.backend.entity.ITI.Iti_trade_mst;
 

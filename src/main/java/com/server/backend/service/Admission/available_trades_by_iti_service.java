@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.admission_process.available_trades_by_iti_dto;
+import com.server.backend.DTO.available_trades_by_iti_dto;
 import com.server.backend.Repository.Admission.available_trades_by_iti_repository;
 
 @Service
