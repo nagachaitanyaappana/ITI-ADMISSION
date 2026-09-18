@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 
-import com.server.backend.entity.ITI.Iti;
+import com.server.backend.entity.Iti;
 
 
 public interface trade_iti_names_repository extends JpaRepository<Iti, String> {

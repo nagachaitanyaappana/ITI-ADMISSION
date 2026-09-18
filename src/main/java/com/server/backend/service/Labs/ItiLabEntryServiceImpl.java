@@ -7,8 +7,8 @@ import com.server.backend.DTO.ItiLabsEntryDto;
 import com.server.backend.DTO.ItiLabsEntryDto.LabItemDTO;
 import com.server.backend.Repository.Labs.ItiLabsEntryRepository;
 import com.server.backend.Repository.Labs.ItiLabItemsRepository;
-import com.server.backend.entity.labs.Labs;
-import com.server.backend.entity.labs.LabItems;
+import com.server.backend.entity.Labs;
+import com.server.backend.entity.LabItems;
 
 @Service
 public class ItiLabEntryServiceImpl implements ItiLabEntryService {

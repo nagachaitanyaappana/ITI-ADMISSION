@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import com.server.backend.DTO.ImplantCreateRequest;
 import com.server.backend.DTO.IndustryMappingRequest;
-import com.server.backend.entity.Placements.ImplantEntity;
+import com.server.backend.entity.ImplantEntity;
 import com.server.backend.DTO.ImplantResponse;
 import com.server.backend.DTO.InplantDashboardResponse;
 import com.server.backend.Repository.PlacementsRepositories.ImplantRepository;

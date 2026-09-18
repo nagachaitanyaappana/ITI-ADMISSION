@@ -1,4 +1,4 @@
-package com.server.backend.entity.ITI;
+package com.server.backend.entity;
 
 import java.io.Serializable;
 import lombok.Data;

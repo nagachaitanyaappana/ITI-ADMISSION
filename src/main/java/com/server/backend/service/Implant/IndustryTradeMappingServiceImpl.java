@@ -2,8 +2,8 @@ package com.server.backend.service.Implant;
 
 import com.server.backend.DTO.IndustryTradeMappingRequest;
 import com.server.backend.DTO.IndustryTradeMappingResponse;
-import com.server.backend.entity.Placements.Industries;
-import com.server.backend.entity.Placements.IndustryMaster;
+import com.server.backend.entity.Industries;
+import com.server.backend.entity.IndustryMaster;
 import com.server.backend.Repository.PlacementsRepositories.IndustriesRepository;
 import com.server.backend.Repository.PlacementsRepositories.IndustryMasterRepository;
 

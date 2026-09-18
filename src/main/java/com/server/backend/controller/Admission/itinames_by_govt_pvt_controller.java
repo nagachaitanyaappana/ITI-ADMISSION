@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.server.backend.entity.ITI.Iti;
+import com.server.backend.entity.Iti;
 import com.server.backend.service.Admission.itinames_by_govt_pvt_service;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

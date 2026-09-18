@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.ItiTradeMstDto;
-import com.server.backend.entity.ITI.Iti_trade_mst;
+import com.server.backend.entity.Iti_trade_mst;
 import com.server.backend.service.ITI.ItiTradeMstService;
 
 import io.swagger.v3.oas.annotations.Operation;

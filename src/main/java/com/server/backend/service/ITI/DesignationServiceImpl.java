@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.server.backend.DTO.DesignationDto;
 import com.server.backend.Repository.ITI.DesignationRepository;
-import com.server.backend.entity.ITI.Designation;
+import com.server.backend.entity.Designation;
 
 @Service
 public class DesignationServiceImpl implements DesignationService {

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.Repository.ITI.ItiRepository;
-import com.server.backend.entity.ITI.Iti;
+import com.server.backend.entity.Iti;
 
 @Service
 public class itinames_by_govt_pvt_serviceimpl implements itinames_by_govt_pvt_service {

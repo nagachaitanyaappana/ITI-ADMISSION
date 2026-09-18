@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.server.backend.entity.labs.Labs;
+import com.server.backend.entity.Labs;
 
 public interface ItiLabsReportRepository extends JpaRepository<Labs, Long> {
 

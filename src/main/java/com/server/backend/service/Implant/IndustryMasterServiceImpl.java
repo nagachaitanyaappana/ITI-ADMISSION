@@ -2,7 +2,7 @@ package com.server.backend.service.Implant;
 
 import com.server.backend.DTO.IndustryMasterRequest;
 import com.server.backend.DTO.IndustryMasterResponse;
-import com.server.backend.entity.Placements.IndustryMaster;
+import com.server.backend.entity.IndustryMaster;
 import com.server.backend.Repository.PlacementsRepositories.IndustryMasterRepository;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;

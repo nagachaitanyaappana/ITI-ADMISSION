@@ -1,6 +1,6 @@
 package com.server.backend.Repository.PlacementsRepositories;
 
-import com.server.backend.entity.Placements.IndustryPartnerDetails;
+import com.server.backend.entity.IndustryPartnerDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;

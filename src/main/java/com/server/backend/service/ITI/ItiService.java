@@ -4,7 +4,7 @@ import java.util.List;
 import com.server.backend.DTO.ItiDto;
 import com.server.backend.DTO.ItiPatchDto;
 import com.server.backend.DTO.DistrictOptionResponse;
-import com.server.backend.entity.ITI.Iti;
+import com.server.backend.entity.Iti;
 
 public interface ItiService {
      Iti createIti(ItiDto dto);

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.server.backend.DTO.DistrictOptionResponse;
-import com.server.backend.entity.ITI.dist_master;
+import com.server.backend.entity.dist_master;
 
 public interface DistrictMasterRepository extends JpaRepository<dist_master, String> {
 

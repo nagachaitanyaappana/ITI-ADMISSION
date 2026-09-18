@@ -1,4 +1,4 @@
-package com.server.backend.entity.Placements;
+package com.server.backend.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

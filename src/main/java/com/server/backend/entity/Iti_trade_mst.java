@@ -1,4 +1,4 @@
-package com.server.backend.entity.ITI;
+package com.server.backend.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

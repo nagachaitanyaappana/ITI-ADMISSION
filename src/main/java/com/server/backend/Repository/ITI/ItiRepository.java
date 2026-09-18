@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
-import com.server.backend.entity.ITI.Iti;
+import com.server.backend.entity.Iti;
 
 public interface ItiRepository extends JpaRepository<Iti, String> {
 

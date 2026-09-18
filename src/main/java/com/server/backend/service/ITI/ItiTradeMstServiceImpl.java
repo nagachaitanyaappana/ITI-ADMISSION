@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.server.backend.DTO.ItiTradeMstDto;
 import com.server.backend.Repository.ITI.ItiTradeMstRepo;
-import com.server.backend.entity.ITI.Iti_trade_mst;
+import com.server.backend.entity.Iti_trade_mst;
 
 @Service
 public class ItiTradeMstServiceImpl

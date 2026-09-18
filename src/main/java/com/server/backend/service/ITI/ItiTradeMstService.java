@@ -3,7 +3,7 @@ package com.server.backend.service.ITI;
 import java.util.List;
 
 import com.server.backend.DTO.ItiTradeMstDto;
-import com.server.backend.entity.ITI.Iti_trade_mst;
+import com.server.backend.entity.Iti_trade_mst;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;

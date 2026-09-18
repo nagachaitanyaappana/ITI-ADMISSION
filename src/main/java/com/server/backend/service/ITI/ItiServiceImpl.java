@@ -10,7 +10,7 @@ import com.server.backend.DTO.ItiPatchDto;
 import com.server.backend.DTO.DistrictOptionResponse;
 import com.server.backend.Repository.ITI.DistrictMasterRepository;
 import com.server.backend.Repository.ITI.ItiRepository;
-import com.server.backend.entity.ITI.Iti;
+import com.server.backend.entity.Iti;
 
 @Service
 public class ItiServiceImpl implements ItiService {

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.ItiDto;
 import com.server.backend.DTO.ItiPatchDto;
-import com.server.backend.entity.ITI.Iti;
+import com.server.backend.entity.Iti;
 import com.server.backend.service.ITI.ItiService;
 
 import io.swagger.v3.oas.annotations.Operation;

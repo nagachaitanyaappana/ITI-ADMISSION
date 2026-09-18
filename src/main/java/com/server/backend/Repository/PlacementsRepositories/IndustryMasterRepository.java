@@ -1,5 +1,5 @@
 package com.server.backend.Repository.PlacementsRepositories;
-import com.server.backend.entity.Placements.IndustryMaster;
+import com.server.backend.entity.IndustryMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.lang.Long;
 import java.util.List;
