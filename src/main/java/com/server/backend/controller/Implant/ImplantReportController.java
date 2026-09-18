@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@Tag(name = "Placements & Industry")
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/implant-report")
 public class ImplantReportController {

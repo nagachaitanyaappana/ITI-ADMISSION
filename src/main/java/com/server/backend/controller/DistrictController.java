@@ -11,7 +11,7 @@ import com.server.backend.Repository.DistrictMasterRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "IT Administration")
+@Tag(name = "ITI")
 @RestController
 @RequestMapping("/api/districts")
 public class DistrictController {

@@ -21,7 +21,7 @@ import com.server.backend.service.MasterData.MasterDataService;
  *
  * Data comes from the placements-side schemas (public2 / see MasterDataServiceImpl).
  */
-@Tag(name = "Placements & Industry")
+@Tag(name = "Placements")
 @RestController
 @RequestMapping("/masterdata")
 public class MasterDataController {

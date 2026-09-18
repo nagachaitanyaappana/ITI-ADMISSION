@@ -23,7 +23,7 @@ import com.server.backend.DTO.Implant.IndustryMappingRequest;
 import com.server.backend.service.Implant.ImplantService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Placements & Industry")
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/implant")
 public class ImplantController {

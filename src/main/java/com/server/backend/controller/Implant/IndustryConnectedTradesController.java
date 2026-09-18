@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Placements & Industry")
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/industry-connected-trades")
 public class IndustryConnectedTradesController {

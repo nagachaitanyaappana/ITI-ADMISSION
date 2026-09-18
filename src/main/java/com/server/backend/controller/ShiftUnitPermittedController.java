@@ -11,7 +11,7 @@ import com.server.backend.service.DGTPermittedShiftsUnits;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "IT Administration")
+@Tag(name = "ITI")
 @RestController
 @RequestMapping("/api/shift-unit-permitted")
 @RequiredArgsConstructor

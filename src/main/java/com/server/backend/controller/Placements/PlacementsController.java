@@ -16,7 +16,7 @@ import com.server.backend.service.Placements.PlacementsService;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "Placements & Industry")
+@Tag(name = "Placements")
 @RestController
 @RequestMapping("/api/placements")
 public class PlacementsController {

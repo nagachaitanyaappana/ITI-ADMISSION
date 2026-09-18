@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-@Tag(name = "Placements & Industry")
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/placements/industries")
 public class IndustriesController {

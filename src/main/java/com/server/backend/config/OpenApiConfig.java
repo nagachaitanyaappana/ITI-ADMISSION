@@ -37,22 +37,35 @@ public class OpenApiConfig {
     }
 
     // ── Admission Process ─────────────────────────────────────────────────
-    // varshitha's admission flow: /admission/* endpoints
+    // varshitha's admission flow (19 controllers).
+    //   /admission/**              -> the 16 /admission/* controllers
+    //   /api/iti/**                -> itinames_by_govt_pvt_controller
+    //   /candidate-selected-trade/** -> candidate_selected_trade_controller
+    //   /api/trades/by-minqual/**  -> trdnms_by_minqual_controller
+    //     (shares the /api/trades base path with the ITI module, so the ITI
+    //      group excludes this one pattern - see itiGroup below)
     @Bean
     public GroupedOpenApi admissionProcessGroup() {
         return GroupedOpenApi.builder()
                 .group("Admission Process")
-                .pathsToMatch("/admission/**")
+                .pathsToMatch("/admission/**", "/api/iti/**",
+                               "/candidate-selected-trade/**",
+                               "/api/trades/by-minqual/**")
                 .build();
     }
 
-    // ── Student ──────────────────────────────────────────────────────────
-    // dilli's student module: /api/student/*, /api/admission-phase/*
+    // ── Student ─────────────────────────────────────────────────────────
+    // dilli's student module + the reference data the student form needs:
+    //   /api/student/**        -> StudentApplication, StudentCandMarks,
+    //                             CasteController (caste-subcaste lookup)
+    //   /api/admission-phase/**-> AdmissionPhaseController
+    //   /api/master/**         -> StateController (state dropdown)
     @Bean
     public GroupedOpenApi studentGroup() {
         return GroupedOpenApi.builder()
                 .group("Student")
-                .pathsToMatch("/api/student/**", "/api/admission-phase/**")
+                .pathsToMatch("/api/student/**", "/api/admission-phase/**",
+                               "/api/master/**")
                 .build();
     }
 
@@ -70,28 +83,43 @@ public class OpenApiConfig {
     }
 
     // ── Labs ─────────────────────────────────────────────────────────────
-    // Labs controllers: /api/labs, /placements (labs report),
-    // /itilogin (ITI lab entry/report login)
+    //   /api/labs/**           -> LabsController
+    //   /placements/labs-report-> LabsReportController
+    //   /itilogin/**           -> ItiLabEntryController + ItiLabsReportController
     @Bean
     public GroupedOpenApi labsGroup() {
         return GroupedOpenApi.builder()
                 .group("Labs")
-                .pathsToMatch("/api/labs/**", "/placements/labs/**",
-                               "/placements/iti/labs/**", "/itilogin/**")
+                .pathsToMatch("/api/labs/**", "/placements/labs-report",
+                               "/itilogin/**")
                 .build();
     }
 
-    // ── Placements & Industry ─────────────────────────────────────────────
-    // PlacementsController (/api/placements/...) +
-    //   Industry sub-controllers (/api/implant/...) +
-    //   MasterDataController (/api/masterdata/...)
+    // ── Implant ──────────────────────────────────────────────────────────
+    // The 7 controllers in controller/Implant/ (industry + in-plant training).
+    // Note: two of them live under the /api/placements base path, so the
+    // Placements group excludes those two patterns - see placementsGroup.
+    @Bean
+    public GroupedOpenApi implantGroup() {
+        return GroupedOpenApi.builder()
+                .group("Implant")
+                .pathsToMatch("/api/implant/**", "/api/implant-report/**",
+                               "/api/industry-connected-trades/**",
+                               "/api/placements/industries/**",
+                               "/api/placements/industry-trade-mapping/**")
+                .build();
+    }
+
+    // ── Placements ───────────────────────────────────────────────────────
+    //   /api/placements/**  -> PlacementsController
+    //   /masterdata/**      -> MasterDataController (placements dashboard)
     @Bean
     public GroupedOpenApi placementsGroup() {
         return GroupedOpenApi.builder()
-                .group("Placements & Industry")
-                .pathsToMatch(
-                    "/api/placements/**", "/api/masterdata/**",
-                    "/api/implant/**")
+                .group("Placements")
+                .pathsToMatch("/api/placements/**", "/masterdata/**")
+                .pathsToExclude("/api/placements/industries/**",
+                                "/api/placements/industry-trade-mapping/**")
                 .build();
     }
 
@@ -104,17 +132,24 @@ public class OpenApiConfig {
                 .build();
     }
 
-    // ── IT Administration ─────────────────────────────────────────────────
-    // Ramya's ITI module: /api/itis, /api/trades, /api/shift-unit-permitted,
-    //   /api/districts, /api/designations
+    // ── ITI ──────────────────────────────────────────────────────────────
+    // Ramya's ITI module (5 controllers):
+    //   /api/itis/**                -> itiController
+    //   /api/trades/**              -> ItiTradeMstController
+    //   /api/shift-unit-permitted/**-> ShiftUnitPermittedController
+    //   /api/districts/**           -> DistrictController
+    //   /api/designations/**        -> DesignationController
+    // /api/trades/by-minqual/** belongs to the Admission Process module
+    // (trdnms_by_minqual_controller) even though it shares this base path.
     @Bean
-    public GroupedOpenApi itAdminGroup() {
+    public GroupedOpenApi itiGroup() {
         return GroupedOpenApi.builder()
-                .group("IT Administration")
+                .group("ITI")
                 .pathsToMatch(
                     "/api/itis/**", "/api/trades/**",
                     "/api/shift-unit-permitted/**",
                     "/api/districts/**", "/api/designations/**")
+                .pathsToExclude("/api/trades/by-minqual/**")
                 .build();
     }
 
