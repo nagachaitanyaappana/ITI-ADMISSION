@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.server.backend.entity.Iti;
+import com.server.backend.entity.ITI.Iti;
 
 public interface vacant_trades_by_district_repository extends JpaRepository<Iti, String> {
 

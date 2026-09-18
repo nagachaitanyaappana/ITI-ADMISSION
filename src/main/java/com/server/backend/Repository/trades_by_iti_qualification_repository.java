@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.server.backend.entity.Iti_trade_mst;
+import com.server.backend.entity.ITI.Iti_trade_mst;
 
 public interface trades_by_iti_qualification_repository extends JpaRepository<Iti_trade_mst, String> {
 

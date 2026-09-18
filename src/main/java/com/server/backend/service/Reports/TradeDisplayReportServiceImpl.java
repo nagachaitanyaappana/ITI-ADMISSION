@@ -11,8 +11,8 @@ import com.server.backend.DTO.Reports.ItiListResponse;
 import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
 import com.server.backend.DTO.Reports.ItiTradeDisplayResponse.TradeDetail;
 import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
-import com.server.backend.Repository.DistrictMasterRepository;
-import com.server.backend.Repository.ItiRepository;
+import com.server.backend.Repository.ITI.DistrictMasterRepository;
+import com.server.backend.Repository.ITI.ItiRepository;
 
 @Service
 public class TradeDisplayReportServiceImpl implements TradeDisplayReportService {

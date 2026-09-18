@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.server.backend.Repository.search_iti_by_name_repository;
-import com.server.backend.entity.Iti;
+import com.server.backend.entity.ITI.Iti;
 
 @Service
 public class search_iti_by_name_service {

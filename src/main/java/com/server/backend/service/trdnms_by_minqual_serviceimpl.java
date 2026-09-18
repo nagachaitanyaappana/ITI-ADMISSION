@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.server.backend.Repository.ItiTradeMstRepo;
-import com.server.backend.entity.Iti_trade_mst;
+import com.server.backend.Repository.ITI.ItiTradeMstRepo;
+import com.server.backend.entity.ITI.Iti_trade_mst;
 
 @Service
 public class trdnms_by_minqual_serviceimpl implements trdnms_by_minqual_service {
