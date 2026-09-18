@@ -27,6 +27,21 @@ public class OpenApiConfig {
                                 .url("http://springdoc.org")));
     }
 
+    // ── All Modules (default landing view) ───────────────────────────────
+    // Every endpoint in one spec, sectioned by each controller's @Tag.
+    // Swagger UI opens on this group (springdoc.swagger-ui.urls-primary-name
+    // in application.properties) so all module sections are visible at once.
+    // The per-module groups below stay available from the "Select a
+    // definition" dropdown in the top bar.
+    @Bean
+    public GroupedOpenApi allModulesGroup() {
+        return GroupedOpenApi.builder()
+                .group("All Modules")
+                .pathsToMatch("/**")
+                .build();
+    }
+
+
     // ── Auth ─────────────────────────────────────────────────────────────
     @Bean
     public GroupedOpenApi authGroup() {
