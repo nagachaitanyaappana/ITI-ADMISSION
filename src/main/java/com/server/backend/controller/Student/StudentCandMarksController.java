@@ -2,7 +2,7 @@ package com.server.backend.controller.Student;
 
 import com.server.backend.dto.StudentCandMarksDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import com.server.backend.service.StudentCandMarksService;
+import com.server.backend.service.Student.StudentCandMarksService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -2,7 +2,7 @@ package com.server.backend.controller.Student;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.dto.AdmissionPhaseDto;
-import com.server.backend.service.AdmissionPhaseService;
+import com.server.backend.service.Student.AdmissionPhaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

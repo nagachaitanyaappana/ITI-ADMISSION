@@ -3,7 +3,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.DTO.ItiLabsEntryDto;
-import com.server.backend.service.ItiLabEntryService;
+import com.server.backend.service.Labs.ItiLabEntryService;
 @Tag(name = "Labs")
 @RestController
 @RequestMapping("/itilogin")

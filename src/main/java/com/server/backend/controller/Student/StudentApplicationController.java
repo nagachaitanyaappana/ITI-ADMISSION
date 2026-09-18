@@ -2,7 +2,7 @@ package com.server.backend.controller.Student;
 
 import com.server.backend.dto.StudentApplicationDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import com.server.backend.service.StudentApplicationService;
+import com.server.backend.service.Student.StudentApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

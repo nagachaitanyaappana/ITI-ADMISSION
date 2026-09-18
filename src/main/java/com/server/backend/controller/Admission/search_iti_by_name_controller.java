@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.entity.ITI.Iti;
-import com.server.backend.service.search_iti_by_name_service;
+import com.server.backend.service.Admission.search_iti_by_name_service;
 
 @Tag(name = "Admission Process")
 @RestController

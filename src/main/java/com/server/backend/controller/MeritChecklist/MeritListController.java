@@ -19,7 +19,7 @@ import com.server.backend.DTO.MeritListDTOs.MeritListResponse;
 import com.server.backend.DTO.MeritListDTOs.MeritListRow;
 import com.server.backend.entity.MeritList;
 import com.server.backend.entity.MeritListId;
-import com.server.backend.service.MeritListService;
+import com.server.backend.service.MeritChecklist.MeritListService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import io.swagger.v3.oas.annotations.tags.Tag;

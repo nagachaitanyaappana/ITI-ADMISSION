@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.admission_process.iti.trade_iti_names_dto;
-import com.server.backend.service.trade_iti_names_service;
+import com.server.backend.service.Admission.trade_iti_names_service;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 

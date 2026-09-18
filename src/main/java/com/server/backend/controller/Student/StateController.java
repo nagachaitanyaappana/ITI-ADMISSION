@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.entity.StateMst;
-import com.server.backend.service.StateService;
+import com.server.backend.service.Student.StateService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 

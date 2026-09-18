@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import com.server.backend.entity.ITI.Iti_trade_mst;
-import com.server.backend.service.trdnms_by_minqual_service;
+import com.server.backend.service.Admission.trdnms_by_minqual_service;
 
 @Tag(name = "Admission Process")
 @RestController

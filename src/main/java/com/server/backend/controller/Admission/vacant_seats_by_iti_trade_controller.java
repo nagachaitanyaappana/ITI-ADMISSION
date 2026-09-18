@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.admission_process.iti.vacant_seats_by_iti_trade_dto;
-import com.server.backend.service.vacant_seats_by_iti_trade_service;
+import com.server.backend.service.Admission.vacant_seats_by_iti_trade_service;
 
 @Tag(name = "Admission Process")
 @RestController

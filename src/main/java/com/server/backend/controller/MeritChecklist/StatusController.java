@@ -1,5 +1,5 @@
 package com.server.backend.controller.MeritChecklist;
-import com.server.backend.service.AdmissionTimingService;
+import com.server.backend.service.MeritChecklist.AdmissionTimingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;

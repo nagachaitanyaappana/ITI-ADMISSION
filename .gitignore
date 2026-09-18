@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Run logs / local output ###
+*.txt
+!README.md
+app_run_*.txt
+run_app.ps1

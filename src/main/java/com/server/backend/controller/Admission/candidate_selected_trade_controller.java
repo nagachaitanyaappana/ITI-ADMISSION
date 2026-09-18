@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.admission_process.candidate_selected_trade_dto;
-import com.server.backend.service.candidate_selected_trade_service;
+import com.server.backend.service.Admission.candidate_selected_trade_service;
 
 @Tag(name = "Admission Process")
 @RestController

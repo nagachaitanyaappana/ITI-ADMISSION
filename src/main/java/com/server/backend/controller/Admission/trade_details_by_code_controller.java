@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.admission_process.trade_details_by_code_dto;
-import com.server.backend.service.trade_details_by_code_service;
+import com.server.backend.service.Admission.trade_details_by_code_service;
 
 @Tag(name = "Admission Process")
 @RestController

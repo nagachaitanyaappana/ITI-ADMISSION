@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import com.server.backend.DTO.admission_process.available_trades_by_iti_dto;
-import com.server.backend.service.available_trades_by_iti_service;
+import com.server.backend.service.Admission.available_trades_by_iti_service;
 
 @Tag(name = "Admission Process")
 @RestController

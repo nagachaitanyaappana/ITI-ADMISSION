@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.CandidateResponseDTO;
-import com.server.backend.service.AdmissionService;
+import com.server.backend.service.Admission.AdmissionService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

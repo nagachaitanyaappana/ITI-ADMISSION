@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.admission_process.seat_details_by_iti_dto;
-import com.server.backend.service.seat_details_by_iti_service;
+import com.server.backend.service.Admission.seat_details_by_iti_service;
 
 @Tag(name = "Admission Process")
 @RestController
