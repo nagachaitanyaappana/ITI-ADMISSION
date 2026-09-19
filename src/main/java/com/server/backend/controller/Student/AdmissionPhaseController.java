@@ -3,7 +3,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.DTO.AdmissionPhaseDto;
 import com.server.backend.service.Student.AdmissionPhaseService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,7 +13,7 @@ import com.server.backend.entity.AdmissionPhase;
 @RequestMapping("/api/admission-phase")
 public class AdmissionPhaseController {
 
-    @Autowired
+    
     private AdmissionPhaseService admissionPhaseService;
 
     @PostMapping("/save")
