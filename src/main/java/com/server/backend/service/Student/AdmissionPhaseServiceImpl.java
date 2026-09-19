@@ -4,7 +4,6 @@ import com.server.backend.DTO.AdmissionPhaseDto;
 import com.server.backend.entity.AdmissionPhase;
 import com.server.backend.entity.AdmissionPhaseId;
 import com.server.backend.Repository.Student.AdmissionPhaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 @Service
 public class AdmissionPhaseServiceImpl implements AdmissionPhaseService {
 
-    @Autowired
+    
     private AdmissionPhaseRepository repository;
 
     @Override
