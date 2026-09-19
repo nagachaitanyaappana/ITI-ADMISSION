@@ -19,7 +19,7 @@ public interface candidate_selected_trade_repository
                 dist_code,
                 phase,
                 "year",
-                freeze
+                "freeze"
             FROM trade_sel2025phase1
             WHERE regid = :regId
             """, nativeQuery = true)
