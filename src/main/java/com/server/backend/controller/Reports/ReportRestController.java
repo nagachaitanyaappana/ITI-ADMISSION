@@ -36,10 +36,8 @@ import com.server.backend.DTO.TradeWiseVacantResponse;
 import com.server.backend.DTO.VerifiedApplicationCountReportResponse;
 import com.server.backend.DTO.ItiListResponse;
 import com.server.backend.DTO.NotAdmittedStudentResponse;
-import com.server.backend.DTO.ItiTradeDisplayResponse;
 import com.server.backend.DTO.DscOptionsResponse;
 import com.server.backend.DTO.CurrentAdmissionPhaseResponse;
-import com.server.backend.DTO.TradeDisplayReportRequest;
 import com.server.backend.service.Reports.ReportService;
 import com.server.backend.service.Reports.TradeDisplayReportService;
 
@@ -349,17 +347,6 @@ public class ReportRestController {
     @GetMapping("/trade-display/districts")
     public ApiListResponse<DistrictOptionResponse> getDistrictOptions() {
         return new ApiListResponse<>(tradeDisplayReportService.getDistrictOptions());
-    }
-
-    @Operation(summary = "Trade Display - ITI List with Trades & Strengths")
-    @GetMapping("/trade-display/itis")
-    public ApiListResponse<ItiTradeDisplayResponse> getTradeDisplayReport(
-            @RequestParam String dist,
-            @RequestParam(required = false) String type) {
-        TradeDisplayReportRequest request = new TradeDisplayReportRequest();
-        request.setDist(dist);
-        request.setType(type);
-        return new ApiListResponse<>(tradeDisplayReportService.getTradeDisplayReport(request));
     }
 
     @Operation(summary = "ITI List - All ITIs filtered by type")
