@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/api/meritlist")
-@CrossOrigin(origins="http://localhost:5052")
+@CrossOrigin(origins="http://localhost:5051")
 public class MeritListController {
 
 

@@ -9,7 +9,7 @@ import java.util.Map;
 @Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/api/status")
-@CrossOrigin(origins="http://localhost:5052")
+@CrossOrigin(origins="http://localhost:5051")
 public class StatusController {
     private final AdmissionTimingService admissionTimingService;
     public StatusController(AdmissionTimingService admissionTimingService) {

@@ -10,7 +10,7 @@ import java.util.HashMap;
 @Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/api/dsc")
-@CrossOrigin(origins="http://localhost:5052")
+@CrossOrigin(origins="http://localhost:5051")
 public class CasteMasterController {
     private final CasteMasterService casteMasterService;
 
