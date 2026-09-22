@@ -1,5 +1,7 @@
 package com.server.backend.service.MeritChecklist;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -42,11 +44,13 @@ public List<Checklist> getAllChecklist() {
         return checklistRepository.findByAppStatusIsNull();
     }
     
+    @Transactional
 public Checklist createChecklist(Checklist checklist) {
     return checklistRepository.save(checklist);
 }
 
 
+    @Transactional
 public Checklist updateChecklist(Integer regid, Checklist checklist) {
 
     Checklist existing = checklistRepository.findById(regid)
@@ -61,6 +65,7 @@ public Checklist updateChecklist(Integer regid, Checklist checklist) {
 }
 
 
+    @Transactional
 public void deleteChecklist(Integer regid) {
     checklistRepository.deleteById(regid);
 }

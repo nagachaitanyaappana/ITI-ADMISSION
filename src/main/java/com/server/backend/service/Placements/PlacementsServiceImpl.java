@@ -487,7 +487,9 @@ public class PlacementsServiceImpl implements PlacementsService {
 
         Integer scheduleDbId = null;
         if (scheduleId != null && !scheduleId.isBlank()) {
-            try { scheduleDbId = Integer.valueOf(scheduleId); } catch (NumberFormatException ignored) { }
+            try { scheduleDbId = Integer.valueOf(scheduleId); } catch (NumberFormatException e) {
+            System.err.println("[PlacementsServiceImpl] Failed to parse scheduleId: " + e.getMessage());
+        }
         }
 
         Integer pid = jdbcTemplate.queryForObject("SELECT nextval('placements.placements_id_seq')", Integer.class);

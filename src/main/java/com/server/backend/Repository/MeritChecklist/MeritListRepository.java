@@ -2,18 +2,18 @@ package com.server.backend.Repository.MeritChecklist;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
-import com.server.backend.entity.MeritList;
-import com.server.backend.entity.MeritListId;
+import com.server.backend.entity.RankEntity;
+import com.server.backend.entity.RankId;
 
-public interface MeritListRepository extends JpaRepository<MeritList, MeritListId> {
-    MeritList findByRegid(Integer regid);
-     List<MeritList> findByDistCode(String dist_code);
+public interface MeritListRepository extends JpaRepository<RankEntity, RankId> {
+    RankEntity findByRegid(Integer regid);
+     List<RankEntity> findByDistCode(String dist_code);
 
 
-    List<MeritList> findByPhase(String phase);
+    List<RankEntity> findByPhase(String phase);
 
-    List<MeritList> findByItiCode(String iti_code);
+    List<RankEntity> findByItiCode(String iti_code);
 
-    List<MeritList> findByAppStatus(String app_status);
-    List<MeritList> findByAppStatusIsNull();
+    List<RankEntity> findByAppStatus(String app_status);
+    List<RankEntity> findByAppStatusIsNull();
 }

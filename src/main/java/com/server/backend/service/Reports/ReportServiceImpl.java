@@ -239,7 +239,7 @@ public class ReportServiceImpl implements ReportService {
             String itiSql = "SELECT iti_name FROM public.iti WHERE iti_code = ?";
             itiName = jdbcTemplate.queryForObject(itiSql, String.class, itiCode);
         } catch (Exception e) {
-            // keep itiCode as fallback
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         String tradeName = tradeCode;
@@ -248,7 +248,7 @@ public class ReportServiceImpl implements ReportService {
             String tradeSql = "SELECT trade_name FROM public.ititrade_master WHERE trade_code = ?";
             tradeName = jdbcTemplate.queryForObject(tradeSql, String.class, Integer.parseInt(tradeCode));
         } catch (Exception e) {
-            // keep tradeCode as fallback
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         response.setMeta(new DscFullReportResponse.Meta(
@@ -1007,7 +1007,7 @@ public class ReportServiceImpl implements ReportService {
             String prefix = regid.substring(0, 2);
             detectedYear = Integer.parseInt("20" + prefix);
         } catch (Exception e) {
-            detectedYear = 2024;
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 1. Registration details
@@ -1087,7 +1087,7 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         } catch (Exception e) {
-            // Not found
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 2. SSC Marks
@@ -1108,7 +1108,7 @@ public class ReportServiceImpl implements ReportService {
                 ));
             }
         } catch (Exception e) {
-            // Not found
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 3. Applied ITIs
@@ -1136,8 +1136,8 @@ public class ReportServiceImpl implements ReportService {
                     ));
                 }
             } catch (Exception e) {
-                // Table might not exist, skip
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
         response.setAppliedItis(appliedList);
 
@@ -1178,8 +1178,8 @@ public class ReportServiceImpl implements ReportService {
                     ));
                 }
             } catch (Exception e) {
-                // Table might not exist, skip
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
         response.setMeritList(meritList);
 
@@ -1207,8 +1207,8 @@ public class ReportServiceImpl implements ReportService {
                     break;
                 }
             } catch (Exception e) {
-                // Not found
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
 
         return response;

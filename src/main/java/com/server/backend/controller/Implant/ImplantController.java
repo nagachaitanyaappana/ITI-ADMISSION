@@ -52,14 +52,6 @@ public class ImplantController {
         return null;
     }
 
-    @GetMapping("/overviewdetails")
-    public ResponseEntity<InplantDashboardResponse> overviewdetails() {
-
-        return ResponseEntity.ok(
-                implantService.getInplantDashboardDetails()
-        );
-    }
-
     @GetMapping("/inplantDashboardDetails")
     public ResponseEntity<InplantDashboardResponse> inplantDashboardDetails() {
 

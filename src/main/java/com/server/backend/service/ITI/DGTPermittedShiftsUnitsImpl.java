@@ -37,9 +37,14 @@ public class DGTPermittedShiftsUnitsImpl implements DGTPermittedShiftsUnits {
         // 3. Save each entry
         List<ShiftUnitEntryDto> savedEntries = new ArrayList<>();
 
+        List<ShiftUnitPermitted> entitiesToSave = new ArrayList<>();
         for (ShiftUnitEntryDto entryDto : dto.getEntries()) {
             ShiftUnitPermitted entity = mapToEntity(dto, entryDto);
-            ShiftUnitPermitted savedEntity = repository.save(entity);
+            entitiesToSave.add(entity);
+        }
+        
+        List<ShiftUnitPermitted> savedEntities = repository.saveAll(entitiesToSave);
+        for (ShiftUnitPermitted savedEntity : savedEntities) {
             savedEntries.add(mapToEntryDto(savedEntity));
         }
 

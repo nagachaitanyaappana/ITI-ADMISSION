@@ -4,8 +4,8 @@ import com.server.backend.DTO.MeritListRow;
 import com.server.backend.DTO.UserPrincipal;
 import org.springframework.stereotype.Service;
 import com.server.backend.Repository.MeritChecklist.MeritListRepository;
-import com.server.backend.entity.MeritList;
-import com.server.backend.entity.MeritListId;
+import com.server.backend.entity.RankEntity;
+import com.server.backend.entity.RankId;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,39 +26,39 @@ public class MeritListService {
 
     }
 
-    public List<MeritList> getAllMeritList() {
+    public List<RankEntity> getAllMeritList() {
         return meritListRepository.findAll();
     }
     
-    public MeritList getMeritListByRegId(Integer regid) {
+    public RankEntity getMeritListByRegId(Integer regid) {
         return meritListRepository.findByRegid(regid);
     }
 
-    public List<MeritList> getMeritListByDistCode(String dist_code) {
+    public List<RankEntity> getMeritListByDistCode(String dist_code) {
         return meritListRepository.findByDistCode(dist_code);
     }
 
-    public List<MeritList> getMeritListByPhase(String phase) {
+    public List<RankEntity> getMeritListByPhase(String phase) {
         return meritListRepository.findByPhase(phase);
     }
 
-    public List<MeritList> getMeritListByItiCode(String iti_code) {
+    public List<RankEntity> getMeritListByItiCode(String iti_code) {
         return meritListRepository.findByItiCode(iti_code);
     }
 
-    public List<MeritList> getMeritListByAppStatus(String app_status) {
+    public List<RankEntity> getMeritListByAppStatus(String app_status) {
         return meritListRepository.findByAppStatus(app_status);
     }
-    public List<MeritList> getMeritListByAppStatusIsNull() {
+    public List<RankEntity> getMeritListByAppStatusIsNull() {
         return meritListRepository.findByAppStatusIsNull();
     }
-    public MeritList saveMeritList(MeritList meritList) {
+    public RankEntity saveMeritList(RankEntity meritList) {
         return meritListRepository.save(meritList);
     }
-    public MeritList updateMeritList(MeritList meritList) {
+    public RankEntity updateMeritList(RankEntity meritList) {
         return meritListRepository.save(meritList);
     }
-    public void deleteMeritList(MeritListId id) {
+    public void deleteMeritList(RankId id) {
         meritListRepository.deleteById(id);
     }
 

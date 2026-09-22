@@ -1,5 +1,7 @@
 package com.server.backend.service.ITI;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,7 @@ public class DesignationServiceImpl implements DesignationService {
     }
 
     @Override
+    @Transactional
     public DesignationDto saveDesignation(DesignationDto dto) {
 
         Designation designation = new Designation();
@@ -51,6 +54,7 @@ public class DesignationServiceImpl implements DesignationService {
     }
 
     @Override
+    @Transactional
     public DesignationDto updateDesignation(String desigCode, DesignationDto dto) {
 
         Designation designation = repository.findById(desigCode)
@@ -65,6 +69,7 @@ public class DesignationServiceImpl implements DesignationService {
     }
 
     @Override
+    @Transactional
     public void deleteDesignation(String desigCode) {
 
         if (!repository.existsById(desigCode)) {

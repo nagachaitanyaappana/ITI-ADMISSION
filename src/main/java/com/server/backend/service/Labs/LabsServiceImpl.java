@@ -1,5 +1,7 @@
 package com.server.backend.service.Labs;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
