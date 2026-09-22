@@ -72,7 +72,7 @@ public class OpenApiConfig {
     // ── Student ─────────────────────────────────────────────────────────
     // dilli's student module + the reference data the student form needs:
     //   /api/student/**        -> StudentApplication, StudentCandMarks,
-    //                             CasteController (caste-subcaste lookup)
+    //                             StudentApplicationController (caste master)
     //   /api/admission-phase/**-> AdmissionPhaseController
     //   /api/master/**         -> StateController (state dropdown)
     @Bean

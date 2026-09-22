@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import com.server.backend.entity.CasteMasterPublic;
-import com.server.backend.entity.SubCasteMaster;
 @Tag(name = "Student")
 @RestController
 @RequestMapping("/api/student")
@@ -72,15 +71,6 @@ public class StudentApplicationController {
 public ResponseEntity<List<CasteMasterPublic>> getAllCastes() {
 
     return ResponseEntity.ok(service.getAllCastes());
-
-}
-
-// Get Sub Castes By Caste
-@GetMapping("/subcastes/{casteId}")
-public ResponseEntity<List<SubCasteMaster>> getSubCastes(
-        @PathVariable Long casteId) {
-
-    return ResponseEntity.ok(service.getSubCastes(casteId));
 
 }
 }
