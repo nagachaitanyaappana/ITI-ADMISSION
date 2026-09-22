@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.server.backend.entity.CasteMasterPublic;
+import com.server.backend.entity.SubCasteMasterPublic;
 import com.server.backend.Repository.MeritChecklist.CasteMasterRepository;
+import com.server.backend.Repository.Student.SubCasteMasterPublicRepository;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 @Service
@@ -22,6 +24,7 @@ public class StudentApplicationServiceImpl implements StudentApplicationService 
 
     private final StudentApplicationRepository repository;
     private final CasteMasterRepository casteMasterRepository;
+    private final SubCasteMasterPublicRepository subCasteMasterRepository;
 
     @Override
     public StudentApplicationDto saveStudent(StudentApplicationDto dto) {
@@ -136,4 +139,9 @@ public List<CasteMasterPublic> getAllCastes() {
 
     return new ArrayList<>(byCode.values());
 }
+
+    @Override
+    public List<SubCasteMasterPublic> getSubCastesByCaste(String casteCode) {
+        return subCasteMasterRepository.findByCasteCodeOrderBySubCasteIdAsc(casteCode);
+    }
 }
