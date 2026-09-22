@@ -36,15 +36,18 @@ public interface ReportService {
 
     // 1. ITI Wise Status Report
     List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size);
+    long countItiWiseStatus(String year, String distCode, String itiCode);
 
     // 2. Applicant Report by Phase
     List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode, int page, int size);
+    long countApplicantReportByPhase(String phase, String year, String itiCode, String distCode);
 
     // 3. Admission Report (Trade wise - for role 1 / state level)
     List<AdmissionReportResponse> getAdmissionReport(String year, String caste, String pwd);
 
     // 3a. Admission Report (ITI - candidate detail for role 4)
     List<AdmissionReportDetailResponse> getAdmissionReportDetails(int page, int size);
+    long countAdmissionReportDetails();
 
     // 4. DSC Full Report
     DscFullReportResponse getDscFullReport(String distCode, String itiCode, String tradeCode, String phase, String year, String modeAdm);
@@ -60,6 +63,7 @@ public interface ReportService {
 
     // 6. Applicant Address With Mobile
     List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode, int page, int size);
+    long countApplicantMobileAddress(String year, String distCode);
 
     // 7. API Dashboard (District - ITI level)
     List<ApiDashboardResponse> getApiDashboard(String year, String distCode);
@@ -99,15 +103,19 @@ public interface ReportService {
 
     // 19. District Schedule
     List<DistrictScheduleResponse> getDistrictSchedule(String distCode, String year, int page, int size);
+    long countDistrictSchedule(String distCode, String year);
 
     // 20. Permitted Shift Unit Report
     List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode, int page, int size);
+    long countPermittedShiftUnit(String distCode, String itiCode);
 
     // 21. ITI Admissions Report
     List<ITIAdmissionsReportResponse> getITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt, int page, int size);
+    long countITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt);
 
     // 22. All Resource Role
     List<AllResourceRoleResponse> getAllResourceRoles(int page, int size);
+    long countAllResourceRoles();
 
     // 23. DistWise Strength+Filled Seats Abstract
     List<StrengthFilledSeatsResponse> getStrengthFilledSeatsAbstract(String year, String distCode);
