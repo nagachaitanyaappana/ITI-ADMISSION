@@ -37,9 +37,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String type = ex.getRequiredType() == null ? "unknown" : ex.getRequiredType().getSimpleName();
         return build(HttpStatus.BAD_REQUEST,
-                "Invalid value for parameter '" + ex.getName() + "'. Expected type: "
-                        + ex.getRequiredType().getSimpleName() + ".");
+                "Invalid value for parameter '" + ex.getName() + "'. Expected type: " + type + ".");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -57,7 +57,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return build(HttpStatus.BAD_REQUEST,
+                ex.getMessage() == null ? "Invalid input." : ex.getMessage());
     }
 
     /**
