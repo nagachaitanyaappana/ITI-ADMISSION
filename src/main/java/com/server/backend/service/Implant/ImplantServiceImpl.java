@@ -1,4 +1,6 @@
 package com.server.backend.service.Implant;
+
+import org.springframework.transaction.annotation.Transactional;
 import com.server.backend.DTO.ImplantReportResponse;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -54,6 +56,7 @@ public class ImplantServiceImpl implements ImplantService {
         return response;
     }
   @Override
+    @Transactional
 public ImplantResponse createImplant(ImplantCreateRequest request) {
 
     ImplantEntity implant = new ImplantEntity();
@@ -100,6 +103,7 @@ public ImplantResponse createImplant(ImplantCreateRequest request) {
         return mapToImplantResponse(implant);
     }
 @Override
+    @Transactional
     public ImplantResponse updateImplant(Long implantId, ImplantCreateRequest request) {
 
     ImplantEntity implant = implantRepository.findById(implantId)
@@ -127,6 +131,7 @@ public ImplantResponse createImplant(ImplantCreateRequest request) {
     return mapToImplantResponse(updatedImplant);
 }
  @Override
+    @Transactional
 public void deleteImplant(Long implantId) {
 
     ImplantEntity implant = implantRepository.findById(implantId)
@@ -542,6 +547,7 @@ dto.setDescription((String) row[14]);
     }
 
     @Override
+    @Transactional
     public List<ImplantReportResponse> getDistrictReport(String itiCode, Integer industryId) {
         StringBuilder sql = new StringBuilder();
         List<Object> params = new ArrayList<>();
@@ -766,6 +772,7 @@ dto.setDescription((String) row[14]);
     }
 
     @Override
+    @Transactional
     public void deleteMapping(Long slno) {
         int deleted = jdbcTemplate.update("DELETE FROM implant.industries WHERE slno = ?", slno);
         if (deleted == 0) {

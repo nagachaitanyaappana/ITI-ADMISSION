@@ -2,8 +2,8 @@ package com.server.backend.service.Student;
 
 import com.server.backend.DTO.StudentApplicationDto;
 import java.util.List;
-import com.server.backend.entity.CasteMaster;
-import com.server.backend.entity.SubCasteMaster;
+import com.server.backend.entity.CasteMasterPublic;
+import com.server.backend.entity.SubCasteMasterPublic;
 public interface StudentApplicationService {
 
     StudentApplicationDto saveStudent(StudentApplicationDto dto);
@@ -17,7 +17,7 @@ public interface StudentApplicationService {
     List<StudentApplicationDto> getAllStudents();
 
     void deleteStudent(Integer regid);
-    List<CasteMaster> getAllCastes();
+    List<CasteMasterPublic> getAllCastes();
 
-List<SubCasteMaster> getSubCastes(Long casteId);
+    List<SubCasteMasterPublic> getSubCastesByCaste(String casteCode);
 }

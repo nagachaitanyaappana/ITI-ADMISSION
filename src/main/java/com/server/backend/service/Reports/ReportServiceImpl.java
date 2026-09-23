@@ -239,7 +239,7 @@ public class ReportServiceImpl implements ReportService {
             String itiSql = "SELECT iti_name FROM public.iti WHERE iti_code = ?";
             itiName = jdbcTemplate.queryForObject(itiSql, String.class, itiCode);
         } catch (Exception e) {
-            // keep itiCode as fallback
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         String tradeName = tradeCode;
@@ -248,7 +248,7 @@ public class ReportServiceImpl implements ReportService {
             String tradeSql = "SELECT trade_name FROM public.ititrade_master WHERE trade_code = ?";
             tradeName = jdbcTemplate.queryForObject(tradeSql, String.class, Integer.parseInt(tradeCode));
         } catch (Exception e) {
-            // keep tradeCode as fallback
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         response.setMeta(new DscFullReportResponse.Meta(
@@ -1007,7 +1007,7 @@ public class ReportServiceImpl implements ReportService {
             String prefix = regid.substring(0, 2);
             detectedYear = Integer.parseInt("20" + prefix);
         } catch (Exception e) {
-            detectedYear = 2024;
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 1. Registration details
@@ -1087,7 +1087,7 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         } catch (Exception e) {
-            // Not found
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 2. SSC Marks
@@ -1108,7 +1108,7 @@ public class ReportServiceImpl implements ReportService {
                 ));
             }
         } catch (Exception e) {
-            // Not found
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 3. Applied ITIs
@@ -1136,8 +1136,8 @@ public class ReportServiceImpl implements ReportService {
                     ));
                 }
             } catch (Exception e) {
-                // Table might not exist, skip
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
         response.setAppliedItis(appliedList);
 
@@ -1178,8 +1178,8 @@ public class ReportServiceImpl implements ReportService {
                     ));
                 }
             } catch (Exception e) {
-                // Table might not exist, skip
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
         response.setMeritList(meritList);
 
@@ -1207,8 +1207,8 @@ public class ReportServiceImpl implements ReportService {
                     break;
                 }
             } catch (Exception e) {
-                // Not found
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
 
         return response;
@@ -1649,6 +1649,135 @@ public class ReportServiceImpl implements ReportService {
                 rs.getTimestamp("entry_date") != null ? rs.getTimestamp("entry_date").toLocalDateTime() : null,
                 rs.getTimestamp("verified_date") != null ? rs.getTimestamp("verified_date").toLocalDateTime() : null
         ), params.toArray());
+    }
+
+    @Override
+    public long countItiWiseStatus(String year, String distCode, String itiCode) {
+        String effectiveYear = (year != null && !year.isEmpty()) ? year : String.valueOf(Year.now().getValue());
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d JOIN public.iti i ON d.dist_code = i.dist_code WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countApplicantReportByPhase(String phase, String year, String itiCode, String distCode) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.student_application sa LEFT JOIN public.iti i ON sa.user_id = i.iti_code WHERE sa.phase::text ILIKE '%\"' || ? || '\"=>\"true\"%'");
+        List<Object> params = new ArrayList<>();
+        params.add(phase);
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND sa.year::text = ?::text");
+            params.add(year);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND i.iti_code = ?");
+            params.add(itiCode);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND i.dist_code = ?");
+            params.add(distCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countAdmissionReportDetails() {
+        String sql = "SELECT COUNT(*) FROM admissions.iti_admissions";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class);
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countApplicantMobileAddress(String year, String distCode) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.application a LEFT JOIN public.iti i ON a.user_id = i.iti_code LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND a.year::text = ?::text");
+            params.add(year);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND i.dist_code::text = ?::text");
+            params.add(distCode.trim());
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countDistrictSchedule(String distCode, String year) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.admission_timings a JOIN public.iti i ON a.iti_code = i.iti_code JOIN public.dist_mst d ON i.dist_code = d.dist_code LEFT JOIN public.ititrade_master tm ON a.minqul = tm.trade_code::text WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND a.year::text = ?::text");
+            params.add(year);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countPermittedShiftUnit(String distCode, String itiCode) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.shift_unit_permitted sup JOIN public.iti i ON sup.iti_code::text = i.iti_code::text JOIN public.ititrade_master tm ON sup.trade_code::text = tm.trade_code::text WHERE TRIM(i.dist_code::text) = TRIM(?::text)");
+        List<Object> params = new ArrayList<>();
+        params.add(distCode);
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(DISTINCT a.adm_num) FROM admissions.iti_admissions a LEFT JOIN public.iti i ON TRIM(a.iti_code::text) = TRIM(i.iti_code::text) WHERE a.year_of_admission::text = ?::text");
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(a.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (govt != null && !"All".equalsIgnoreCase(govt)) {
+            sql.append(" AND i.govt = ?");
+            params.add("Govt".equalsIgnoreCase(govt) ? "G" : "P");
+        }
+        if (caste != null && !"All".equalsIgnoreCase(caste)) {
+            sql.append(" AND TRIM(a.res_category) = ?");
+            params.add(caste);
+        }
+        if (gender != null && !"All".equalsIgnoreCase(gender)) {
+            String genderVal = gender.toUpperCase().startsWith("M") ? "M%" : "F%";
+            sql.append(" AND a.gender ILIKE ?");
+            params.add(genderVal);
+        }
+        if (ncvtScvt != null && !"All".equalsIgnoreCase(ncvtScvt)) {
+            String typeVal = ncvtScvt.toUpperCase().startsWith("N") ? "N" : "S";
+            sql.append(" AND TRIM(a.type_admission) = ?");
+            params.add(typeVal);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countAllResourceRoles() {
+        String sql = "SELECT COUNT(*) FROM public.login_users lu LEFT JOIN public.role_mast rm ON lu.roleid = rm.role_id LEFT JOIN public.iti i ON lu.ins_code = i.iti_code LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class);
+        return count != null ? count : 0L;
     }
 
     @Override

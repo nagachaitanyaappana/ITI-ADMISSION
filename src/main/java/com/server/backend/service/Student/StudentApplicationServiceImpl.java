@@ -12,18 +12,19 @@ import org.springframework.beans.BeanWrapperImpl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.server.backend.entity.CasteMaster;
-import com.server.backend.entity.SubCasteMaster;
-import com.server.backend.Repository.Student.CasteRepository;
-import com.server.backend.Repository.Student.SubCasteRepository;
+import com.server.backend.entity.CasteMasterPublic;
+import com.server.backend.entity.SubCasteMasterPublic;
+import com.server.backend.Repository.MeritChecklist.CasteMasterRepository;
+import com.server.backend.Repository.Student.SubCasteMasterPublicRepository;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 @Service
 @RequiredArgsConstructor
 public class StudentApplicationServiceImpl implements StudentApplicationService {
 
     private final StudentApplicationRepository repository;
-    private final CasteRepository casteRepository;
-
-private final SubCasteRepository subCasteRepository;
+    private final CasteMasterRepository casteMasterRepository;
+    private final SubCasteMasterPublicRepository subCasteMasterRepository;
 
     @Override
     public StudentApplicationDto saveStudent(StudentApplicationDto dto) {
@@ -125,12 +126,22 @@ public StudentApplicationDto updateStudent(Integer regid, StudentApplicationDto 
 
     }
     @Override
-public List<CasteMaster> getAllCastes() {
-    return casteRepository.findAll();
+public List<CasteMasterPublic> getAllCastes() {
+
+    // Caste master lives in public.caste_master (CasteMasterPublic), the same table
+    // the /api/dsc/caste-list endpoint reads. De-duplicated by code, matching
+    // CasteMasterService.getAllCasteMasters().
+    LinkedHashMap<String, CasteMasterPublic> byCode = new LinkedHashMap<>();
+
+    for (CasteMasterPublic caste : casteMasterRepository.findAll()) {
+        byCode.putIfAbsent(caste.getCasteCode(), caste);
+    }
+
+    return new ArrayList<>(byCode.values());
 }
 
-@Override
-public List<SubCasteMaster> getSubCastes(Long casteId) {
-    return subCasteRepository.findByCasteId(casteId);
-}
+    @Override
+    public List<SubCasteMasterPublic> getSubCastesByCaste(String casteCode) {
+        return subCasteMasterRepository.findByCasteCodeOrderBySubCasteIdAsc(casteCode);
+    }
 }

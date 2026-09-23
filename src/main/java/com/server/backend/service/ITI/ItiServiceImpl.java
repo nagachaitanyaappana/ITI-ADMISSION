@@ -1,5 +1,7 @@
 package com.server.backend.service.ITI;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -24,6 +26,7 @@ public class ItiServiceImpl implements ItiService {
     }
 
     @Override
+    @Transactional
     public Iti createIti(ItiDto dto) {
         if (repository.existsById(dto.getItiCode())) {
             throw new RuntimeException("ITI Code already exists");
@@ -50,6 +53,7 @@ public class ItiServiceImpl implements ItiService {
     }
 
     @Override
+    @Transactional
     public Iti updateIti(String itiCode, ItiDto dto) {
         Iti iti = repository.findById(itiCode)
                 .orElseThrow(() -> new RuntimeException("ITI Not Found"));
@@ -60,6 +64,7 @@ public class ItiServiceImpl implements ItiService {
     }
 
     @Override
+    @Transactional
     public void deleteIti(String itiCode) {
         repository.deleteById(itiCode);
     }
@@ -74,6 +79,7 @@ public class ItiServiceImpl implements ItiService {
      }
 
      @Override
+    @Transactional
 public Iti patchIti(String itiCode,
                     String distCode,
                     ItiPatchDto dto) {

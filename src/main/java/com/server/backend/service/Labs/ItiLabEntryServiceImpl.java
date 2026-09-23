@@ -40,7 +40,7 @@ public class ItiLabEntryServiceImpl implements ItiLabEntryService {
 
         // Save equipment/items
         if (dto.getItems() != null) {
-
+            java.util.List<LabItems> itemsToSave = new java.util.ArrayList<>();
             for (LabItemDTO itemDTO : dto.getItems()) {
 
                 LabItems item = new LabItems();
@@ -51,8 +51,9 @@ public class ItiLabEntryServiceImpl implements ItiLabEntryService {
                 item.setItemCost(itemDTO.getItemCost());
                 item.setItemPhoto(itemDTO.getItemPhoto());
 
-                itiLabItemsRepository.save(item);
+                itemsToSave.add(item);
             }
+            itiLabItemsRepository.saveAll(itemsToSave);
         }
     }
 }

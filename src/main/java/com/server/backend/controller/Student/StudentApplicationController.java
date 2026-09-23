@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import com.server.backend.entity.CasteMaster;
-import com.server.backend.entity.SubCasteMaster;
+import com.server.backend.entity.CasteMasterPublic;
+import com.server.backend.entity.SubCasteMasterPublic;
 @Tag(name = "Student")
 @RestController
 @RequestMapping("/api/student")
@@ -69,18 +69,16 @@ public class StudentApplicationController {
     }
     // Get All Castes
 @GetMapping("/castes")
-public ResponseEntity<List<CasteMaster>> getAllCastes() {
+public ResponseEntity<List<CasteMasterPublic>> getAllCastes() {
 
     return ResponseEntity.ok(service.getAllCastes());
 
 }
 
-// Get Sub Castes By Caste
-@GetMapping("/subcastes/{casteId}")
-public ResponseEntity<List<SubCasteMaster>> getSubCastes(
-        @PathVariable Long casteId) {
-
-    return ResponseEntity.ok(service.getSubCastes(casteId));
-
-}
+    // Get Sub-Castes for a caste code (reference derived from real applications; names are
+    // filled in as the true master becomes available)
+    @GetMapping("/subcastes/{casteCode}")
+    public ResponseEntity<List<SubCasteMasterPublic>> getSubCastes(@PathVariable String casteCode) {
+        return ResponseEntity.ok(service.getSubCastesByCaste(casteCode));
+    }
 }

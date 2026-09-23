@@ -17,8 +17,8 @@ import com.server.backend.DTO.UserPrincipal;
 import com.server.backend.DTO.MeritListRequest;
 import com.server.backend.DTO.MeritListResponse;
 import com.server.backend.DTO.MeritListRow;
-import com.server.backend.entity.MeritList;
-import com.server.backend.entity.MeritListId;
+import com.server.backend.entity.RankEntity;
+import com.server.backend.entity.RankId;
 import com.server.backend.service.MeritChecklist.MeritListService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -39,39 +39,39 @@ public class MeritListController {
     }
     @Operation(summary = "Get all merit lists")
     @GetMapping
-    public List<MeritList> getAllMeritList() {
+    public List<RankEntity> getAllMeritList() {
         return meritListService.getAllMeritList();
     }
     @Operation(summary = "Get merit list by registration ID")
     @GetMapping("/{regid}")
-    public MeritList getMeritListByRegId(@PathVariable Integer regid){
+    public RankEntity getMeritListByRegId(@PathVariable Integer regid){
         return meritListService.getMeritListByRegId(regid);
     }
 
     @Operation(summary = "Get merit list by district code")
     @GetMapping("/district/{dist_code}")
-    public List<MeritList> getMeritListByDistCode(
+    public List<RankEntity> getMeritListByDistCode(
             @PathVariable String dist_code){
         return meritListService.getMeritListByDistCode(dist_code);
     }
 
     @Operation(summary = "Get merit list by phase")
     @GetMapping("/phase/{phase}")
-    public List<MeritList> getMeritListByPhase(
+    public List<RankEntity> getMeritListByPhase(
             @PathVariable String phase) {
         return meritListService.getMeritListByPhase(phase);
     }
 
     @Operation(summary = "Get merit list by ITI code")
     @GetMapping("/iti/{iti_code}")
-    public List<MeritList> getMeritListByItiCode(
+    public List<RankEntity> getMeritListByItiCode(
             @PathVariable String iti_code){
         return meritListService.getMeritListByItiCode(iti_code);
     }
 
     @Operation(summary = "Get merit list by application status")
     @GetMapping("/status/{app_status}")
-    public List<MeritList> getMeritListByAppStatus(
+    public List<RankEntity> getMeritListByAppStatus(
             @PathVariable String app_status){
                 if("null".equalsIgnoreCase(app_status)) {
                     return meritListService.getMeritListByAppStatusIsNull();
@@ -80,13 +80,13 @@ public class MeritListController {
     }
     @Operation(summary = "Create a new merit list")
     @PostMapping
-public MeritList createMeritList(@RequestBody MeritList meritList) {
+public RankEntity createMeritList(@RequestBody RankEntity meritList) {
     
     return meritListService.saveMeritList(meritList);
 }
 @Operation(summary = "Update an existing merit list")
 @PutMapping("/{regid}")
-public MeritList updateMeritList(@PathVariable Integer regid, @RequestBody MeritList meritList) {
+public RankEntity updateMeritList(@PathVariable Integer regid, @RequestBody RankEntity meritList) {
 
     meritList.setRegid(regid);
     return meritListService.updateMeritList(meritList);
@@ -99,7 +99,7 @@ public void deleteMeritList(
         @RequestParam String temp_pk,
         @RequestParam String phase)
         {
-            MeritListId meritListId = new MeritListId(regid, qual, temp_pk, phase);
+            RankId meritListId = new RankId(regid, qual, temp_pk, phase);
             meritListService.deleteMeritList(meritListId);
         }
 @Operation(summary = "Generate/Regenerate merit lists or checklists")
