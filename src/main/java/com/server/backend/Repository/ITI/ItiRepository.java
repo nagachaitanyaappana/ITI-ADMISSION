@@ -23,4 +23,12 @@ public interface ItiRepository extends JpaRepository<Iti, String> {
 
     // New method for Govt/Pvt API (added from varshitha module)
     List<Iti> findByGovt(String govt);
+
+    @Query(value = "SELECT i.iti_code, i.iti_name, i.govt, m.trade_name, t.strength " +
+                   "FROM iti i " +
+                   "LEFT JOIN ititrade t ON i.iti_code = t.iti_code " +
+                   "LEFT JOIN ititrade_master m ON t.trade_short = m.trade_short " +
+                   "WHERE i.dist_code = :distCode AND (:govt IS NULL OR i.govt = :govt) " +
+                   "ORDER BY i.iti_name, m.trade_name", nativeQuery = true)
+    List<Object[]> findTradeDisplayRowsByDistrictCodeAndGovt(@Param("distCode") String distCode, @Param("govt") String govt);
 }
