@@ -54,10 +54,43 @@ public class ReportServiceImpl implements ReportService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Resolve the admission year the old Struts app always used:
+     * {@code SELECT value FROM iti_params WHERE code='7'}.
+     * Falls back to the supplied value, then calendar year, so reports never
+     * silently switch year in the Jan-Mar gap.
+     */
+    private String resolveAdmissionYear(String year) {
+        if (year != null && !year.isBlank()) {
+            return year.trim();
+        }
+        try {
+            String v = jdbcTemplate.queryForObject(
+                    "SELECT value FROM public.iti_params WHERE code='7'", String.class);
+            if (v != null && !v.isBlank()) {
+                return v.trim();
+            }
+        } catch (Exception ignored) {
+            // fall through to calendar year
+        }
+        return String.valueOf(Year.now().getValue());
+    }
+
+    /**
+     * Seat capacity helper — mirrors old
+     * {@code sum(value::dec) from iti_seatmatrix, each(strength)}.
+     * Sums every hstore entry so multi-key strength maps are not under-counted.
+     */
+    private static final String SEAT_SUM_EXPR =
+            "(SELECT COALESCE(SUM(value::numeric),0) FROM each(sm.strength))";
+
+    /** Filled seats helper — old code used COUNT(*) everywhere for abstracts. */
+    private static final String FILLED_COUNT_EXPR = "COUNT(*)";
+
     // 1. ITI Wise Status Report
     @Override
     public List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size) {
-        String effectiveYear = (year != null && !year.isEmpty()) ? year : String.valueOf(Year.now().getValue());
+        String effectiveYear = resolveAdmissionYear(year);
         
         StringBuilder sql = new StringBuilder("""
             WITH iti_data AS (
@@ -245,8 +278,8 @@ public class ReportServiceImpl implements ReportService {
         String tradeName = tradeCode;
         int totalStrength = 0;
         try {
-            String tradeSql = "SELECT trade_name FROM public.ititrade_master WHERE trade_code = ?";
-            tradeName = jdbcTemplate.queryForObject(tradeSql, String.class, Integer.parseInt(tradeCode));
+            String tradeSql = "SELECT trade_name FROM public.ititrade_master WHERE TRIM(trade_code::text) = TRIM(?::text)";
+            tradeName = jdbcTemplate.queryForObject(tradeSql, String.class, tradeCode);
         } catch (Exception e) {
             System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
@@ -849,9 +882,12 @@ public class ReportServiceImpl implements ReportService {
     }
 
     // 15. Trade Duration Seats Abstract
+    // Old: trade_duration comes in MONTHS (6/12/24), matched exactly against
+    // ititrade_master.durationyrs, and filled = COUNT(*) (see
+    // trade_seats_abstract_duration_wise_action.java).
     @Override
     public List<TradeDurationSeatsResponse> getTradeDurationSeats(String year, String durationMonths, String itiType) {
-        String durationyrs = String.valueOf(Integer.parseInt(durationMonths) / 12);
+        String durationyrs = mapDurationMonthsToYears(durationMonths);
         String sql = """
             WITH unique_iti AS (
                 SELECT DISTINCT ON (iti_code) iti_code, govt FROM public.iti
@@ -865,21 +901,21 @@ public class ReportServiceImpl implements ReportService {
                 JOIN unique_iti ui ON sm.iti_code = ui.iti_code
                 JOIN unique_trades ut ON sm.trade_code::text = ut.trade_code::text
                 WHERE sm.year::text = ?::text
-                  AND ut.durationyrs::text LIKE ? || '%'
-                  AND ui.govt = ?
+                  AND TRIM(ut.durationyrs::text) = TRIM(?::text)
+                  AND (? = 'All' OR ui.govt = ?)
             ),
             trade_seats AS (
                 SELECT trade_code, trade_name, SUM(strength_val) AS strength
                 FROM individual_seats GROUP BY trade_code, trade_name
             ),
             trade_filled AS (
-                SELECT a.trade_code, COUNT(DISTINCT a.adm_num) AS fill
+                SELECT a.trade_code, COUNT(*) AS fill
                 FROM admissions.iti_admissions a
                 JOIN unique_iti ui ON a.iti_code = ui.iti_code
                 JOIN unique_trades ut ON a.trade_code::text = ut.trade_code::text
                 WHERE a.year_of_admission::text = ?::text
-                  AND ut.durationyrs::text LIKE ? || '%'
-                  AND ui.govt = ?
+                  AND TRIM(ut.durationyrs::text) = TRIM(?::text)
+                  AND (? = 'All' OR ui.govt = ?)
                 GROUP BY a.trade_code
             )
             SELECT ts.trade_code, ts.trade_name, ts.strength,
@@ -899,7 +935,34 @@ public class ReportServiceImpl implements ReportService {
                 rs.getInt("fill"),
                 rs.getInt("vacant"),
                 rs.getDouble("fill_percentage")
-        ), year, durationyrs, itiType, year, durationyrs, itiType);
+        ), year, durationyrs, itiType, itiType, year, durationyrs, itiType, itiType);
+    }
+
+    /**
+     * Old form sends MONTHS (6/12/24/36/48) while ititrade_master.durationyrs
+     * stores YEARS. 6-month trades have no year row, so map 6->6 to keep the
+     * exact-match semantics (matches nothing unless master has '6'), never 0.
+     */
+    private static String mapDurationMonthsToYears(String durationMonths) {
+        if (durationMonths == null) {
+            throw new IllegalArgumentException("durationMonths is required");
+        }
+        String m = durationMonths.trim();
+        return switch (m) {
+            case "6" -> "6";
+            case "12" -> "1";
+            case "24" -> "2";
+            case "36" -> "3";
+            case "48" -> "4";
+            default -> {
+                try {
+                    int months = Integer.parseInt(m);
+                    yield months % 12 == 0 ? String.valueOf(months / 12) : m;
+                } catch (NumberFormatException e) {
+                    yield m;
+                }
+            }
+        };
     }
 
     // 16. Govt/Pvt District Wise Seats Abstract
