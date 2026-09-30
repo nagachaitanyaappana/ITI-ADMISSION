@@ -1,6 +1,8 @@
 package com.server.backend.DTO;
 import lombok.Data;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.Map;
 @Data
 public class ItiTradeMstDto {
     @NotNull(message="trade code is required")
@@ -12,7 +14,8 @@ public class ItiTradeMstDto {
     private String tradeFreeze;
     private Integer convApproval;
     private Integer tradeCode;
-    private Integer maxInternalMarks;
+    /** subject code -> max internal marks; DB column is hstore, not a number. */
+    private Map<String, String> maxInternalMarks;
     private String typeAdmission;
     private String drNondr;
     private Integer unitStrength;

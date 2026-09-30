@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -53,6 +54,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<Map<String, Object>> handleNumberFormat(NumberFormatException ex) {
         return build(HttpStatus.BAD_REQUEST, "Numeric fields must contain valid numbers only.");
+    }
+
+    /**
+     * A required @RequestParam was not supplied: a client error (400), not a
+     * server fault. This used to fall through to the generic Exception handler
+     * below and surface as a 500 ("Unhandled exception ... MissingServletRequest-
+     * ParameterException").
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, Object>> handleMissingParam(MissingServletRequestParameterException ex) {
+        return build(HttpStatus.BAD_REQUEST,
+                "Required parameter '" + ex.getParameterName() + "' is missing.");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
