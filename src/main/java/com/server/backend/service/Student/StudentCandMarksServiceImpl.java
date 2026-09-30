@@ -25,10 +25,15 @@ public class StudentCandMarksServiceImpl implements StudentCandMarksService {
         StudentApplication student = applicationRepository.findById(dto.getRegid())
                 .orElseThrow(() -> new RuntimeException("Student Not Found"));
 
-        StudentCandMarks entity = new StudentCandMarks();
+        String regid = String.valueOf(dto.getRegid());
 
-        BeanUtils.copyProperties(dto, entity);
-        entity.setRegid(String.valueOf(dto.getRegid()));
+        // Re-save must overwrite (UPDATE), never create a second row.
+        // Without this check every retry / double-click inserted a duplicate.
+        StudentCandMarks entity = marksRepository.findById(regid)
+                .orElseGet(StudentCandMarks::new);
+
+        BeanUtils.copyProperties(dto, entity, "regid");
+        entity.setRegid(regid);
 
         entity.setEntryDate(LocalDateTime.now());
 
