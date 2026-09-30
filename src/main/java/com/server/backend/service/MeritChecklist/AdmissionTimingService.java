@@ -45,8 +45,10 @@ public class AdmissionTimingService {
     }
 
     private LocalDate resolveDate(String value) {
+        // A blank date used to fall back to LocalDate.now(), so submitting the schedule form
+        // with an empty date silently created a schedule starting today.
         if (value == null || value.isBlank()) {
-            return LocalDate.now();
+            throw new IllegalArgumentException("Date is required");
         }
 
         try {

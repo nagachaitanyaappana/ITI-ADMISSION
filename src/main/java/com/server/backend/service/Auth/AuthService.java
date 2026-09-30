@@ -76,18 +76,21 @@ public class AuthService {
             res.put("lastLogins", List.of());
         }
 
-        // ITI name for role-4 users (ins_code = iti code)
-        if (user.getDistCode() != null && !user.getDistCode().isBlank()) {
+        // ITI name for role-4 users (ins_code = iti code). Only ITI logins hold an ITI code:
+        // role 3 (district) holds a district code, and 7 other roles hold neither, so looking
+        // those up in public.iti just produced a bogus row for the navbar.
+        res.put("itiName", "");
+        Integer roleId = user.getRoleId();
+        if (roleId != null && roleId == 4
+                && user.getDistCode() != null && !user.getDistCode().isBlank()) {
             try {
                 String itiName = jdbc.query(
                         "SELECT iti_name FROM public.iti WHERE CAST(iti_code AS text) = ? LIMIT 1",
                         rs -> { rs.next(); return rs.getString(1); }, user.getDistCode());
-                res.put("itiName", itiName);
+                res.put("itiName", itiName == null ? "" : itiName);
             } catch (Exception ignored) {
                 res.put("itiName", "");
             }
-        } else {
-            res.put("itiName", "");
         }
         return res;
     }

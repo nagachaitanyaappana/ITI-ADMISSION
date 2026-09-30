@@ -2,6 +2,9 @@ package com.server.backend.service.ITI;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -58,9 +61,39 @@ public class ItiServiceImpl implements ItiService {
         Iti iti = repository.findById(itiCode)
                 .orElseThrow(() -> new RuntimeException("ITI Not Found"));
 
-        BeanUtils.copyProperties(dto, iti);
+        // Null-skipping copy. BeanUtils.copyProperties copies nulls too, so a partial PUT
+        // silently blanked every column the caller omitted. patchIti() below does the same
+        // thing field-by-field; this keeps the full ItiDto surface without listing every setter.
+        copyNonNullProperties(dto, iti);
         iti.setItiCode(itiCode);
         return repository.save(iti);
+    }
+
+    /**
+     * Copies every non-null property from source to target, leaving omitted fields untouched.
+     * Mirrors the null-guarded setters used in {@link #patchIti}.
+     */
+    private void copyNonNullProperties(Object source, Object target) {
+        try {
+            for (PropertyDescriptor pd : BeanUtils.getPropertyDescriptors(source.getClass())) {
+                String name = pd.getName();
+                Method readMethod = pd.getReadMethod();
+                if ("class".equals(name) || readMethod == null) {
+                    continue;
+                }
+                Object value = readMethod.invoke(source);
+                if (value == null) {
+                    continue;
+                }
+                PropertyDescriptor targetPd = BeanUtils.getPropertyDescriptor(target.getClass(), name);
+                Method writeMethod = targetPd == null ? null : targetPd.getWriteMethod();
+                if (writeMethod != null) {
+                    writeMethod.invoke(target, value);
+                }
+            }
+        } catch (IllegalAccessException | InvocationTargetException ex) {
+            throw new RuntimeException("Failed to update ITI " + ex.getMessage(), ex);
+        }
     }
 
     @Override

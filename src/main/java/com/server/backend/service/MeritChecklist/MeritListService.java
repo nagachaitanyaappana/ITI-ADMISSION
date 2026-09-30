@@ -3,6 +3,8 @@ import java.util.List;
 import com.server.backend.DTO.MeritListRow;
 import com.server.backend.DTO.UserPrincipal;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.server.backend.Repository.MeritChecklist.MeritListRepository;
 import com.server.backend.entity.RankEntity;
 import com.server.backend.entity.RankId;
@@ -14,6 +16,7 @@ import java.util.Map;
 @Service
 public class MeritListService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MeritListService.class);
 
     private final MeritListRepository meritListRepository;
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -66,26 +69,31 @@ public class MeritListService {
     
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> generateMeritList(String Category,String qual, String status, UserPrincipal user) {
-        // 1. Get current year
-        String yearQuery = "SELECT value FROM iti_params WHERE code = '7'";
-        List<String> years = jdbcTemplate.getJdbcTemplate().queryForList(yearQuery, String.class);
-        if (years.isEmpty()) {
-            throw new IllegalStateException("ITI param for code '7' not found");
-        }
-        String year = years.get(0);
+        // 1. Resolve the year + phase actually in force.
+        //    iti_params code '7' is advisory only. It currently reads 2026 while
+        //    admissions.admission_phase holds its only current row under 2025, so trusting it
+        //    made every request throw "No current phase found for year 2026".
+        //    admission_phase is the authority, because the date-window checks below depend on it.
+        String paramYearQuery = "SELECT value FROM iti_params WHERE code = '7'";
+        List<String> paramYears = jdbcTemplate.getJdbcTemplate().queryForList(paramYearQuery, String.class);
+        String paramYear = paramYears.isEmpty() ? null : paramYears.get(0);
 
-        // 1.2 Get phase details
-        String phaseQuery = "SELECT phase, meritliststartdate, meritlisttodate " +
+        String phaseQuery = "SELECT year, phase, meritliststartdate, meritlisttodate " +
                 "FROM admissions.admission_phase " +
-                "WHERE year = :year AND current = 'true'";
-        MapSqlParameterSource phaseParams = new MapSqlParameterSource("year", year);
-        List<Map<String, Object>> phases = jdbcTemplate.queryForList(phaseQuery, phaseParams);
+                "WHERE current = 'true'";
+        List<Map<String, Object>> phases =
+                jdbcTemplate.queryForList(phaseQuery, new MapSqlParameterSource());
         if (phases.isEmpty()) {
-            throw new IllegalStateException("No current phase found for year " + year);
+            throw new IllegalStateException("No current admission phase found in admissions.admission_phase");
         }
 
         Map<String, Object> phaseInfo = phases.get(0);
+        String year = String.valueOf(phaseInfo.get("year"));
         String phase = String.valueOf(phaseInfo.get("phase"));
+        if (paramYear != null && !paramYear.equals(year)) {
+            logger.warn("iti_params code '7' year {} does not match the current admission_phase year {}; using admission_phase",
+                    paramYear, year);
+        }
         Date meritliststartdate = (Date) phaseInfo.get("meritliststartdate");
         Date meritlisttodate = (Date) phaseInfo.get("meritlisttodate");
 
@@ -98,15 +106,20 @@ public class MeritListService {
             throw new IllegalStateException(String.format("Merit list generation for phase %s has ended (Ended: %s)", phase, meritlisttodate));
         }
 
-        // 2. Enforcement: for phases 2 to 5, roleid must be '4'
-        String adjustedRoleId = user.roleid();
-        if (List.of("2", "3", "4", "5").contains(phase)) {
-            adjustedRoleId = "4";
-        }
-
-        boolean useDistCode = "3".equals(adjustedRoleId);
+        // 2. The caller's own role sets the scope: role 3 = whole district, role 4 = one ITI.
+        //    Phases 2-5 used to force every caller to role 4, so a district login generated a
+        //    single ITI's list instead of the district's.
+        String roleId = user.roleid();
+        boolean useDistCode = "3".equals(roleId);
         String targetCode = useDistCode ? user.distCode() : user.itiCode();
+        if (targetCode == null || targetCode.isBlank()) {
+            throw new IllegalArgumentException("No " + (useDistCode ? "district" : "ITI")
+                    + " code is available for this login; cannot scope the merit list.");
+        }
         String codeColumn = useDistCode ? "dist_code" : "iti_code";
+
+        // 3. 'qual' used to be ignored and every generated row was written as 'all'.
+        String qualCode = (qual == null || qual.isBlank()) ? "all" : qual.trim();
 
         String dbTablename;
         String heading;
@@ -117,12 +130,14 @@ public class MeritListService {
             dbTablename = "checklist";
             heading = "System Generated CheckList";
             
-            // Delete from checklist where temp_pk = targetCode
+            // checklist's primary key is regid alone (no year column), so this delete is
+            // deliberately left unscoped by phase/year. Scoping it would raise duplicate-key
+            // errors on the next phase instead of replacing the earlier phase's rows.
             String deleteQuery = "DELETE FROM checklist WHERE temp_pk = :targetCode";
             jdbcTemplate.update(deleteQuery, new MapSqlParameterSource("targetCode", targetCode));
 
             insertColumns = "dist_code, regid, rank, iti_code, qual, temp_pk, phase, app_status";
-            selectValues = ":distCode, regid, generated_rank::text, :itiCode, 'all', :targetCode, :phase, null";
+            selectValues = ":distCode, regid, generated_rank::text, :itiCode, :qual, :targetCode, :phase, null";
             
         } else if ("finalmeritlist".equals(status)) {
             // Check if checklist exists
@@ -143,7 +158,7 @@ public class MeritListService {
             jdbcTemplate.update(deleteQuery, checkParams);
 
             insertColumns = "dist_code, regid, rank, iti_code, qual, temp_pk, phase, year, app_status";
-            selectValues = ":distCode, regid, generated_rank::text, :itiCode, 'all', :targetCode, :phase, :year, null";
+            selectValues = ":distCode, regid, generated_rank::text, :itiCode, :qual, :targetCode, :phase, :year, null";
             
         } else if ("regeneratechecklist".equals(status)) {
             dbTablename = "checklist";
@@ -154,11 +169,17 @@ public class MeritListService {
             jdbcTemplate.update(deleteQuery, new MapSqlParameterSource("targetCode", targetCode));
 
             insertColumns = "dist_code, regid, rank, iti_code, qual, temp_pk, phase, app_status";
-            selectValues = ":distCode, regid, generated_rank::text, :itiCode, 'all', :targetCode, :phase, null";
+            selectValues = ":distCode, regid, generated_rank::text, :itiCode, :qual, :targetCode, :phase, null";
             
         } else {
             throw new IllegalArgumentException("Invalid status value provided: " + status);
         }
+
+        // The ssc_*_gpa columns are varchar and hold '', 'NaN' and zero-padded values (e.g. '05').
+        // A bare ::real aborts the whole ranking on '' (reproduced on live data) and lets 'NaN'
+        // silently poison the ordering. Strip every non-numeric character first, then let
+        // unparseable values fall through to NULLS LAST.
+        String safeGpa = "nullif(regexp_replace(%s, '[^0-9.]', '', 'g'), '')::real";
 
         // Build Optimized SQL Query with safe parameters and dynamic schema interpolation
         String sql = String.format(
@@ -171,20 +192,23 @@ public class MeritListService {
             "        RANK() OVER (\n" +
             "            ORDER BY \n" +
             "                ssc_passed DESC, \n" +
-            "                ssc_tot_gpa::real DESC NULLS LAST, \n" +
-            "                ssc_math_gpa::real DESC NULLS LAST, \n" +
-            "                ssc_sci_gpa::real DESC NULLS LAST, \n" +
-            "                ssc_social_gpa::real DESC NULLS LAST, \n" +
-            "                ssc_eng_gpa::real DESC NULLS LAST, \n" +
-            "                ssc_first_lang_gpa::real DESC NULLS LAST, \n" +
-            "                ssc_second_lang_gpa::real DESC NULLS LAST, \n" +
+            String.format(safeGpa, "ssc_tot_gpa") + " DESC NULLS LAST, \n" +
+            String.format(safeGpa, "ssc_math_gpa") + " DESC NULLS LAST, \n" +
+            String.format(safeGpa, "ssc_sci_gpa") + " DESC NULLS LAST, \n" +
+            String.format(safeGpa, "ssc_social_gpa") + " DESC NULLS LAST, \n" +
+            String.format(safeGpa, "ssc_eng_gpa") + " DESC NULLS LAST, \n" +
+            String.format(safeGpa, "ssc_first_lang_gpa") + " DESC NULLS LAST, \n" +
+            String.format(safeGpa, "ssc_second_lang_gpa") + " DESC NULLS LAST, \n" +
             "                dob ASC, \n" +
             "                name ASC\n" +
             "        ) as generated_rank\n" +
             "    FROM (\n" +
             "        SELECT a.name, a.regid, a.dob, a.ssc_passed, b.ssc_tot_gpa, b.ssc_math_gpa, b.ssc_sci_gpa, b.ssc_social_gpa, b.ssc_eng_gpa, b.ssc_first_lang_gpa, b.ssc_second_lang_gpa\n" +
             "        FROM application a\n" +
-            "        LEFT JOIN student_cand_marks b ON a.regid::character varying = b.regid\n" +
+            // student_cand_marks holds byte-identical duplicate rows per regid (67,791 groups,
+            // same entry_date to the millisecond), which fanned this join out to two rows per
+            // candidate and made RANK() score every applicant twice. DISTINCT collapses them.
+            "        LEFT JOIN (SELECT DISTINCT * FROM student_cand_marks) b ON a.regid::character varying = b.regid\n" +
             "        WHERE hstore(a.phase)->:phase = 'true'\n" +
             "        AND a.app_status = 'A'\n" +
             "        AND EXISTS (\n" +
@@ -228,6 +252,7 @@ public class MeritListService {
 
         MapSqlParameterSource queryParams = new MapSqlParameterSource()
                 .addValue("phase", phase)
+                .addValue("qual", qualCode)
                 .addValue("targetCode", targetCode)
                 .addValue("itiCode", user.itiCode())
                 .addValue("distCode", user.distCode())

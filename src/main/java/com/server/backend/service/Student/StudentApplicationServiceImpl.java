@@ -11,6 +11,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import com.server.backend.entity.CasteMasterPublic;
 import com.server.backend.entity.SubCasteMasterPublic;
@@ -53,6 +54,16 @@ entity.setSscPassed(true);
     }
 
 
+    /**
+     * Fields owned by the server. A student-submitted update must never be able to set these:
+     * appStatus / phase / verified* drive verification and phase-wise reporting, so accepting
+     * them from the client would let a candidate self-verify.
+     */
+    private static final Set<String> SERVER_OWNED_FIELDS = Set.of(
+            "appStatus", "phase", "dataFlag",
+            "verifiedDate", "verifiedIp", "userId",
+            "trno", "entryDate");
+
     @Override
 public StudentApplicationDto updateStudent(Integer regid, StudentApplicationDto dto) {
 
@@ -69,6 +80,13 @@ public StudentApplicationDto updateStudent(Integer regid, StudentApplicationDto 
         if ("class".equals(propertyName) || "regid".equals(propertyName)) {
             continue;
         }
+
+            // Server-owned fields are never accepted from the client: letting an applicant
+            // write appStatus/phase/verified* would let a candidate self-verify.
+            if (SERVER_OWNED_FIELDS.contains(propertyName)) {
+                continue;
+            }
+
 
         Object value = src.getPropertyValue(propertyName);
 
