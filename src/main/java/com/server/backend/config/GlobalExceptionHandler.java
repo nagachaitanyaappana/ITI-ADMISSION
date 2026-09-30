@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +15,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Global handler so that invalid client input returns a clean 400 with a
@@ -66,6 +69,33 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleMissingParam(MissingServletRequestParameterException ex) {
         return build(HttpStatus.BAD_REQUEST,
                 "Required parameter '" + ex.getParameterName() + "' is missing.");
+    }
+
+    /**
+     * Wrong HTTP method for an existing endpoint (e.g. GET on a POST-only
+     * route): a client error (405), not a server fault. This used to fall
+     * through to the generic Exception handler below and surface as a 500.
+     */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+        var supported = ex.getSupportedHttpMethods();
+        String supportedText = (supported == null || supported.isEmpty())
+                ? "unknown"
+                : supported.stream().map(Object::toString).collect(Collectors.joining(", "));
+        return build(HttpStatus.METHOD_NOT_ALLOWED,
+                "HTTP " + ex.getMethod() + " is not supported for this endpoint. Supported method(s): " + supportedText + ".");
+    }
+
+    /**
+     * Body sent with a Content-Type the endpoint cannot consume: a client
+     * error (415), not a server fault.
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                "Unsupported Content-Type"
+                        + (ex.getContentType() == null ? "." : ": " + ex.getContentType() + ".")
+                        + " Use application/json.");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
