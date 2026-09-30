@@ -18,8 +18,31 @@ String findCurrentYearVal();
 @Query(value = "SELECT phase FROM admissions.admission_phase WHERE year = :year AND current = 'true'", nativeQuery = true)
 Optional<String> findCurrentPhaseVal(@Param("year") String year);
 
+/**
+ * The single row flagged {@code current} in {@code admissions.admission_phase}. This table — not
+ * {@code iti_params} code '7' — is the authority on which year/phase is running: the param
+ * currently reads 2026 while the only current phase row is 2025, so resolving the year from the
+ * param makes every lookup fail with "No current phase found for year 2026".
+ *
+ * <p>Kept as two single-column queries on purpose: a native query returning several columns mapped
+ * to {@code Optional<Object[]>} comes back as a one-element array, which fails at runtime.
+ */
+@Query(value = "SELECT year FROM admissions.admission_phase WHERE current = 'true'", nativeQuery = true)
+Optional<String> findCurrentPhaseYear();
+
+@Query(value = "SELECT phase FROM admissions.admission_phase WHERE current = 'true'", nativeQuery = true)
+Optional<String> findCurrentPhaseAnyYear();
+
+
+/**
+ * Phase and its admission date window for the current row of a given year.
+ *
+ * <p>Returns {@code List<Object[]>} rather than {@code Optional<Object[]>}: a multi-column native
+ * query declared as {@code Optional<Object[]>} comes back wrapped, so {@code row[0]} is another
+ * Object[] and casting it to String throws ClassCastException at runtime.
+ */
 @Query(value = "SELECT phase, admissions_start_date, admissions_end_date FROM admissions.admission_phase WHERE year = :year AND current = 'true'", nativeQuery = true)
-Optional<Object[]> findPhaseDates(@Param("year") String year);
+List<Object[]> findPhaseDates(@Param("year") String year);
 
 @Query(value = "SELECT COALESCE(MAX(CAST(temp_pk AS integer)), 0) + 1 FROM public.admission_timings", nativeQuery = true)
 Integer getNextTempPkVal();
@@ -70,13 +93,15 @@ List<AdmissionTiming> findOverlappingDistMeritRanges(
 );
 
 // Add this to search for schedules dynamically in the View endpoint
+// The optional cal_time filter is applied by the caller rather than here: "(:calTime IS NULL OR
+// t.calTime = :calTime)" binds an untyped NULL, which PostgreSQL rejects with
+// "could not determine data type of parameter" and took the whole view down.
 @Query("SELECT t FROM AdmissionTiming t WHERE " +
        "((:useDist = true AND t.distCode = :code) OR (:useDist = false AND t.itiCode = :code)) " +
        "AND t.phase = :phase " +
        "AND t.year = :year " +
        "AND (:caste = 'all' OR t.caste = :caste) " +
        "AND (:minqul = 'all' OR t.minqul = :minqul) " +
-       "AND (:calTime IS NULL OR t.calTime = :calTime) " +
        "ORDER BY t.calDate, t.calTime")
 List<AdmissionTiming> findFilteredSchedules(
     @Param("useDist") boolean useDist,
@@ -84,7 +109,6 @@ List<AdmissionTiming> findFilteredSchedules(
     @Param("phase") String phase,
     @Param("year") String year,
     @Param("caste") String caste,
-    @Param("minqul") String minqul,
-    @Param("calTime") LocalTime calTime
+    @Param("minqul") String minqul
 );
 }
