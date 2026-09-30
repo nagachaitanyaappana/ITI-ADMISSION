@@ -4,15 +4,17 @@ import com.server.backend.DTO.AdmissionPhaseDto;
 import com.server.backend.entity.AdmissionPhase;
 import com.server.backend.entity.AdmissionPhaseId;
 import com.server.backend.Repository.Student.AdmissionPhaseRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AdmissionPhaseServiceImpl implements AdmissionPhaseService {
 
-    
-    private AdmissionPhaseRepository repository;
+    /** Injected: without this (or a constructor) the field stayed null and every call NPE'd. */
+    private final AdmissionPhaseRepository repository;
 
     @Override
     public AdmissionPhaseDto saveAdmissionPhase(AdmissionPhaseDto dto) {
