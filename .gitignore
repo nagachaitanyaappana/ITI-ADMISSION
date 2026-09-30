@@ -37,3 +37,7 @@ build/
 !README.md
 app_run_*.txt
 run_app.ps1
+
+### Local env overrides — NEVER commit real credentials ###
+.env
+.env.*.local

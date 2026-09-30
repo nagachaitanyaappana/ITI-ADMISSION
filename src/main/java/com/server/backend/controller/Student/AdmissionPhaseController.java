@@ -1,5 +1,4 @@
 package com.server.backend.controller.Student;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.DTO.AdmissionPhaseDto;
 import com.server.backend.service.Student.AdmissionPhaseService;
@@ -7,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.server.backend.entity.AdmissionPhase;
-@CrossOrigin(origins = "http://localhost:5051")
 @Tag(name = "Student")
 @RestController
 @RequestMapping("/api/admission-phase")

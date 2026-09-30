@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Admission Process")
 @RestController
 @RequestMapping("/api/iti")
-@CrossOrigin(origins = "*")
 public class itinames_by_govt_pvt_controller {
 
     private final itinames_by_govt_pvt_service service;

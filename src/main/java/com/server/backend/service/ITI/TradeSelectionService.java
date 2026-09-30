@@ -1,4 +1,4 @@
-package com.server.backend.service.Admission;
+package com.server.backend.service.ITI;
 
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.server.backend.controller.Admission;
+package com.server.backend.controller.ITI;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.server.backend.DTO.TradeSelectionRequestDto;
-import com.server.backend.service.Admission.TradeSelectionService;
+import com.server.backend.service.ITI.TradeSelectionService;
 
 /**
  * Trade selection — the write path into {@code trade_sel}.
@@ -25,8 +25,11 @@ import com.server.backend.service.Admission.TradeSelectionService;
  * <p>Ported from the legacy {@code Master.Trade.Tradesel_entry_Action}. Without this endpoint
  * {@code trade_sel} stays empty and merit generation can never find a candidate, because the
  * generator filters on {@code regid in (select regid from trade_sel where ...)}.
+ * <p>Lives in the {@code ITI} module alongside the ITI-side lookups a selection page needs
+ * (eligible ITIs, trades by ITI, candidate profile). The table itself is ranked by the
+ * {@code meritlistchecklist} module, which is why the legacy file sat under {@code Master.Trade}.
  */
-@Tag(name = "Admission Process", description = "Admission process (seat allotment, merit, DSC)")
+@Tag(name = "ITI", description = "Institute / ITI admin masters: designations, districts, itis, trades, shift units")
 @RestController
 @RequestMapping("/api/trade-selection")
 public class TradeSelectionController {

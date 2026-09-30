@@ -21,12 +21,10 @@ import com.server.backend.entity.RankEntity;
 import com.server.backend.entity.RankId;
 import com.server.backend.service.MeritChecklist.MeritListService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Merit & Checklist")
 @RestController
 @RequestMapping("/api/meritlist")
-@CrossOrigin(origins="http://localhost:5051")
 public class MeritListController {
 
 
@@ -106,9 +104,18 @@ public void deleteMeritList(
 @PostMapping("/generate")
 public ResponseEntity<MeritListResponse> generateMeritList(
         @RequestBody MeritListRequest request,
-        @RequestHeader(name = "X-Role-Id", defaultValue = "3") String roleId,
-        @RequestHeader(name = "X-Iti-Code", defaultValue = "ITI001") String itiCode,
-        @RequestHeader(name = "X-Dist-Code", defaultValue = "DIST001") String distCode
+        @RequestHeader(name = "X-Role-Id", required = false) String roleId,
+        // No defaultValue on purpose. These previously defaulted to the placeholders
+        // "ITI001" / "DIST001", so a request without them silently generated rows tagged with a
+        // non-existent ITI/district instead of failing. MeritListService already rejects a blank
+        // institution code, which is the behaviour we want.
+        // login_users has a single ins_code column holding either a district or an ITI code
+        // depending on role (verified: role 3 -> 18/18 district, role 4 -> 528/600 ITI), so the
+        // page sends it once as X-Ins-Code and resolveUser() maps it to the right slot.
+        @RequestHeader(name = "X-Ins-Code", required = false) String insCode,
+
+        @RequestHeader(name = "X-Iti-Code", required = false) String itiCode,
+        @RequestHeader(name = "X-Dist-Code", required = false) String distCode
 ) {
     try {
         if (request == null) {
@@ -120,7 +127,7 @@ public ResponseEntity<MeritListResponse> generateMeritList(
                     .body(new MeritListResponse(false, "Status is required."));
         }
 
-        UserPrincipal user = new UserPrincipal(roleId, itiCode, distCode);
+        UserPrincipal user = resolveUser(roleId, insCode, itiCode, distCode);
         Map<String, Object> serviceResult = meritListService.generateMeritList(
                
                 request.category(),
@@ -145,5 +152,44 @@ public ResponseEntity<MeritListResponse> generateMeritList(
     }
 }
 
-}
 
+    /**
+     * Builds the calling user from the request headers.
+     *
+     * <p>{@code login_users.ins_code} is a single column that holds either a district code or an
+     * ITI code depending on the role, so the page sends it once as {@code X-Ins-Code}. The role
+     * decides which field it belongs in. The explicit {@code X-Iti-Code} / {@code X-Dist-Code}
+     * headers still win when supplied, so an admin tool can target an arbitrary scope.
+     *
+     * @throws IllegalArgumentException when the role is missing or no institution code came through,
+     *                                  rather than silently generating for a placeholder institution
+     */
+    private UserPrincipal resolveUser(String roleId, String insCode, String itiCode, String distCode) {
+        String role = (roleId == null || roleId.isBlank()) ? null : roleId.trim();
+        String ins = (insCode == null || insCode.isBlank()) ? null : insCode.trim();
+
+        if (role == null) {
+            throw new IllegalArgumentException(
+                    "X-Role-Id is required so the merit list can be scoped to a district or an ITI");
+        }
+
+        String resolvedIti = (itiCode == null || itiCode.isBlank()) ? null : itiCode.trim();
+        String resolvedDist = (distCode == null || distCode.isBlank()) ? null : distCode.trim();
+
+        if ("3".equals(role)) {
+            // District login: the institution code is the district.
+            if (resolvedDist == null) {
+                resolvedDist = ins;
+            }
+        } else if (resolvedIti == null) {
+            // ITI login (and any other role): the institution code is the ITI.
+            resolvedIti = ins;
+        }
+
+        if (resolvedIti == null && resolvedDist == null) {
+            throw new IllegalArgumentException(
+                    "X-Ins-Code is required so the merit list can be scoped to a district or an ITI");
+        }
+        return new UserPrincipal(role, resolvedIti, resolvedDist);
+    }
+}
