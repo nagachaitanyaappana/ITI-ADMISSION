@@ -1,20 +1,20 @@
 package com.server.backend.controller.Student;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.DTO.AdmissionPhaseDto;
 import com.server.backend.service.Student.AdmissionPhaseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.server.backend.entity.AdmissionPhase;
-@CrossOrigin(origins = "http://localhost:5051")
 @Tag(name = "Student")
 @RestController
 @RequestMapping("/api/admission-phase")
+@RequiredArgsConstructor
 public class AdmissionPhaseController {
 
-    
-    private AdmissionPhaseService admissionPhaseService;
+    /** Injected: without this (or a constructor) the field stayed null and every call NPE'd. */
+    private final AdmissionPhaseService admissionPhaseService;
 
     @PostMapping("/save")
     public ResponseEntity<AdmissionPhaseDto> saveAdmissionPhase(@RequestBody AdmissionPhaseDto dto) {

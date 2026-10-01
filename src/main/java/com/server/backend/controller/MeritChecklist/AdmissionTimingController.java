@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +26,6 @@ import jakarta.validation.Valid;
 @Tag(name = "admission-timings", description = "Admission timing schedule management")
 @RestController
 @RequestMapping("/admission-timings")
-@CrossOrigin(origins="http://localhost:5052")
 public class AdmissionTimingController {
     private final AdmissionTimingService admissionTimingService;
     public AdmissionTimingController(AdmissionTimingService admissionTimingService) {

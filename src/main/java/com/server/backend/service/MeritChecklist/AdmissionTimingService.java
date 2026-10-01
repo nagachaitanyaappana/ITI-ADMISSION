@@ -2,7 +2,9 @@ package com.server.backend.service.MeritChecklist;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import org.slf4j.Logger;
@@ -25,23 +27,52 @@ public class AdmissionTimingService {
         this.admissionTimingRepository = admissionTimingRepository;
     }
 
+    /**
+     * The running admission year.
+     *
+     * <p>{@code iti_params} code '7' is advisory: it currently reads 2026 while
+     * {@code admissions.admission_phase} holds its only current row under 2025, so trusting the param
+     * made {@code /api/status} and every schedule lookup fail with
+     * "No current phase found for year 2026". {@code admission_phase} is the authority — the same
+     * decision {@code MeritListService} and {@code TradeSelectionService.resolvePhase} already
+     * document — and the param is only a fallback when no current phase row exists.
+     */
     private String resolveCurrentYear() {
+        Optional<String> currentYear = admissionTimingRepository.findCurrentPhaseYear();
+        if (currentYear.isPresent() && currentYear.get() != null && !currentYear.get().isBlank()) {
+            String phaseYear = currentYear.get().trim();
+            String paramYear = admissionTimingRepository.findCurrentYearVal();
+            if (paramYear != null && !paramYear.trim().equals(phaseYear)) {
+                logger.warn("iti_params code '7' year {} does not match the current admission_phase "
+                        + "year {}; using admission_phase", paramYear.trim(), phaseYear);
+            }
+            return phaseYear;
+        }
+
         String yearStr = admissionTimingRepository.findCurrentYearVal();
         if (yearStr == null || yearStr.isBlank()) {
             throw new IllegalArgumentException("Current year value is missing from the system configuration.");
         }
-
-        try {
-            return String.valueOf(yearStr.trim());
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Invalid current year value: " + yearStr, ex);
-        }
+        return yearStr.trim();
     }
 
     private String resolveCurrentPhase(String year) {
         String yearStr = year != null ? String.valueOf(year) : null;
-        return admissionTimingRepository.findCurrentPhaseVal(yearStr)
-                .orElseThrow(() -> new IllegalArgumentException("No current phase found for year " + year));
+        Optional<String> byYear = admissionTimingRepository.findCurrentPhaseVal(yearStr);
+        if (byYear.isPresent()) {
+            return byYear.get();
+        }
+
+        // Fall back to the current phase row even when the parameter year disagrees, so a stale
+        // iti_params value cannot break the page (see resolveCurrentYear).
+        Optional<String> current = admissionTimingRepository.findCurrentPhaseAnyYear();
+        if (current.isPresent() && current.get() != null && !current.get().isBlank()) {
+            String phase = current.get().trim();
+            logger.warn("No current admission_phase row for year {}; using the current phase {}",
+                    year, phase);
+            return phase;
+        }
+        throw new IllegalArgumentException("No current phase found for year " + year);
     }
 
     private LocalDate resolveDate(String value) {
@@ -242,22 +273,45 @@ AdmissionTiming updatedRecord = admissionTimingRepository.save(target);
     return response;
 }
 
+    /**
+     * The admission date window comes back as {@code LocalDateTime} from a Spring Data native query
+     * and as {@code java.sql.Timestamp} from plain JdbcTemplate. Both are accepted here: the cast to
+     * {@code java.util.Date} that used to sit inline threw ClassCastException on the JPA path, which
+     * is why {@code POST /admission-timings/view} had never returned a row.
+     */
+    private static LocalDateTime asLocalDateTime(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof LocalDateTime dateTime) {
+            return dateTime;
+        }
+        if (value instanceof Date legacy) {
+            return LocalDateTime.ofInstant(legacy.toInstant(), ZoneId.systemDefault());
+        }
+        logger.debug("Unsupported admission window type: {}", value.getClass().getName());
+        return null;
+    }
+
     public Map<String, Object> viewScheduleTimings(ViewScheduleRequest req, CurrentUser user) {
     String year = resolveCurrentYear();
     String yearStr = String.valueOf(year);
     
-    Object[] phaseMeta = admissionTimingRepository.findPhaseDates(yearStr)
-            .orElseThrow(() -> new IllegalArgumentException("No current phase found for year " + year));
+    List<Object[]> phaseRows = admissionTimingRepository.findPhaseDates(yearStr);
+    if (phaseRows.isEmpty()) {
+        throw new IllegalArgumentException("No current phase found for year " + year);
+    }
+    Object[] phaseMeta = phaseRows.get(0);
 
-    String phase = (String) phaseMeta[0];
-    Date startDate = (Date) phaseMeta[1];
-    Date endDate = (Date) phaseMeta[2];
+    String phase = phaseMeta[0] == null ? null : String.valueOf(phaseMeta[0]);
+    LocalDateTime startDate = asLocalDateTime(phaseMeta[1]);
+    LocalDateTime endDate = asLocalDateTime(phaseMeta[2]);
 
-    Date now = new Date();
-    if (startDate != null && now.before(startDate)) {
+    LocalDateTime now = LocalDateTime.now();
+    if (startDate != null && now.isBefore(startDate)) {
         throw new IllegalArgumentException("Admission for phase " + phase + " has not started yet (Starts: " + startDate + ")");
     }
-    if (endDate != null && now.after(endDate)) {
+    if (endDate != null && now.isAfter(endDate)) {
         throw new IllegalArgumentException("Admission for phase " + phase + " has ended (Ended: " + endDate + ")");
     }
 
@@ -277,7 +331,18 @@ AdmissionTiming updatedRecord = admissionTimingRepository.save(target);
         filterTime = null;
     }
 
-    List<AdmissionTiming> timingsList = admissionTimingRepository.findFilteredSchedules(useDist, code, phase, year, caste, minqul, filterTime);
+    List<AdmissionTiming> timingsList = admissionTimingRepository.findFilteredSchedules(useDist, code, phase, year, caste, minqul);
+    if (filterTime != null) {
+        // Applied in memory: the per-institution result is small, and binding a null calTime into
+        // the query is what used to break this endpoint.
+        List<AdmissionTiming> byTime = new ArrayList<>();
+        for (AdmissionTiming timing : timingsList) {
+            if (filterTime.equals(timing.getCalTime())) {
+                byTime.add(timing);
+            }
+        }
+        timingsList = byTime;
+    }
     List<ScheduleViewResponse> formattedList = new ArrayList<>();
 
     DateTimeFormatter dateWriter = DateTimeFormatter.ofPattern("dd-MM-yyyy");

@@ -10,7 +10,6 @@ import com.server.backend.service.Admission.trdnms_by_minqual_service;
 @Tag(name = "Admission Process")
 @RestController
 @RequestMapping("/api/trades")
-@CrossOrigin(origins = "*")
 public class trdnms_by_minqual_controller {
 
     private final trdnms_by_minqual_service service;
