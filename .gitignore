@@ -40,4 +40,11 @@ run_app.ps1
 
 ### Local env overrides — NEVER commit real credentials ###
 .env
+.env.*
 .env.*.local
+!.env.example
+
+### AI agent worktrees ###
+# Kilo Code clones the whole project here per task, so it must be
+# excluded here rather than only in .git/info/exclude (machine-local).
+.kilo/
