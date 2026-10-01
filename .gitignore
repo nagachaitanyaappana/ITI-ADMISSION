@@ -44,3 +44,6 @@ run_app.ps1
 ### Local env overrides — NEVER commit real credentials ###
 .env
 .env.*.local
+.env
+.env.*
+!.env.example
