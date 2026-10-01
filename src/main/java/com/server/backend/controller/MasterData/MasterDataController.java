@@ -1,16 +1,16 @@
 package com.server.backend.controller.MasterData;
 
 import java.util.List;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.MasterData.DashBoardDataResponse;
-import com.server.backend.DTO.MasterData.ItiDetailResponse;
-import com.server.backend.DTO.MasterData.ItiPercentStatsResponse;
+import com.server.backend.DTO.DashBoardDataResponse;
+import com.server.backend.DTO.ItiDetailResponse;
+import com.server.backend.DTO.ItiPercentStatsResponse;
 import com.server.backend.service.MasterData.MasterDataService;
 
 /**
@@ -21,6 +21,7 @@ import com.server.backend.service.MasterData.MasterDataService;
  *
  * Data comes from the placements-side schemas (public2 / see MasterDataServiceImpl).
  */
+@Tag(name = "Placements")
 @RestController
 @RequestMapping("/masterdata")
 public class MasterDataController {

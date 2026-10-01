@@ -9,41 +9,41 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.Reports.AdmissionReportDetailResponse;
-import com.server.backend.DTO.Reports.NotAdmittedStudentResponse;
-import com.server.backend.DTO.Reports.AdmissionReportResponse;
-import com.server.backend.DTO.Reports.AllResourceRoleResponse;
-import com.server.backend.DTO.Reports.ApiDashboardResponse;
-import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
-import com.server.backend.DTO.Reports.ApplicantCountDistrictResponse;
-import com.server.backend.DTO.Reports.ApplicantReportResponse;
-import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
-import com.server.backend.DTO.Reports.DistrictScheduleResponse;
-import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
-import com.server.backend.DTO.Reports.DscFullReportResponse;
-import com.server.backend.DTO.Reports.GovtPvtSeatsAbstractResponse;
-import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
-import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
-import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
-import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
-import com.server.backend.DTO.Reports.ShiftUnitResponse;
-import com.server.backend.DTO.Reports.StateDashboardResponse;
-import com.server.backend.DTO.Reports.StrengthFilledSeatsResponse;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.AdmissionDetail;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.AppliedIti;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.MeritListDetail;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.RegistrationDetail;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.SscMarksDetail;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse.VerifiedDetail;
-import com.server.backend.DTO.Reports.TodayScheduleResponse;
-import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
-import com.server.backend.DTO.Reports.TradeWiseReportResponse;
-import com.server.backend.DTO.Reports.TradeWiseVacantResponse;
-//import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
-import com.server.backend.DTO.Reports.VerifiedApplicationCountReportResponse;
-import com.server.backend.DTO.Reports.DscOptionsResponse;
-import com.server.backend.DTO.Reports.CurrentAdmissionPhaseResponse;
+import com.server.backend.DTO.AdmissionReportDetailResponse;
+import com.server.backend.DTO.NotAdmittedStudentResponse;
+import com.server.backend.DTO.AdmissionReportResponse;
+import com.server.backend.DTO.AllResourceRoleResponse;
+import com.server.backend.DTO.ApiDashboardResponse;
+import com.server.backend.DTO.ApplicantMobileAddressResponse;
+import com.server.backend.DTO.ApplicantCountDistrictResponse;
+import com.server.backend.DTO.ApplicantReportResponse;
+import com.server.backend.DTO.CasteWiseAdmissionsResponse;
+import com.server.backend.DTO.DistrictScheduleResponse;
+import com.server.backend.DTO.DistrictWiseApplicationCountResponse;
+import com.server.backend.DTO.DscFullReportResponse;
+import com.server.backend.DTO.GovtPvtSeatsAbstractResponse;
+import com.server.backend.DTO.ITIAdmissionsReportResponse;
+import com.server.backend.DTO.ItiWiseStatusResponse;
+import com.server.backend.DTO.OpenSeatsAbstractResponse;
+import com.server.backend.DTO.PhaseWiseReportResponse;
+import com.server.backend.DTO.ShiftUnitResponse;
+import com.server.backend.DTO.StateDashboardResponse;
+import com.server.backend.DTO.StrengthFilledSeatsResponse;
+import com.server.backend.DTO.StudentCompleteDetailsResponse;
+import com.server.backend.DTO.StudentCompleteDetailsResponse.AdmissionDetail;
+import com.server.backend.DTO.StudentCompleteDetailsResponse.AppliedIti;
+import com.server.backend.DTO.StudentCompleteDetailsResponse.MeritListDetail;
+import com.server.backend.DTO.StudentCompleteDetailsResponse.RegistrationDetail;
+import com.server.backend.DTO.StudentCompleteDetailsResponse.SscMarksDetail;
+import com.server.backend.DTO.StudentCompleteDetailsResponse.VerifiedDetail;
+import com.server.backend.DTO.TodayScheduleResponse;
+import com.server.backend.DTO.TradeDurationSeatsResponse;
+import com.server.backend.DTO.TradeWiseReportResponse;
+import com.server.backend.DTO.TradeWiseVacantResponse;
+//import com.server.backend.DTO.VerifiedApplicationCountResponse;
+import com.server.backend.DTO.VerifiedApplicationCountReportResponse;
+import com.server.backend.DTO.DscOptionsResponse;
+import com.server.backend.DTO.CurrentAdmissionPhaseResponse;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -54,10 +54,43 @@ public class ReportServiceImpl implements ReportService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Resolve the admission year the old Struts app always used:
+     * {@code SELECT value FROM iti_params WHERE code='7'}.
+     * Falls back to the supplied value, then calendar year, so reports never
+     * silently switch year in the Jan-Mar gap.
+     */
+    private String resolveAdmissionYear(String year) {
+        if (year != null && !year.isBlank()) {
+            return year.trim();
+        }
+        try {
+            String v = jdbcTemplate.queryForObject(
+                    "SELECT value FROM public.iti_params WHERE code='7'", String.class);
+            if (v != null && !v.isBlank()) {
+                return v.trim();
+            }
+        } catch (Exception ignored) {
+            // fall through to calendar year
+        }
+        return String.valueOf(Year.now().getValue());
+    }
+
+    /**
+     * Seat capacity helper — mirrors old
+     * {@code sum(value::dec) from iti_seatmatrix, each(strength)}.
+     * Sums every hstore entry so multi-key strength maps are not under-counted.
+     */
+    private static final String SEAT_SUM_EXPR =
+            "(SELECT COALESCE(SUM(value::numeric),0) FROM each(sm.strength))";
+
+    /** Filled seats helper — old code used COUNT(*) everywhere for abstracts. */
+    private static final String FILLED_COUNT_EXPR = "COUNT(*)";
+
     // 1. ITI Wise Status Report
     @Override
     public List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size) {
-        String effectiveYear = (year != null && !year.isEmpty()) ? year : String.valueOf(Year.now().getValue());
+        String effectiveYear = resolveAdmissionYear(year);
         
         StringBuilder sql = new StringBuilder("""
             WITH iti_data AS (
@@ -239,16 +272,16 @@ public class ReportServiceImpl implements ReportService {
             String itiSql = "SELECT iti_name FROM public.iti WHERE iti_code = ?";
             itiName = jdbcTemplate.queryForObject(itiSql, String.class, itiCode);
         } catch (Exception e) {
-            // keep itiCode as fallback
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         String tradeName = tradeCode;
         int totalStrength = 0;
         try {
-            String tradeSql = "SELECT trade_name FROM public.ititrade_master WHERE trade_code = ?";
-            tradeName = jdbcTemplate.queryForObject(tradeSql, String.class, Integer.parseInt(tradeCode));
+            String tradeSql = "SELECT trade_name FROM public.ititrade_master WHERE TRIM(trade_code::text) = TRIM(?::text)";
+            tradeName = jdbcTemplate.queryForObject(tradeSql, String.class, tradeCode);
         } catch (Exception e) {
-            // keep tradeCode as fallback
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         response.setMeta(new DscFullReportResponse.Meta(
@@ -849,9 +882,12 @@ public class ReportServiceImpl implements ReportService {
     }
 
     // 15. Trade Duration Seats Abstract
+    // Old: trade_duration comes in MONTHS (6/12/24), matched exactly against
+    // ititrade_master.durationyrs, and filled = COUNT(*) (see
+    // trade_seats_abstract_duration_wise_action.java).
     @Override
     public List<TradeDurationSeatsResponse> getTradeDurationSeats(String year, String durationMonths, String itiType) {
-        String durationyrs = String.valueOf(Integer.parseInt(durationMonths) / 12);
+        String durationyrs = mapDurationMonthsToYears(durationMonths);
         String sql = """
             WITH unique_iti AS (
                 SELECT DISTINCT ON (iti_code) iti_code, govt FROM public.iti
@@ -865,21 +901,21 @@ public class ReportServiceImpl implements ReportService {
                 JOIN unique_iti ui ON sm.iti_code = ui.iti_code
                 JOIN unique_trades ut ON sm.trade_code::text = ut.trade_code::text
                 WHERE sm.year::text = ?::text
-                  AND ut.durationyrs::text LIKE ? || '%'
-                  AND ui.govt = ?
+                  AND TRIM(ut.durationyrs::text) = TRIM(?::text)
+                  AND (? = 'All' OR ui.govt = ?)
             ),
             trade_seats AS (
                 SELECT trade_code, trade_name, SUM(strength_val) AS strength
                 FROM individual_seats GROUP BY trade_code, trade_name
             ),
             trade_filled AS (
-                SELECT a.trade_code, COUNT(DISTINCT a.adm_num) AS fill
+                SELECT a.trade_code, COUNT(*) AS fill
                 FROM admissions.iti_admissions a
                 JOIN unique_iti ui ON a.iti_code = ui.iti_code
                 JOIN unique_trades ut ON a.trade_code::text = ut.trade_code::text
                 WHERE a.year_of_admission::text = ?::text
-                  AND ut.durationyrs::text LIKE ? || '%'
-                  AND ui.govt = ?
+                  AND TRIM(ut.durationyrs::text) = TRIM(?::text)
+                  AND (? = 'All' OR ui.govt = ?)
                 GROUP BY a.trade_code
             )
             SELECT ts.trade_code, ts.trade_name, ts.strength,
@@ -899,7 +935,34 @@ public class ReportServiceImpl implements ReportService {
                 rs.getInt("fill"),
                 rs.getInt("vacant"),
                 rs.getDouble("fill_percentage")
-        ), year, durationyrs, itiType, year, durationyrs, itiType);
+        ), year, durationyrs, itiType, itiType, year, durationyrs, itiType, itiType);
+    }
+
+    /**
+     * Old form sends MONTHS (6/12/24/36/48) while ititrade_master.durationyrs
+     * stores YEARS. 6-month trades have no year row, so map 6->6 to keep the
+     * exact-match semantics (matches nothing unless master has '6'), never 0.
+     */
+    private static String mapDurationMonthsToYears(String durationMonths) {
+        if (durationMonths == null) {
+            throw new IllegalArgumentException("durationMonths is required");
+        }
+        String m = durationMonths.trim();
+        return switch (m) {
+            case "6" -> "6";
+            case "12" -> "1";
+            case "24" -> "2";
+            case "36" -> "3";
+            case "48" -> "4";
+            default -> {
+                try {
+                    int months = Integer.parseInt(m);
+                    yield months % 12 == 0 ? String.valueOf(months / 12) : m;
+                } catch (NumberFormatException e) {
+                    yield m;
+                }
+            }
+        };
     }
 
     // 16. Govt/Pvt District Wise Seats Abstract
@@ -1007,7 +1070,7 @@ public class ReportServiceImpl implements ReportService {
             String prefix = regid.substring(0, 2);
             detectedYear = Integer.parseInt("20" + prefix);
         } catch (Exception e) {
-            detectedYear = 2024;
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 1. Registration details
@@ -1087,7 +1150,7 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         } catch (Exception e) {
-            // Not found
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 2. SSC Marks
@@ -1108,7 +1171,7 @@ public class ReportServiceImpl implements ReportService {
                 ));
             }
         } catch (Exception e) {
-            // Not found
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
         }
 
         // 3. Applied ITIs
@@ -1136,8 +1199,8 @@ public class ReportServiceImpl implements ReportService {
                     ));
                 }
             } catch (Exception e) {
-                // Table might not exist, skip
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
         response.setAppliedItis(appliedList);
 
@@ -1178,8 +1241,8 @@ public class ReportServiceImpl implements ReportService {
                     ));
                 }
             } catch (Exception e) {
-                // Table might not exist, skip
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
         response.setMeritList(meritList);
 
@@ -1207,8 +1270,8 @@ public class ReportServiceImpl implements ReportService {
                     break;
                 }
             } catch (Exception e) {
-                // Not found
-            }
+            System.err.println("[ReportServiceImpl] Unexpected error: " + e.getMessage());
+        }
         }
 
         return response;
@@ -1649,6 +1712,135 @@ public class ReportServiceImpl implements ReportService {
                 rs.getTimestamp("entry_date") != null ? rs.getTimestamp("entry_date").toLocalDateTime() : null,
                 rs.getTimestamp("verified_date") != null ? rs.getTimestamp("verified_date").toLocalDateTime() : null
         ), params.toArray());
+    }
+
+    @Override
+    public long countItiWiseStatus(String year, String distCode, String itiCode) {
+        String effectiveYear = (year != null && !year.isEmpty()) ? year : String.valueOf(Year.now().getValue());
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d JOIN public.iti i ON d.dist_code = i.dist_code WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(d.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countApplicantReportByPhase(String phase, String year, String itiCode, String distCode) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.student_application sa LEFT JOIN public.iti i ON sa.user_id = i.iti_code WHERE sa.phase::text ILIKE '%\"' || ? || '\"=>\"true\"%'");
+        List<Object> params = new ArrayList<>();
+        params.add(phase);
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND sa.year::text = ?::text");
+            params.add(year);
+        }
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND i.iti_code = ?");
+            params.add(itiCode);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND i.dist_code = ?");
+            params.add(distCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countAdmissionReportDetails() {
+        String sql = "SELECT COUNT(*) FROM admissions.iti_admissions";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class);
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countApplicantMobileAddress(String year, String distCode) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.application a LEFT JOIN public.iti i ON a.user_id = i.iti_code LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND a.year::text = ?::text");
+            params.add(year);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode) && !distCode.isEmpty()) {
+            sql.append(" AND i.dist_code::text = ?::text");
+            params.add(distCode.trim());
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countDistrictSchedule(String distCode, String year) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.admission_timings a JOIN public.iti i ON a.iti_code = i.iti_code JOIN public.dist_mst d ON i.dist_code = d.dist_code LEFT JOIN public.ititrade_master tm ON a.minqul = tm.trade_code::text WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (year != null && !year.isEmpty()) {
+            sql.append(" AND a.year::text = ?::text");
+            params.add(year);
+        }
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(i.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countPermittedShiftUnit(String distCode, String itiCode) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM public.shift_unit_permitted sup JOIN public.iti i ON sup.iti_code::text = i.iti_code::text JOIN public.ititrade_master tm ON sup.trade_code::text = tm.trade_code::text WHERE TRIM(i.dist_code::text) = TRIM(?::text)");
+        List<Object> params = new ArrayList<>();
+        params.add(distCode);
+        if (itiCode != null && !"All".equalsIgnoreCase(itiCode) && !itiCode.isEmpty()) {
+            sql.append(" AND TRIM(i.iti_code::text) = TRIM(?::text)");
+            params.add(itiCode);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(DISTINCT a.adm_num) FROM admissions.iti_admissions a LEFT JOIN public.iti i ON TRIM(a.iti_code::text) = TRIM(i.iti_code::text) WHERE a.year_of_admission::text = ?::text");
+        List<Object> params = new ArrayList<>();
+        params.add(year);
+
+        if (distCode != null && !"All".equalsIgnoreCase(distCode)) {
+            sql.append(" AND TRIM(a.dist_code::text) = TRIM(?::text)");
+            params.add(distCode);
+        }
+        if (govt != null && !"All".equalsIgnoreCase(govt)) {
+            sql.append(" AND i.govt = ?");
+            params.add("Govt".equalsIgnoreCase(govt) ? "G" : "P");
+        }
+        if (caste != null && !"All".equalsIgnoreCase(caste)) {
+            sql.append(" AND TRIM(a.res_category) = ?");
+            params.add(caste);
+        }
+        if (gender != null && !"All".equalsIgnoreCase(gender)) {
+            String genderVal = gender.toUpperCase().startsWith("M") ? "M%" : "F%";
+            sql.append(" AND a.gender ILIKE ?");
+            params.add(genderVal);
+        }
+        if (ncvtScvt != null && !"All".equalsIgnoreCase(ncvtScvt)) {
+            String typeVal = ncvtScvt.toUpperCase().startsWith("N") ? "N" : "S";
+            sql.append(" AND TRIM(a.type_admission) = ?");
+            params.add(typeVal);
+        }
+        Long count = jdbcTemplate.queryForObject(sql.toString(), Long.class, params.toArray());
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public long countAllResourceRoles() {
+        String sql = "SELECT COUNT(*) FROM public.login_users lu LEFT JOIN public.role_mast rm ON lu.roleid = rm.role_id LEFT JOIN public.iti i ON lu.ins_code = i.iti_code LEFT JOIN public.dist_mst d ON i.dist_code = d.dist_code";
+        Long count = jdbcTemplate.queryForObject(sql, Long.class);
+        return count != null ? count : 0L;
     }
 
     @Override

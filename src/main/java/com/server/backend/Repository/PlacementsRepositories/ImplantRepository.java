@@ -1,5 +1,5 @@
 package com.server.backend.Repository.PlacementsRepositories;
-import com.server.backend.entity.Placements.ImplantEntity;
+import com.server.backend.entity.ImplantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

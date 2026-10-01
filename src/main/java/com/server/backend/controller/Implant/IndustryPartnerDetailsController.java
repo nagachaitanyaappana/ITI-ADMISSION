@@ -1,7 +1,7 @@
 package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Implant.IndustryPartnerDetailsRequest;
-import com.server.backend.DTO.Implant.IndustryPartnerDetailsResponse;
+import com.server.backend.DTO.IndustryPartnerDetailsRequest;
+import com.server.backend.DTO.IndustryPartnerDetailsResponse;
 import com.server.backend.service.Implant.IndustryPartnerDetailsExcelService;
 import com.server.backend.service.Implant.IndustryPartnerDetailsService;
 
@@ -17,12 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/implant/industry-partner-details")
-@Tag(
-        name = "Industry Partner Details",
-        description = "APIs for Industry Partner Details"
-)
 public class IndustryPartnerDetailsController {
 
     private final IndustryPartnerDetailsService service;

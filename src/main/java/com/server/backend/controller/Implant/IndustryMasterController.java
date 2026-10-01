@@ -1,14 +1,14 @@
 package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Implant.IndustryMasterRequest;
-import com.server.backend.DTO.Implant.IndustryMasterResponse;
+import com.server.backend.DTO.IndustryMasterRequest;
+import com.server.backend.DTO.IndustryMasterResponse;
 import com.server.backend.service.Implant.IndustryMasterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-@Tag(name="Industry Master Controller", description="Controller for managing industry master data")
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/implant/industry-master")
 public class IndustryMasterController {

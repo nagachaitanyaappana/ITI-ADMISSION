@@ -2,49 +2,52 @@ package com.server.backend.service.Reports;
 
 import java.util.List;
 
-import com.server.backend.DTO.Reports.AdmissionReportDetailResponse;
-import com.server.backend.DTO.Reports.NotAdmittedStudentResponse;
-import com.server.backend.DTO.Reports.AdmissionReportResponse;
-import com.server.backend.DTO.Reports.AllResourceRoleResponse;
-import com.server.backend.DTO.Reports.ApiDashboardResponse;
-import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
-import com.server.backend.DTO.Reports.ApplicantCountDistrictResponse;
-import com.server.backend.DTO.Reports.ApplicantReportResponse;
-import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
-import com.server.backend.DTO.Reports.DistrictScheduleResponse;
-import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
-import com.server.backend.DTO.Reports.DscFullReportResponse;
-import com.server.backend.DTO.Reports.GovtPvtSeatsAbstractResponse;
-import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
-import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
-import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
-import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
-import com.server.backend.DTO.Reports.ShiftUnitResponse;
-import com.server.backend.DTO.Reports.StateDashboardResponse;
-import com.server.backend.DTO.Reports.StrengthFilledSeatsResponse;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
-import com.server.backend.DTO.Reports.TodayScheduleResponse;
-import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
-import com.server.backend.DTO.Reports.TradeWiseReportResponse;
-import com.server.backend.DTO.Reports.TradeWiseVacantResponse;
-//import com.server.backend.DTO.Reports.VerifiedApplicationCountResponse;
-import com.server.backend.DTO.Reports.VerifiedApplicationCountReportResponse;
-import com.server.backend.DTO.Reports.DscOptionsResponse;
-import com.server.backend.DTO.Reports.CurrentAdmissionPhaseResponse;
+import com.server.backend.DTO.AdmissionReportDetailResponse;
+import com.server.backend.DTO.NotAdmittedStudentResponse;
+import com.server.backend.DTO.AdmissionReportResponse;
+import com.server.backend.DTO.AllResourceRoleResponse;
+import com.server.backend.DTO.ApiDashboardResponse;
+import com.server.backend.DTO.ApplicantMobileAddressResponse;
+import com.server.backend.DTO.ApplicantCountDistrictResponse;
+import com.server.backend.DTO.ApplicantReportResponse;
+import com.server.backend.DTO.CasteWiseAdmissionsResponse;
+import com.server.backend.DTO.DistrictScheduleResponse;
+import com.server.backend.DTO.DistrictWiseApplicationCountResponse;
+import com.server.backend.DTO.DscFullReportResponse;
+import com.server.backend.DTO.GovtPvtSeatsAbstractResponse;
+import com.server.backend.DTO.ITIAdmissionsReportResponse;
+import com.server.backend.DTO.ItiWiseStatusResponse;
+import com.server.backend.DTO.OpenSeatsAbstractResponse;
+import com.server.backend.DTO.PhaseWiseReportResponse;
+import com.server.backend.DTO.ShiftUnitResponse;
+import com.server.backend.DTO.StateDashboardResponse;
+import com.server.backend.DTO.StrengthFilledSeatsResponse;
+import com.server.backend.DTO.StudentCompleteDetailsResponse;
+import com.server.backend.DTO.TodayScheduleResponse;
+import com.server.backend.DTO.TradeDurationSeatsResponse;
+import com.server.backend.DTO.TradeWiseReportResponse;
+import com.server.backend.DTO.TradeWiseVacantResponse;
+//import com.server.backend.DTO.VerifiedApplicationCountResponse;
+import com.server.backend.DTO.VerifiedApplicationCountReportResponse;
+import com.server.backend.DTO.DscOptionsResponse;
+import com.server.backend.DTO.CurrentAdmissionPhaseResponse;
 
 public interface ReportService {
 
     // 1. ITI Wise Status Report
     List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size);
+    long countItiWiseStatus(String year, String distCode, String itiCode);
 
     // 2. Applicant Report by Phase
     List<ApplicantReportResponse> getApplicantReportByPhase(String phase, String year, String itiCode, String distCode, int page, int size);
+    long countApplicantReportByPhase(String phase, String year, String itiCode, String distCode);
 
     // 3. Admission Report (Trade wise - for role 1 / state level)
     List<AdmissionReportResponse> getAdmissionReport(String year, String caste, String pwd);
 
     // 3a. Admission Report (ITI - candidate detail for role 4)
     List<AdmissionReportDetailResponse> getAdmissionReportDetails(int page, int size);
+    long countAdmissionReportDetails();
 
     // 4. DSC Full Report
     DscFullReportResponse getDscFullReport(String distCode, String itiCode, String tradeCode, String phase, String year, String modeAdm);
@@ -60,6 +63,7 @@ public interface ReportService {
 
     // 6. Applicant Address With Mobile
     List<ApplicantMobileAddressResponse> getApplicantMobileAddress(String year, String distCode, int page, int size);
+    long countApplicantMobileAddress(String year, String distCode);
 
     // 7. API Dashboard (District - ITI level)
     List<ApiDashboardResponse> getApiDashboard(String year, String distCode);
@@ -99,15 +103,19 @@ public interface ReportService {
 
     // 19. District Schedule
     List<DistrictScheduleResponse> getDistrictSchedule(String distCode, String year, int page, int size);
+    long countDistrictSchedule(String distCode, String year);
 
     // 20. Permitted Shift Unit Report
     List<ShiftUnitResponse> getPermittedShiftUnit(String distCode, String itiCode, int page, int size);
+    long countPermittedShiftUnit(String distCode, String itiCode);
 
     // 21. ITI Admissions Report
     List<ITIAdmissionsReportResponse> getITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt, int page, int size);
+    long countITIAdmissionsReport(String year, String distCode, String govt, String caste, String gender, String ncvtScvt);
 
     // 22. All Resource Role
     List<AllResourceRoleResponse> getAllResourceRoles(int page, int size);
+    long countAllResourceRoles();
 
     // 23. DistWise Strength+Filled Seats Abstract
     List<StrengthFilledSeatsResponse> getStrengthFilledSeatsAbstract(String year, String distCode);

@@ -1,8 +1,10 @@
 package com.server.backend.service.Implant;
 
-import com.server.backend.DTO.Implant.IndustryMasterRequest;
-import com.server.backend.DTO.Implant.IndustryMasterResponse;
-import com.server.backend.entity.Placements.IndustryMaster;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.server.backend.DTO.IndustryMasterRequest;
+import com.server.backend.DTO.IndustryMasterResponse;
+import com.server.backend.entity.IndustryMaster;
 import com.server.backend.Repository.PlacementsRepositories.IndustryMasterRepository;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
@@ -18,6 +20,7 @@ public class IndustryMasterServiceImpl implements IndustryMasterService {
     }
 
     @Override
+    @Transactional
     public IndustryMasterResponse createIndustry(
             IndustryMasterRequest request) {
 
@@ -75,6 +78,7 @@ public IndustryMasterResponse getIndustryById(Long industryId) {
     );
 }
 @Override
+    @Transactional
 public IndustryMasterResponse updateIndustry(
         Long industryId,
         IndustryMasterRequest request) {
@@ -107,6 +111,7 @@ public IndustryMasterResponse updateIndustry(
     );
 }
 @Override
+    @Transactional
 public void deleteIndustry(Long industryId) {
 
     IndustryMaster industry = repository.findById(industryId)

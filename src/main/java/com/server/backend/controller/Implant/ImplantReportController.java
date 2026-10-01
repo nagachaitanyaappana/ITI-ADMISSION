@@ -1,11 +1,13 @@
   package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Industries.ImplantIndustryResponse;
+import com.server.backend.DTO.ImplantIndustryResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.service.Implant.ImplantReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/implant-report")
 public class ImplantReportController {

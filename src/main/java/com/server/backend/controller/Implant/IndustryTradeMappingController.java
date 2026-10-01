@@ -1,7 +1,7 @@
 package com.server.backend.controller.Implant;
 
-import com.server.backend.DTO.Implant.IndustryTradeMappingRequest;
-import com.server.backend.DTO.Implant.IndustryTradeMappingResponse;
+import com.server.backend.DTO.IndustryTradeMappingRequest;
+import com.server.backend.DTO.IndustryTradeMappingResponse;
 import com.server.backend.service.Implant.IndustryTradeMappingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,12 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.lang.Long;
 import java.util.List;
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/placements/industry-trade-mapping")
-@Tag(
-    name = "Industry Trade Mapping Controller",
-    description = "APIs for mapping industries with trades for an ITI"
-)
 public class IndustryTradeMappingController {
 
     private final IndustryTradeMappingService mappingService;

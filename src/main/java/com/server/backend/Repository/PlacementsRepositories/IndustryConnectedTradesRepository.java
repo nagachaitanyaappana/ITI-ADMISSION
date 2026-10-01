@@ -1,6 +1,6 @@
 package com.server.backend.Repository.PlacementsRepositories;
 
-import com.server.backend.DTO.Industries.IndustryConnectedTradesDTO;
+import com.server.backend.DTO.IndustryConnectedTradesDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

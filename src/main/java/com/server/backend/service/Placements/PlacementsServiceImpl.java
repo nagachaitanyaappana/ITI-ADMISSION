@@ -6,9 +6,9 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.server.backend.DTO.Placements.PlacementsDistinctItiResponse;
-import com.server.backend.DTO.Placements.PlacementsGroupedResponse;
-import com.server.backend.DTO.Placements.PlacementsOverviewResponse;
+import com.server.backend.DTO.PlacementsDistinctItiResponse;
+import com.server.backend.DTO.PlacementsGroupedResponse;
+import com.server.backend.DTO.PlacementsOverviewResponse;
 
 @Service
 public class PlacementsServiceImpl implements PlacementsService {
@@ -487,7 +487,9 @@ public class PlacementsServiceImpl implements PlacementsService {
 
         Integer scheduleDbId = null;
         if (scheduleId != null && !scheduleId.isBlank()) {
-            try { scheduleDbId = Integer.valueOf(scheduleId); } catch (NumberFormatException ignored) { }
+            try { scheduleDbId = Integer.valueOf(scheduleId); } catch (NumberFormatException e) {
+            System.err.println("[PlacementsServiceImpl] Failed to parse scheduleId: " + e.getMessage());
+        }
         }
 
         Integer pid = jdbcTemplate.queryForObject("SELECT nextval('placements.placements_id_seq')", Integer.class);

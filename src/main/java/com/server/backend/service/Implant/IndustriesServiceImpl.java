@@ -1,9 +1,9 @@
 package com.server.backend.service.Implant;
 
-import com.server.backend.DTO.Implant.IndustryDropdownResponse;
-import com.server.backend.DTO.Implant.TradeResponse;
+import com.server.backend.DTO.IndustryDropdownResponse;
+import com.server.backend.DTO.TradeResponse;
 import com.server.backend.Repository.PlacementsRepositories.IndustriesRepository;
-import com.server.backend.entity.Placements.Industries;
+import com.server.backend.entity.Industries;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

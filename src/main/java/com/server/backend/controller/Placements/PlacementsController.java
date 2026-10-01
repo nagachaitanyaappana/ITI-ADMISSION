@@ -1,6 +1,7 @@
 package com.server.backend.controller.Placements;
 
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,13 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.Placements.PlacementsDistinctItiResponse;
-import com.server.backend.DTO.Placements.PlacementsGroupedResponse;
-import com.server.backend.DTO.Placements.PlacementsOverviewResponse;
+import com.server.backend.DTO.PlacementsDistinctItiResponse;
+import com.server.backend.DTO.PlacementsGroupedResponse;
+import com.server.backend.DTO.PlacementsOverviewResponse;
 import com.server.backend.service.Placements.PlacementsService;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Placements")
 @RestController
 @RequestMapping("/api/placements")
 public class PlacementsController {

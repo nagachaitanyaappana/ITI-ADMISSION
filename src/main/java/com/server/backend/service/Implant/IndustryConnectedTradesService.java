@@ -1,6 +1,6 @@
 package com.server.backend.service.Implant;
 
-import com.server.backend.DTO.Industries.IndustryConnectedTradesDTO;
+import com.server.backend.DTO.IndustryConnectedTradesDTO;
 
 import java.util.List;
 

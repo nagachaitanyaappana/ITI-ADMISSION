@@ -1,5 +1,5 @@
 package com.server.backend.Repository.PlacementsRepositories;
-import com.server.backend.entity.Placements.Industries;
+import com.server.backend.entity.Industries;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 

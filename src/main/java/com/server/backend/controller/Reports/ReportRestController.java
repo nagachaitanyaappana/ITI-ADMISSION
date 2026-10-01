@@ -7,46 +7,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.server.backend.DTO.Reports.AdmissionReportDetailResponse;
-import com.server.backend.DTO.Reports.AdmissionReportResponse;
-import com.server.backend.DTO.Reports.AllResourceRoleResponse;
-import com.server.backend.DTO.Reports.ApiDashboardResponse;
-import com.server.backend.DTO.Reports.ApiListResponse;
-import com.server.backend.DTO.Reports.ApplicantMobileAddressResponse;
-import com.server.backend.DTO.Reports.ApplicantCountDistrictResponse;
-import com.server.backend.DTO.Reports.ApplicantReportResponse;
-import com.server.backend.DTO.Reports.CasteWiseAdmissionsResponse;
-import com.server.backend.DTO.Reports.DistrictOptionResponse;
-import com.server.backend.DTO.Reports.DistrictScheduleResponse;
-import com.server.backend.DTO.Reports.DistrictWiseApplicationCountResponse;
-import com.server.backend.DTO.Reports.DscFullReportResponse;
-import com.server.backend.DTO.Reports.GovtPvtSeatsAbstractResponse;
-import com.server.backend.DTO.Reports.ITIAdmissionsReportResponse;
-import com.server.backend.DTO.Reports.ItiWiseStatusResponse;
-import com.server.backend.DTO.Reports.OpenSeatsAbstractResponse;
-import com.server.backend.DTO.Reports.PhaseWiseReportResponse;
-import com.server.backend.DTO.Reports.ShiftUnitResponse;
-import com.server.backend.DTO.Reports.StateDashboardResponse;
-import com.server.backend.DTO.Reports.StrengthFilledSeatsResponse;
-import com.server.backend.DTO.Reports.StudentCompleteDetailsResponse;
-import com.server.backend.DTO.Reports.TodayScheduleResponse;
-import com.server.backend.DTO.Reports.TradeDurationSeatsResponse;
-import com.server.backend.DTO.Reports.TradeWiseReportResponse;
-import com.server.backend.DTO.Reports.TradeWiseVacantResponse;
-import com.server.backend.DTO.Reports.VerifiedApplicationCountReportResponse;
-import com.server.backend.DTO.Reports.ItiListResponse;
-import com.server.backend.DTO.Reports.NotAdmittedStudentResponse;
-import com.server.backend.DTO.Reports.ItiTradeDisplayResponse;
-import com.server.backend.DTO.Reports.DscOptionsResponse;
-import com.server.backend.DTO.Reports.CurrentAdmissionPhaseResponse;
-import com.server.backend.DTO.Reports.TradeDisplayReportRequest;
+import com.server.backend.DTO.AdmissionReportDetailResponse;
+import com.server.backend.DTO.AdmissionReportResponse;
+import com.server.backend.DTO.AllResourceRoleResponse;
+import com.server.backend.DTO.ApiDashboardResponse;
+import com.server.backend.DTO.ApiListResponse;
+import com.server.backend.DTO.PagedResponse;
+import com.server.backend.DTO.ApplicantMobileAddressResponse;
+import com.server.backend.DTO.ApplicantCountDistrictResponse;
+import com.server.backend.DTO.ApplicantReportResponse;
+import com.server.backend.DTO.CasteWiseAdmissionsResponse;
+import com.server.backend.DTO.DistrictOptionResponse;
+import com.server.backend.DTO.DistrictScheduleResponse;
+import com.server.backend.DTO.DistrictWiseApplicationCountResponse;
+import com.server.backend.DTO.DscFullReportResponse;
+import com.server.backend.DTO.GovtPvtSeatsAbstractResponse;
+import com.server.backend.DTO.ITIAdmissionsReportResponse;
+import com.server.backend.DTO.ItiWiseStatusResponse;
+import com.server.backend.DTO.OpenSeatsAbstractResponse;
+import com.server.backend.DTO.PhaseWiseReportResponse;
+import com.server.backend.DTO.ShiftUnitResponse;
+import com.server.backend.DTO.StateDashboardResponse;
+import com.server.backend.DTO.StrengthFilledSeatsResponse;
+import com.server.backend.DTO.StudentCompleteDetailsResponse;
+import com.server.backend.DTO.TodayScheduleResponse;
+import com.server.backend.DTO.TradeDurationSeatsResponse;
+import com.server.backend.DTO.TradeWiseReportResponse;
+import com.server.backend.DTO.TradeWiseVacantResponse;
+import com.server.backend.DTO.VerifiedApplicationCountReportResponse;
+import com.server.backend.DTO.ItiListResponse;
+import com.server.backend.DTO.NotAdmittedStudentResponse;
+import com.server.backend.DTO.DscOptionsResponse;
+import com.server.backend.DTO.CurrentAdmissionPhaseResponse;
+import com.server.backend.DTO.ItiTradeDisplayResponse;
 import com.server.backend.service.Reports.ReportService;
 import com.server.backend.service.Reports.TradeDisplayReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "reports", description = "REST APIs for generating various reports including admissions, applicants, trade-wise analysis, and district-wise statistics")
+@Tag(name = "Reports")
 @RestController
 @RequestMapping("/api/reports")
 public class ReportRestController {
@@ -62,28 +62,30 @@ public class ReportRestController {
     // ========== 1 - API Dashboard (ITI) ==========
     @Operation(summary = "1 - API Dashboard (ITI)")
     @GetMapping("/iti-wise-status")
-    public ApiListResponse<ItiWiseStatusResponse> getItiWiseStatus(
+    public org.springframework.http.ResponseEntity<PagedResponse<ItiWiseStatusResponse>> getItiWiseStatus(
             @RequestParam(required = false) String year,
             @RequestParam(required = false, defaultValue = "All") String distCode,
             @RequestParam(required = false, defaultValue = "All") String itiCode,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getItiWiseStatus(year, distCode, itiCode, page, safeSize));
+            @RequestParam(defaultValue = "100") int size) {
+        java.util.List<ItiWiseStatusResponse> data = reportService.getItiWiseStatus(year, distCode, itiCode, page, size);
+        long count = reportService.countItiWiseStatus(year, distCode, itiCode);
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 2 - Applicant Report ==========
     @Operation(summary = "2 - Applicant Report")
     @GetMapping("/applicant-report-by-phase")
-    public ApiListResponse<ApplicantReportResponse> getApplicantReportByPhase(
+    public org.springframework.http.ResponseEntity<PagedResponse<ApplicantReportResponse>> getApplicantReportByPhase(
             @RequestParam String phase,
             @RequestParam(required = false) String year,
             @RequestParam(required = false, defaultValue = "All") String itiCode,
             @RequestParam(required = false, defaultValue = "All") String distCode,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getApplicantReportByPhase(phase, year, itiCode, distCode, page, safeSize));
+            @RequestParam(defaultValue = "100") int size) {
+        java.util.List<ApplicantReportResponse> data = reportService.getApplicantReportByPhase(phase, year, itiCode, distCode, page, size);
+        long count = reportService.countApplicantReportByPhase(phase, year, itiCode, distCode);
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 2a - Current Admission Phase ==========
@@ -96,11 +98,12 @@ public class ReportRestController {
     // ========== 3 - Admission Report (ITI) ==========
     @Operation(summary = "3 - Admission Report (ITI)")
     @GetMapping("/admission-report-iti")
-    public ApiListResponse<AdmissionReportDetailResponse> getAdmissionReportIti(
+    public org.springframework.http.ResponseEntity<PagedResponse<AdmissionReportDetailResponse>> getAdmissionReportIti(
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "500") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getAdmissionReportDetails(page, safeSize));
+            @RequestParam(defaultValue = "200") int size) {
+        java.util.List<AdmissionReportDetailResponse> data = reportService.getAdmissionReportDetails(page, size);
+        long count = reportService.countAdmissionReportDetails();
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 4 - DSC List ==========
@@ -149,13 +152,14 @@ public class ReportRestController {
     // ========== 6 - Applicant Address With Mobile ==========
     @Operation(summary = "6 - Applicant Address With Mobile")
     @GetMapping("/applicant-mobile-address")
-    public ApiListResponse<ApplicantMobileAddressResponse> getApplicantMobileAddress(
+    public org.springframework.http.ResponseEntity<PagedResponse<ApplicantMobileAddressResponse>> getApplicantMobileAddress(
             @RequestParam(required = false) String year,
             @RequestParam(required = false, defaultValue = "All") String distCode,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getApplicantMobileAddress(year, distCode, page, safeSize));
+            @RequestParam(defaultValue = "100") int size) {
+        java.util.List<ApplicantMobileAddressResponse> data = reportService.getApplicantMobileAddress(year, distCode, page, size);
+        long count = reportService.countApplicantMobileAddress(year, distCode);
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 7 - API Dashboard (District) ==========
@@ -268,31 +272,33 @@ public class ReportRestController {
     // ========== 19 - District Schedule ==========
     @Operation(summary = "19 - District Schedule")
     @GetMapping("/district-schedule")
-    public ApiListResponse<DistrictScheduleResponse> getDistrictSchedule(
+    public org.springframework.http.ResponseEntity<PagedResponse<DistrictScheduleResponse>> getDistrictSchedule(
             @RequestParam(required = false, defaultValue = "All") String distCode,
             @RequestParam(required = false, defaultValue = "2025") String year,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getDistrictSchedule(distCode, year, page, safeSize));
+            @RequestParam(defaultValue = "100") int size) {
+        java.util.List<DistrictScheduleResponse> data = reportService.getDistrictSchedule(distCode, year, page, size);
+        long count = reportService.countDistrictSchedule(distCode, year);
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 20 - Shift Unit Report ==========
     @Operation(summary = "20 - Shift Unit Report")
     @GetMapping("/permitted-shift-unit")
-    public ApiListResponse<ShiftUnitResponse> getPermittedShiftUnit(
+    public org.springframework.http.ResponseEntity<PagedResponse<ShiftUnitResponse>> getPermittedShiftUnit(
             @RequestParam String distCode,
             @RequestParam(required = false, defaultValue = "All") String itiCode,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getPermittedShiftUnit(distCode, itiCode, page, safeSize));
+            @RequestParam(defaultValue = "100") int size) {
+        java.util.List<ShiftUnitResponse> data = reportService.getPermittedShiftUnit(distCode, itiCode, page, size);
+        long count = reportService.countPermittedShiftUnit(distCode, itiCode);
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 21 - Admitted Seats Abstract ==========
     @Operation(summary = "21 - Admitted Seats Abstract")
     @GetMapping("/iti-admissions")
-    public ApiListResponse<ITIAdmissionsReportResponse> getITIAdmissionsReport(
+    public org.springframework.http.ResponseEntity<PagedResponse<ITIAdmissionsReportResponse>> getITIAdmissionsReport(
             @RequestParam String year,
             @RequestParam(required = false, defaultValue = "All") String distCode,
             @RequestParam(required = false, defaultValue = "All") String govt,
@@ -300,19 +306,21 @@ public class ReportRestController {
             @RequestParam(required = false, defaultValue = "All") String gender,
             @RequestParam(required = false, defaultValue = "All") String ncvtScvt,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getITIAdmissionsReport(year, distCode, govt, caste, gender, ncvtScvt, page, safeSize));
+            @RequestParam(defaultValue = "100") int size) {
+        java.util.List<ITIAdmissionsReportResponse> data = reportService.getITIAdmissionsReport(year, distCode, govt, caste, gender, ncvtScvt, page, size);
+        long count = reportService.countITIAdmissionsReport(year, distCode, govt, caste, gender, ncvtScvt);
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 22 - All Resource Role ==========
     @Operation(summary = "22 - All Resource Role")
     @GetMapping("/all-resource-roles")
-    public ApiListResponse<AllResourceRoleResponse> getAllResourceRoles(
+    public org.springframework.http.ResponseEntity<PagedResponse<AllResourceRoleResponse>> getAllResourceRoles(
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "100") int size) {
-        int safeSize = Math.min(size, 10000);
-        return new ApiListResponse<>(reportService.getAllResourceRoles(page, safeSize));
+            @RequestParam(defaultValue = "100") int size) {
+        java.util.List<AllResourceRoleResponse> data = reportService.getAllResourceRoles(page, size);
+        long count = reportService.countAllResourceRoles();
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(data, page, size, count));
     }
 
     // ========== 23 - DistWise Admitted Seats Abstract ==========
@@ -356,10 +364,7 @@ public class ReportRestController {
     public ApiListResponse<ItiTradeDisplayResponse> getTradeDisplayReport(
             @RequestParam String dist,
             @RequestParam(required = false) String type) {
-        TradeDisplayReportRequest request = new TradeDisplayReportRequest();
-        request.setDist(dist);
-        request.setType(type);
-        return new ApiListResponse<>(tradeDisplayReportService.getTradeDisplayReport(request));
+        return new ApiListResponse<>(tradeDisplayReportService.getTradeDisplayReport(dist, type));
     }
 
     @Operation(summary = "ITI List - All ITIs filtered by type")
@@ -378,16 +383,13 @@ public class ReportRestController {
 
     @Operation(summary = "27 - Students Not Admitted (registered but no admission record)")
     @GetMapping("/students-not-admitted")
-    public ApiListResponse<NotAdmittedStudentResponse> getStudentsNotAdmitted(
+    public org.springframework.http.ResponseEntity<PagedResponse<NotAdmittedStudentResponse>> getStudentsNotAdmitted(
             @RequestParam String year,
             @RequestParam(required = false) Integer phase,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "500") int size) {
-        int safeSize = Math.min(size, 5000);
-        List<NotAdmittedStudentResponse> rows =
-                reportService.getStudentsNotAdmitted(year, phase, page, safeSize);
-        ApiListResponse<NotAdmittedStudentResponse> response = new ApiListResponse<>(rows);
-        response.setCount((int) reportService.countStudentsNotAdmitted(year, phase));
-        return response;
+            @RequestParam(defaultValue = "200") int size) {
+        java.util.List<NotAdmittedStudentResponse> rows = reportService.getStudentsNotAdmitted(year, phase, page, size);
+        long count = reportService.countStudentsNotAdmitted(year, phase);
+        return org.springframework.http.ResponseEntity.ok(new PagedResponse<>(rows, page, size, count));
     }
 }

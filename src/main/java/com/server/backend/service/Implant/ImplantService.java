@@ -1,11 +1,11 @@
 package com.server.backend.service.Implant;
-import com.server.backend.DTO.Implant.ImplantCreateRequest;
-import com.server.backend.DTO.Implant.IndustryMappingRequest;
-import com.server.backend.DTO.Implant.ImplantResponse;
-import com.server.backend.DTO.Implant.InplantDashboardResponse;
+import com.server.backend.DTO.ImplantCreateRequest;
+import com.server.backend.DTO.IndustryMappingRequest;
+import com.server.backend.DTO.ImplantResponse;
+import com.server.backend.DTO.InplantDashboardResponse;
 import java.util.List;
 import java.util.Map;
-import com.server.backend.DTO.Implant.ImplantReportResponse;
+import com.server.backend.DTO.ImplantReportResponse;
 public interface ImplantService {
     InplantDashboardResponse getInplantDashboardDetails();
     ImplantResponse createImplant(ImplantCreateRequest request);

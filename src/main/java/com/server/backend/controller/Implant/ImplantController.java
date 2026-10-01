@@ -2,7 +2,7 @@ package com.server.backend.controller.Implant;
 
 import java.util.Map;
 import java.util.List;
-import com.server.backend.DTO.Implant.ImplantReportResponse;
+import com.server.backend.DTO.ImplantReportResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import com.server.backend.DTO.Implant.ImplantCreateRequest;
-import com.server.backend.DTO.Implant.ImplantResponse;
-import com.server.backend.DTO.Implant.InplantDashboardResponse;
-import com.server.backend.DTO.Implant.IndustryMappingRequest;
+import com.server.backend.DTO.ImplantCreateRequest;
+import com.server.backend.DTO.ImplantResponse;
+import com.server.backend.DTO.InplantDashboardResponse;
+import com.server.backend.DTO.IndustryMappingRequest;
 import com.server.backend.service.Implant.ImplantService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Implant", description = "Implant management APIs")
+@Tag(name = "Implant")
 @RestController
 @RequestMapping("/api/implant")
 public class ImplantController {
@@ -50,14 +50,6 @@ public class ImplantController {
             return "P";
         }
         return null;
-    }
-
-    @GetMapping("/overviewdetails")
-    public ResponseEntity<InplantDashboardResponse> overviewdetails() {
-
-        return ResponseEntity.ok(
-                implantService.getInplantDashboardDetails()
-        );
     }
 
     @GetMapping("/inplantDashboardDetails")
