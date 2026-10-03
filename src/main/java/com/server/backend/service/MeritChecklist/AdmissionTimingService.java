@@ -211,7 +211,7 @@ public Map<String, Object> createScheduleEntry(CreateEntryRequest req, CurrentUs
     response.put("success", true);
     response.put("message", "Schedule entry created successfully");
     response.put("data", schedulePayload(useDist, useDist ? user.distCode() : user.itiCode(),
-        phase, year, tempPk, calDate, calTime, 0, 0, caste, quality));
+        phase, year, tempPk, calDate, calTime, 0, 0, caste, quality, entityName));
     response.put("dist_name", useDist ? entityName : null);
     response.put("iti_name", useDist ? null : entityName);
 
@@ -278,7 +278,7 @@ public Map<String, Object> addScheduleTimings(UpdateTimingsRequest req, CurrentU
     response.put("success", true);
     response.put("message", "Schedule timings updated successfully");
     response.put("data", schedulePayload(useDist, entityValue, phase, year, tempPk, requestedDate,
-        requestedTime, req.meritFrom(), req.meritTo(), caste, quality));
+        requestedTime, req.meritFrom(), req.meritTo(), caste, quality, entityName));
     response.put("dist_name", useDist ? entityName : null);
     response.put("iti_name", useDist ? null : entityName);
 
@@ -289,10 +289,17 @@ public Map<String, Object> addScheduleTimings(UpdateTimingsRequest req, CurrentU
  * Re-reads the row Step 2 wrote and shapes it like the entity used to serialise, so the JSP keeps
  * receiving the same {@code data} object it did before ({@code minqul}, {@code reservation},
  * {@code phase}, ...) without any entity hydration.
+ *
+ * <p>{@code dist_name} / {@code iti_name} are repeated inside {@code data} because the page renders
+ * the entity name from {@code result.data.dist_name || result.data.iti_name}
+ * ({@code checkmeritschedule/ScheduleEntry.jsp}, {@code showTimingForm}) -- reading them from the
+ * top level alone left both undefined there and the label fell through to a stale localStorage
+ * value. Only one of the two is populated, matching the top-level keys, which are kept because that
+ * is the shape the API has always returned.
  */
 private Map<String, Object> schedulePayload(boolean useDist, String code, String phase, String year,
         String tempPk, LocalDate calDate, LocalTime calTime, Integer meritFrom, Integer meritTo,
-        String caste, String minqul) {
+        String caste, String minqul, String entityName) {
     List<Object[]> rows = admissionTimingRepository.findRowByTempPk(useDist, code, phase, year, tempPk);
     Object[] row = rows.isEmpty() ? new Object[] { tempPk, calDate, meritFrom, meritTo, calTime }
                                  : rows.get(0);
@@ -312,6 +319,8 @@ private Map<String, Object> schedulePayload(boolean useDist, String code, String
     payload.put("meritTo", row[3]);
     payload.put("calDate", storedDate == null ? null : storedDate.format(dateWriter));
     payload.put("calTime", asLocalTime(row[4]) != null ? asLocalTime(row[4]) : calTime);
+    payload.put("dist_name", useDist ? entityName : null);
+    payload.put("iti_name", useDist ? null : entityName);
     return payload;
 }
 
