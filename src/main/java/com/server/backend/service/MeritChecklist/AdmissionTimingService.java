@@ -75,13 +75,37 @@ public class AdmissionTimingService {
         throw new IllegalArgumentException("No current phase found for year " + year);
     }
 
+    /**
+     * Resolves a date that the caller has already validated as present. Used by Step 2, where a
+     * scheduled session genuinely needs its date.
+     */
     private LocalDate resolveDate(String value) {
-        // A blank date used to fall back to LocalDate.now(), so submitting the schedule form
-        // with an empty date silently created a schedule starting today.
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("Date is required");
         }
+        return parseDate(value);
+    }
 
+    /**
+     * Resolves a date that may legitimately be absent, returning {@code null} for a blank value.
+     *
+     * <p>Used by Step 1 (schedule initialisation). That step only defines a scope -- category and
+     * qualification -- and its date field lives in Step 2, which the JSP only reveals once Step 1
+     * succeeds. Requiring the date here deadlocked the wizard: the field could not be filled in
+     * until the request that demanded it had already succeeded. Step 2 overwrites the null with the
+     * date the user actually types, so a placeholder row is created now and dated later.
+     *
+     * <p>{@code admission_timings.cal_date} is nullable, so the stored null is safe.
+     */
+    private LocalDate resolveOptionalDate(String value) {
+        if (value == null || value.isBlank()) {
+            logger.debug("resolveOptionalDate: input is null or blank, leaving the date unset");
+            return null;
+        }
+        return parseDate(value);
+    }
+
+    private LocalDate parseDate(String value) {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException ex) {
@@ -172,7 +196,7 @@ public Map<String, Object> createScheduleEntry(CreateEntryRequest req, CurrentUs
     timing.setCaste(caste);
     timing.setMeritFrom(0);
     timing.setMeritTo(0);
-    timing.setCalDate(resolveDate(req.calDate()));
+    timing.setCalDate(resolveOptionalDate(req.calDate()));
     timing.setCalTime(resolveTime(req.calTime()));
     timing.setPhase(phase);
     timing.setYear(year);

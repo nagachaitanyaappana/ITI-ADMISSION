@@ -102,6 +102,16 @@ public AdmissionTiming createAdmissionTiming(@RequestBody AdmissionTiming admiss
     /**
      * Builds the calling user from request headers. Fails loudly when no institution code is
      * present, instead of silently writing a schedule against a placeholder ITI.
+     *
+     * <p>{@code login_users.ins_code} is a single column holding either a district code or an ITI
+     * code depending on the role, and the page sends it once as {@code X-Ins-Code} via
+     * {@code scopeHeaders()}. The role therefore decides which field it belongs in. The explicit
+     * {@code X-Iti-Code} / {@code X-Dist-Code} headers still win when supplied, matching
+     * {@code MeritListController.resolveUser}.
+     *
+     * <p>Previously this passed {@code insCode} through without placing it in either field, so the
+     * schedule row was saved with {@code iti_code} and {@code dist_code} both null and Step 2 could
+     * never find the placeholder it had just created.
      */
     private CurrentUser currentUser(String itiCode, String distCode, String insCode, String roleId) {
         if (isBlank(insCode) && isBlank(itiCode) && isBlank(distCode)) {
@@ -109,8 +119,23 @@ public AdmissionTiming createAdmissionTiming(@RequestBody AdmissionTiming admiss
                     "Missing institution code: send X-Ins-Code (or X-Iti-Code / X-Dist-Code)"
                             + " to create or view a schedule");
         }
-        String ins = !isBlank(insCode) ? insCode : (!isBlank(distCode) ? distCode : itiCode);
-        return new CurrentUser(itiCode, distCode, ins, isBlank(roleId) ? "3" : roleId);
+        String role = isBlank(roleId) ? "3" : roleId.trim();
+        String ins = !isBlank(insCode) ? insCode.trim() : (!isBlank(distCode) ? distCode.trim() : itiCode.trim());
+
+        String resolvedIti = isBlank(itiCode) ? null : itiCode.trim();
+        String resolvedDist = isBlank(distCode) ? null : distCode.trim();
+
+        if ("3".equals(role)) {
+            // District login: the institution code is the district.
+            if (resolvedDist == null) {
+                resolvedDist = ins;
+            }
+        } else if (resolvedIti == null) {
+            // ITI login (and any other role): the institution code is the ITI.
+            resolvedIti = ins;
+        }
+
+        return new CurrentUser(resolvedIti, resolvedDist, ins, role);
     }
 
     private static boolean isBlank(String value) {
