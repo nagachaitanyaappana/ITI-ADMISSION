@@ -187,6 +187,9 @@ public Map<String, Object> createScheduleEntry(CreateEntryRequest req, CurrentUs
     String caste = req.reservation() != null ? req.reservation() : "all";
     String quality = req.minqul() != null ? req.minqul() : "all";
 
+    // Serialise the MAX+1 read and the INSERT below. Without this, two Step 1 requests arriving
+    // together both read the same max and are handed the same temp_pk.
+    admissionTimingRepository.lockTempPkAllocation();
     Integer nextPk = admissionTimingRepository.getNextTempPkVal();
 
     int trno;

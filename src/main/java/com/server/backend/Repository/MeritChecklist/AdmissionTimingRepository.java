@@ -48,6 +48,25 @@ List<Object[]> findPhaseDates(@Param("year") String year);
 @Query(value = "SELECT COALESCE(MAX(CAST(temp_pk AS integer)), 0) + 1 FROM public.admission_timings", nativeQuery = true)
 Integer getNextTempPkVal();
 
+/**
+ * Serialises temp_pk allocation between concurrent Step 1 calls.
+ *
+ * <p>{@link #getNextTempPkVal()} reads MAX(temp_pk)+1 and the caller then INSERTs that value, so two
+ * requests arriving together both read the same max and write the same temp_pk. That was observed in
+ * testing: district 11 and ITI 1536 were both handed 3283.
+ *
+ * <p>The advisory lock is transaction-scoped, so it is released automatically at commit or rollback
+ * and cannot leak if the request fails. Call it before {@link #getNextTempPkVal()}; both must run in
+ * the same transaction, which is why the caller is {@code @Transactional}. The id is an arbitrary
+ * constant -- it only has to be unique within this database, and no other code path takes this lock.
+ *
+ * <p>No schema change: temp_pk has no unique index because legacy rows already reuse values (an
+ * ITI's own code appears as its temp_pk), so the collision is prevented here rather than by a
+ * constraint.
+ */
+@Query(value = "SELECT 1 FROM pg_advisory_xact_lock(918273645)", nativeQuery = true)
+Integer lockTempPkAllocation();
+
 // ---------------------------------------------------------------------------
 // Native reads and writes for the two-step schedule flow.
 //
