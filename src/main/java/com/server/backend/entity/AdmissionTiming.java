@@ -1,15 +1,16 @@
 package com.server.backend.entity;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
-import java.time.LocalTime;
-import java.time.LocalDate;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+
 @Entity
-@Table(name = "admission_timings" ,schema="public")
-@Data
+@Table(name = "admission_timings", schema = "public")
 @IdClass(AdmissionTimingId.class)
 public class AdmissionTiming {
 
@@ -39,11 +40,11 @@ public class AdmissionTiming {
     private String caste;
 
     @Column(name = "trno", nullable = false)
-    private Integer trno;
+    private Long trno;
 
     @Column(name = "temp_pk", nullable = false)
     private String tempPk;
-    
+
     @Id
     @Column(name = "phase")
     private String phase;
@@ -51,4 +52,101 @@ public class AdmissionTiming {
     @Column(name = "year")
     private String year;
 
+    // Getters and Setters
+
+    public String getItiCode() {
+        return itiCode;
+    }
+
+    public void setItiCode(String itiCode) {
+        this.itiCode = itiCode;
+    }
+
+    public String getMinqul() {
+        return minqul;
+    }
+
+    public void setMinqul(String minqul) {
+        this.minqul = minqul;
+    }
+
+    public Integer getMeritFrom() {
+        return meritFrom;
+    }
+
+    public void setMeritFrom(Integer meritFrom) {
+        this.meritFrom = meritFrom;
+    }
+
+    public Integer getMeritTo() {
+        return meritTo;
+    }
+
+    public void setMeritTo(Integer meritTo) {
+        this.meritTo = meritTo;
+    }
+
+    public LocalDate getCalDate() {
+        return calDate;
+    }
+
+    public void setCalDate(LocalDate calDate) {
+        this.calDate = calDate;
+    }
+
+    public LocalTime getCalTime() {
+        return calTime;
+    }
+
+    public void setCalTime(LocalTime calTime) {
+        this.calTime = calTime;
+    }
+
+    public String getDistCode() {
+        return distCode;
+    }
+
+    public void setDistCode(String distCode) {
+        this.distCode = distCode;
+    }
+
+    public String getCaste() {
+        return caste;
+    }
+
+    public void setCaste(String caste) {
+        this.caste = caste;
+    }
+
+    public Long getTrno() {
+        return trno;
+    }
+
+    public void setTrno(Long trno) {
+        this.trno = trno;
+    }
+
+    public String getTempPk() {
+        return tempPk;
+    }
+
+    public void setTempPk(String tempPk) {
+        this.tempPk = tempPk;
+    }
+
+    public String getPhase() {
+        return phase;
+    }
+
+    public void setPhase(String phase) {
+        this.phase = phase;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
 }
