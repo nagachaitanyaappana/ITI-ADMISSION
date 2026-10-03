@@ -92,6 +92,23 @@ public class AuthService {
                 res.put("itiName", "");
             }
         }
+
+        // District name for role-3 users, mirroring itiName above: a district login holds a
+        // district code in ins_code. Without this the district pages had no name to show and fell
+        // back to the officer's username (or "N/A" where they read localStorage.displayName, which
+        // the session-based login never writes).
+        res.put("distName", "");
+        if (roleId != null && roleId == 3
+                && user.getDistCode() != null && !user.getDistCode().isBlank()) {
+            try {
+                String distName = jdbc.query(
+                        "SELECT dist_name FROM public.dist_mst WHERE dist_code = ? LIMIT 1",
+                        rs -> { rs.next(); return rs.getString(1); }, user.getDistCode());
+                res.put("distName", distName == null ? "" : distName);
+            } catch (Exception ignored) {
+                res.put("distName", "");
+            }
+        }
         return res;
     }
 

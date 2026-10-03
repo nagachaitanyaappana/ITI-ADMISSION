@@ -75,13 +75,37 @@ public class AdmissionTimingService {
         throw new IllegalArgumentException("No current phase found for year " + year);
     }
 
+    /**
+     * Resolves a date that the caller has already validated as present. Used by Step 2, where a
+     * scheduled session genuinely needs its date.
+     */
     private LocalDate resolveDate(String value) {
-        // A blank date used to fall back to LocalDate.now(), so submitting the schedule form
-        // with an empty date silently created a schedule starting today.
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("Date is required");
         }
+        return parseDate(value);
+    }
 
+    /**
+     * Resolves a date that may legitimately be absent, returning {@code null} for a blank value.
+     *
+     * <p>Used by Step 1 (schedule initialisation). That step only defines a scope -- category and
+     * qualification -- and its date field lives in Step 2, which the JSP only reveals once Step 1
+     * succeeds. Requiring the date here deadlocked the wizard: the field could not be filled in
+     * until the request that demanded it had already succeeded. Step 2 overwrites the null with the
+     * date the user actually types, so a placeholder row is created now and dated later.
+     *
+     * <p>{@code admission_timings.cal_date} is nullable, so the stored null is safe.
+     */
+    private LocalDate resolveOptionalDate(String value) {
+        if (value == null || value.isBlank()) {
+            logger.debug("resolveOptionalDate: input is null or blank, leaving the date unset");
+            return null;
+        }
+        return parseDate(value);
+    }
+
+    private LocalDate parseDate(String value) {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException ex) {
@@ -163,28 +187,23 @@ public Map<String, Object> createScheduleEntry(CreateEntryRequest req, CurrentUs
     String caste = req.reservation() != null ? req.reservation() : "all";
     String quality = req.minqul() != null ? req.minqul() : "all";
 
+    // Serialise the MAX+1 read and the INSERT below. Without this, two Step 1 requests arriving
+    // together both read the same max and are handed the same temp_pk.
+    admissionTimingRepository.lockTempPkAllocation();
     Integer nextPk = admissionTimingRepository.getNextTempPkVal();
 
-    AdmissionTiming timing = new AdmissionTiming();
-    timing.setItiCode(user.itiCode());
-    timing.setDistCode(user.distCode());
-    timing.setMinqul(quality);
-    timing.setCaste(caste);
-    timing.setMeritFrom(0);
-    timing.setMeritTo(0);
-    timing.setCalDate(resolveDate(req.calDate()));
-    timing.setCalTime(resolveTime(req.calTime()));
-    timing.setPhase(phase);
-    timing.setYear(year);
-    
+    int trno;
     try {
-        timing.setTrno(Integer.valueOf(user.insCode()));
+        trno = Integer.parseInt(user.insCode());
     } catch (NumberFormatException e) {
-        timing.setTrno(0);
+        trno = 0;
     }
-    timing.setTempPk(String.valueOf(nextPk));
+    String tempPk = String.valueOf(nextPk);
+    LocalDate calDate = resolveOptionalDate(req.calDate());
+    LocalTime calTime = resolveTime(req.calTime());
 
-    AdmissionTiming savedRecord = admissionTimingRepository.save(timing);
+    admissionTimingRepository.insertScheduleRow(
+        user.itiCode(), user.distCode(), quality, calDate, calTime, caste, trno, tempPk, phase, year);
 
     boolean useDist = "3".equals(user.roleId());
     String entityName = useDist 
@@ -194,7 +213,8 @@ public Map<String, Object> createScheduleEntry(CreateEntryRequest req, CurrentUs
     Map<String, Object> response = new HashMap<>();
     response.put("success", true);
     response.put("message", "Schedule entry created successfully");
-    response.put("data", savedRecord);
+    response.put("data", schedulePayload(useDist, useDist ? user.distCode() : user.itiCode(),
+        phase, year, tempPk, calDate, calTime, 0, 0, caste, quality, entityName));
     response.put("dist_name", useDist ? entityName : null);
     response.put("iti_name", useDist ? null : entityName);
 
@@ -212,53 +232,47 @@ public Map<String, Object> addScheduleTimings(UpdateTimingsRequest req, CurrentU
     boolean useDist = "3".equals(user.roleId());
     String entityValue = useDist ? user.distCode() : user.itiCode();
 
-    Optional<AdmissionTiming> placeholderOpt = useDist 
-        ? admissionTimingRepository.findFirstByDistCodeAndPhaseAndYearAndCasteAndMinqulAndMeritFrom(entityValue, phase, year, caste, quality, 0)
-        : admissionTimingRepository.findFirstByItiCodeAndPhaseAndYearAndCasteAndMinqulAndMeritFrom(entityValue, phase, year, caste, quality, 0);
+    List<String> placeholderPks = admissionTimingRepository.findPlaceholderTempPk(
+        useDist, entityValue, phase, year, caste, quality);
 
-    if (placeholderOpt.isEmpty()) {
-        throw new IllegalArgumentException("No available placeholder found for this " 
+    if (placeholderPks.isEmpty()) {
+        throw new IllegalArgumentException("No available placeholder found for this "
             + (useDist ? "District" : "ITI") + " and category. Please create it first.");
     }
-    AdmissionTiming target = placeholderOpt.get();
+    String tempPk = placeholderPks.get(0);
 
     LocalDate requestedDate = resolveDate(req.calDate());
     LocalTime requestedTime = resolveTime(req.calTime());
 
     boolean hasDateTimeOverlap = useDist
-        ? admissionTimingRepository.existsByDistCodeAndPhaseAndYearAndCalDateAndCalTimeAndTempPkNot(entityValue, phase, year, requestedDate, requestedTime, target.getTempPk())
-        : admissionTimingRepository.existsByItiCodeAndPhaseAndYearAndCalDateAndCalTimeAndTempPkNot(entityValue, phase, year, requestedDate, requestedTime, target.getTempPk());
+        ? admissionTimingRepository.existsByDistCodeAndPhaseAndYearAndCalDateAndCalTimeAndTempPkNot(entityValue, phase, year, requestedDate, requestedTime, tempPk)
+        : admissionTimingRepository.existsByItiCodeAndPhaseAndYearAndCalDateAndCalTimeAndTempPkNot(entityValue, phase, year, requestedDate, requestedTime, tempPk);
 
     if (hasDateTimeOverlap) {
         throw new IllegalArgumentException("The date " + requestedDate + " at " + requestedTime 
             + " is already booked for another session at this " + (useDist ? "District" : "ITI") + ".");
     }
 
-    List<AdmissionTiming> overlapList = useDist
-        ? admissionTimingRepository.findOverlappingDistMeritRanges(entityValue, phase, year, target.getTempPk(), req.meritFrom(), req.meritTo())
-        : admissionTimingRepository.findOverlappingItiMeritRanges(entityValue, phase, year, target.getTempPk(), req.meritFrom(), req.meritTo());
+    List<Object[]> overlapList = admissionTimingRepository.findOverlappingMeritRange(
+        useDist, entityValue, phase, year, tempPk, req.meritFrom(), req.meritTo());
 
     if (!overlapList.isEmpty()) {
-        AdmissionTiming existing = overlapList.get(0);
-        throw new IllegalArgumentException("The merit range " + req.meritFrom() + "-" + req.meritTo() 
-            + " overlaps with an existing entry (" + existing.getMeritFrom() + "-" + existing.getMeritTo() + ") for this " 
+        Object[] existing = overlapList.get(0);
+        throw new IllegalArgumentException("The merit range " + req.meritFrom() + "-" + req.meritTo()
+            + " overlaps with an existing entry (" + existing[0] + "-" + existing[1] + ") for this "
             + (useDist ? "District" : "ITI") + ".");
     }
 
-    target.setMeritFrom(req.meritFrom());
-    target.setMeritTo(req.meritTo());
-   
-System.out.println("Merit From (Request) = " + req.meritFrom());
-System.out.println("Merit To (Request) = " + req.meritTo());
+    int updated = admissionTimingRepository.updateScheduleRow(
+        useDist, entityValue, phase, year, caste, quality, tempPk,
+        req.meritFrom(), req.meritTo(), requestedDate, requestedTime);
 
-System.out.println("Merit From (Target) = " + target.getMeritFrom());
-System.out.println("Merit To (Target) = " + target.getMeritTo());
+    if (updated == 0) {
+        throw new IllegalArgumentException("The schedule placeholder for this "
+            + (useDist ? "District" : "ITI")
+            + " was already filled in by another session. Please create it again.");
+    }
 
-target.setCalDate(requestedDate);
-target.setCalTime(requestedTime);
-
-AdmissionTiming updatedRecord = admissionTimingRepository.save(target);
-   
     String entityName = useDist 
         ? admissionTimingRepository.findDistName(user.distCode()).orElse("Unknown")
         : admissionTimingRepository.findItiName(user.itiCode()).orElse("Unknown");
@@ -266,12 +280,95 @@ AdmissionTiming updatedRecord = admissionTimingRepository.save(target);
     Map<String, Object> response = new HashMap<>();
     response.put("success", true);
     response.put("message", "Schedule timings updated successfully");
-    response.put("data", updatedRecord);
+    response.put("data", schedulePayload(useDist, entityValue, phase, year, tempPk, requestedDate,
+        requestedTime, req.meritFrom(), req.meritTo(), caste, quality, entityName));
     response.put("dist_name", useDist ? entityName : null);
     response.put("iti_name", useDist ? null : entityName);
 
     return response;
 }
+
+/**
+ * Re-reads the row Step 2 wrote and shapes it like the entity used to serialise, so the JSP keeps
+ * receiving the same {@code data} object it did before ({@code minqul}, {@code reservation},
+ * {@code phase}, ...) without any entity hydration.
+ *
+ * <p>{@code dist_name} / {@code iti_name} are repeated inside {@code data} because the page renders
+ * the entity name from {@code result.data.dist_name || result.data.iti_name}
+ * ({@code checkmeritschedule/ScheduleEntry.jsp}, {@code showTimingForm}) -- reading them from the
+ * top level alone left both undefined there and the label fell through to a stale localStorage
+ * value. Only one of the two is populated, matching the top-level keys, which are kept because that
+ * is the shape the API has always returned.
+ */
+private Map<String, Object> schedulePayload(boolean useDist, String code, String phase, String year,
+        String tempPk, LocalDate calDate, LocalTime calTime, Integer meritFrom, Integer meritTo,
+        String caste, String minqul, String entityName) {
+    List<Object[]> rows = admissionTimingRepository.findRowByTempPk(useDist, code, phase, year, tempPk);
+    Object[] row = rows.isEmpty() ? new Object[] { tempPk, calDate, meritFrom, meritTo, calTime }
+                                 : rows.get(0);
+
+    DateTimeFormatter dateWriter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    LocalDate storedDate = asLocalDate(row[1]);
+
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("tempPk", row[0]);
+    payload.put("phase", phase);
+    payload.put("year", year);
+    payload.put("itiCode", useDist ? null : code);
+    payload.put("distCode", useDist ? code : null);
+    payload.put("minqul", minqul);
+    payload.put("reservation", caste);
+    payload.put("meritFrom", row[2]);
+    payload.put("meritTo", row[3]);
+    payload.put("calDate", storedDate == null ? null : storedDate.format(dateWriter));
+    payload.put("calTime", asLocalTime(row[4]) != null ? asLocalTime(row[4]) : calTime);
+    payload.put("dist_name", useDist ? entityName : null);
+    payload.put("iti_name", useDist ? null : entityName);
+    return payload;
+}
+
+    /**
+     * Native queries hand back {@code java.sql.Date}/{@code java.sql.Time} over plain JDBC and
+     * {@code LocalDate}/{@code LocalTime} over the JPA driver, so both shapes are accepted. Casting
+     * to one concrete type inline is what used to throw ClassCastException on the other path.
+     */
+    private static LocalDate asLocalDate(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof LocalDate localDate) {
+            return localDate;
+        }
+        if (value instanceof java.sql.Date sqlDate) {
+            return sqlDate.toLocalDate();
+        }
+        if (value instanceof LocalDateTime dateTime) {
+            return dateTime.toLocalDate();
+        }
+        if (value instanceof Date legacy) {
+            return LocalDateTime.ofInstant(legacy.toInstant(), ZoneId.systemDefault()).toLocalDate();
+        }
+        return null;
+    }
+
+    private static LocalTime asLocalTime(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof LocalTime localTime) {
+            return localTime;
+        }
+        if (value instanceof java.sql.Time sqlTime) {
+            return sqlTime.toLocalTime();
+        }
+        if (value instanceof LocalDateTime dateTime) {
+            return dateTime.toLocalTime();
+        }
+        if (value instanceof Date legacy) {
+            return LocalDateTime.ofInstant(legacy.toInstant(), ZoneId.systemDefault()).toLocalTime();
+        }
+        return null;
+    }
 
     /**
      * The admission date window comes back as {@code LocalDateTime} from a Spring Data native query
@@ -331,32 +428,28 @@ AdmissionTiming updatedRecord = admissionTimingRepository.save(target);
         filterTime = null;
     }
 
-    List<AdmissionTiming> timingsList = admissionTimingRepository.findFilteredSchedules(useDist, code, phase, year, caste, minqul);
-    if (filterTime != null) {
-        // Applied in memory: the per-institution result is small, and binding a null calTime into
-        // the query is what used to break this endpoint.
-        List<AdmissionTiming> byTime = new ArrayList<>();
-        for (AdmissionTiming timing : timingsList) {
-            if (filterTime.equals(timing.getCalTime())) {
-                byTime.add(timing);
-            }
-        }
-        timingsList = byTime;
-    }
+    List<Object[]> rowList = admissionTimingRepository.findFilteredScheduleRows(useDist, code, phase, year, caste, minqul);
+
+    // Native columns: cal_date, merit_from, merit_to, caste, minqul, cal_time.
+    // Null-safe per element -- a single malformed row must not hide every other schedule behind it.
     List<ScheduleViewResponse> formattedList = new ArrayList<>();
 
     DateTimeFormatter dateWriter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-    for (AdmissionTiming t : timingsList) {
-        String dateFormatted = t.getCalDate() != null ? t.getCalDate().format(dateWriter) : "";
-        String meritRange = t.getMeritFrom() + "-" + t.getMeritTo();
-        
+    for (Object[] row : rowList) {
+        LocalDate rowDate = asLocalDate(row[0]);
+        LocalTime rowTime = asLocalTime(row[5]);
+
+        if (filterTime != null && !filterTime.equals(rowTime)) {
+            continue;
+        }
+
         formattedList.add(new ScheduleViewResponse(
-            dateFormatted,
-            meritRange,
-            t.getCaste(),
-            t.getMinqul(),
-            t.getCalTime()
+            rowDate == null ? "" : rowDate.format(dateWriter),
+            row[1] + "-" + row[2],
+            row[3] == null ? null : String.valueOf(row[3]),
+            row[4] == null ? null : String.valueOf(row[4]),
+            rowTime
         ));
     }
 
