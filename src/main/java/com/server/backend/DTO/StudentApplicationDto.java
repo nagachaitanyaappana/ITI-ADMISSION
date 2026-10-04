@@ -46,7 +46,20 @@ public class StudentApplicationDto {
     private Boolean phc;
     private String pwdCategory;
 
+    // Mirrors StudentApplication.exservice column; transferred via
+    // BeanUtils.copyProperties + Jackson (see StudentApplicationServiceImpl),
+    // i.e. no direct Java call site. The explicit accessor below counts as a
+    // real read/write so the JDT 'unused field' analysis stays satisfied
+    // (a bare @SuppressWarnings("unused") is itself flagged as 1102 here).
     private Boolean exservice;
+
+    public Boolean getExservice() {
+        return exservice;
+    }
+
+    public void setExservice(Boolean exservice) {
+        this.exservice = exservice;
+    }
 
     private Boolean sscPassed;
     private Boolean interPassed;
@@ -86,6 +99,26 @@ public class StudentApplicationDto {
     private String casteCertificate;
     private String tc;
 
+    // Mirrors StudentApplication.phChallenge / exService columns; transferred via
+    // BeanUtils.copyProperties + Jackson (see StudentApplicationServiceImpl).
+    // Explicit accessors below count as a real Java read/write so the
+    // JDT 'unused field' analysis stays satisfied.
     private String phChallenge;
     private String exService;
+
+    public String getPhChallenge() {
+        return phChallenge;
+    }
+
+    public void setPhChallenge(String phChallenge) {
+        this.phChallenge = phChallenge;
+    }
+
+    public String getExService() {
+        return exService;
+    }
+
+    public void setExService(String exService) {
+        this.exService = exService;
+    }
 }

@@ -1,7 +1,6 @@
 package com.server.backend.service.Student;
 
 import com.server.backend.DTO.StudentCandMarksDto;
-import com.server.backend.entity.StudentApplication;
 import com.server.backend.entity.StudentCandMarks;
 import com.server.backend.Repository.Student.StudentApplicationRepository;
 import com.server.backend.Repository.Student.StudentCandMarksRepository;
@@ -22,7 +21,7 @@ public class StudentCandMarksServiceImpl implements StudentCandMarksService {
     public String saveMarks(StudentCandMarksDto dto) {
 
         // Check whether regid exists in student_application
-        StudentApplication student = applicationRepository.findById(dto.getRegid())
+        applicationRepository.findById(dto.getRegid())
                 .orElseThrow(() -> new RuntimeException("Student Not Found"));
 
         String regid = String.valueOf(dto.getRegid());

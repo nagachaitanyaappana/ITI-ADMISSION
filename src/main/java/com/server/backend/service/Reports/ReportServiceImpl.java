@@ -76,17 +76,6 @@ public class ReportServiceImpl implements ReportService {
         return String.valueOf(Year.now().getValue());
     }
 
-    /**
-     * Seat capacity helper — mirrors old
-     * {@code sum(value::dec) from iti_seatmatrix, each(strength)}.
-     * Sums every hstore entry so multi-key strength maps are not under-counted.
-     */
-    private static final String SEAT_SUM_EXPR =
-            "(SELECT COALESCE(SUM(value::numeric),0) FROM each(sm.strength))";
-
-    /** Filled seats helper — old code used COUNT(*) everywhere for abstracts. */
-    private static final String FILLED_COUNT_EXPR = "COUNT(*)";
-
     // 1. ITI Wise Status Report
     @Override
     public List<ItiWiseStatusResponse> getItiWiseStatus(String year, String distCode, String itiCode, int page, int size) {
@@ -1716,7 +1705,8 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public long countItiWiseStatus(String year, String distCode, String itiCode) {
-        String effectiveYear = (year != null && !year.isEmpty()) ? year : String.valueOf(Year.now().getValue());
+        // Note: year intentionally unused here — this counts ITI master rows for
+        // pagination (same as getItiWiseStatus's outer query), not admissions.
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM (SELECT DISTINCT dist_code, dist_name FROM public.dist_mst) d JOIN public.iti i ON d.dist_code = i.dist_code WHERE 1=1");
         List<Object> params = new ArrayList<>();
         if (distCode != null && !"All".equalsIgnoreCase(distCode)) {

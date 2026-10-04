@@ -26,16 +26,33 @@ public class Schedule_Entry_ServiceImpl implements Schedule_Entry_Service {
             String phase,
             String year) {
 
+        // "All" from Screen 1 means wildcard. Normalise to lower-case "all" so the
+        // JPQL wildcard check matches regardless of the case the UI sends ("All",
+        // "ALL", "all"), and trim blanks to avoid silent empty results.
+        String minqulFilter = normaliseFilter(qualification);
+        String casteFilter = normaliseFilter(caste);
+
         List<AdmissionTiming> timings =
-                repository.findByMinqulAndCasteAndPhaseAndYear(
-                        qualification,
-                        caste,
-                        phase,
-                        year);
+                repository.findFilteredScheduleEntries(
+                        minqulFilter,
+                        casteFilter,
+                        phase == null ? null : phase.trim(),
+                        year == null ? null : year.trim());
 
         return timings.stream()
                 .map(this::convertToDTO)
                 .toList();
+    }
+
+    private String normaliseFilter(String value) {
+        if (value == null) {
+            return "all";
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty() || trimmed.equalsIgnoreCase("all")) {
+            return "all";
+        }
+        return trimmed;
     }
 
     private Schedule_Entry_DTO convertToDTO(
