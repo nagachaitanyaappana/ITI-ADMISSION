@@ -23,7 +23,7 @@ public class StudentApplication {
             allocationSize = 1
     )
     @Column(name = "regid")
-    private Integer regid;
+    private Long regid;
 
     @Column(name = "ssc_regno", nullable = false)
     private String sscRegNo;

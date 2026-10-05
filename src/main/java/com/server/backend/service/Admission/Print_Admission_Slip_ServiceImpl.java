@@ -23,7 +23,7 @@ public class Print_Admission_Slip_ServiceImpl
             String admissionNumber) {
 
         iti_admissions admission = repository
-                .findByAdm_num(admissionNumber)
+                .findByAdmissionNumber(admissionNumber)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Admission number not found"));
 
