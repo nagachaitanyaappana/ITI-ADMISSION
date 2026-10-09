@@ -15,6 +15,12 @@
     <description>ITI Admission Backend</description>
     <properties>
         <java.version>21</java.version>
+        <!-- Pin Lombok pre-JDK25: 1.18.40+ generates Flexible Constructor Bodies
+             (source level 25) code for @XArgsConstructor/@RequiredArgsConstructor,
+             which ECJ flags as 4195411 on this Java 21 project.
+             Spring Boot 4.0.8 manages 1.18.46; override it here.
+             1.18.38 is cached locally and supports JDK 21/22. -->
+        <lombok.version>1.18.38</lombok.version>
     </properties>
     <dependencies>
         <dependency>

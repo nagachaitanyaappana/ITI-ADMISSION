@@ -4,18 +4,22 @@ import com.server.backend.DTO.StudentCandMarksDto;
 import com.server.backend.entity.StudentCandMarks;
 import com.server.backend.Repository.Student.StudentApplicationRepository;
 import com.server.backend.Repository.Student.StudentCandMarksRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
 public class StudentCandMarksServiceImpl implements StudentCandMarksService {
 
     private final StudentCandMarksRepository marksRepository;
     private final StudentApplicationRepository applicationRepository;
+
+    public StudentCandMarksServiceImpl(StudentCandMarksRepository marksRepository,
+            StudentApplicationRepository applicationRepository) {
+        this.marksRepository = marksRepository;
+        this.applicationRepository = applicationRepository;
+    }
 
     @Override
     public String saveMarks(StudentCandMarksDto dto) {

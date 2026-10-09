@@ -4,22 +4,25 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class VerifiedApplicationCountReportResponse {
     private String year;
     @JsonProperty("dist_code")
     private String distCode;
     private List<VerifiedRow> data;
 
+    public VerifiedApplicationCountReportResponse(String year, String distCode, List<VerifiedRow> data) {
+        this.year = year;
+        this.distCode = distCode;
+        this.data = data;
+    }
+
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class VerifiedRow {
         @JsonProperty("District Name")
         private String districtName;
@@ -31,5 +34,14 @@ public class VerifiedApplicationCountReportResponse {
         private int rejected;
         @JsonProperty("Unverified")
         private int unverified;
+
+        public VerifiedRow(String districtName, int totalApplications, int approved, int rejected,
+                int unverified) {
+            this.districtName = districtName;
+            this.totalApplications = totalApplications;
+            this.approved = approved;
+            this.rejected = rejected;
+            this.unverified = unverified;
+        }
     }
 }

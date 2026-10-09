@@ -1,10 +1,8 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class ItiWiseStatusResponse {
     private String distName;
     private String itiName;
@@ -18,4 +16,21 @@ public class ItiWiseStatusResponse {
     private int phoneDuplicateRecords;
     private int aadharDuplicateRecords;
     private int emailDuplicateRecords;
+
+    public ItiWiseStatusResponse(String distName, String itiName, String itiCode, int total, int success,
+            int pendingSid, int verified, int toBeVerified, int toBeUpdated, int phoneDuplicateRecords,
+            int aadharDuplicateRecords, int emailDuplicateRecords) {
+        this.distName = distName;
+        this.itiName = itiName;
+        this.itiCode = itiCode;
+        this.total = total;
+        this.success = success;
+        this.pendingSid = pendingSid;
+        this.verified = verified;
+        this.toBeVerified = toBeVerified;
+        this.toBeUpdated = toBeUpdated;
+        this.phoneDuplicateRecords = phoneDuplicateRecords;
+        this.aadharDuplicateRecords = aadharDuplicateRecords;
+        this.emailDuplicateRecords = emailDuplicateRecords;
+    }
 }

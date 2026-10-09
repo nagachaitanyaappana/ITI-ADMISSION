@@ -1,12 +1,8 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class IndustryPartnerDetailsRequest {
 
     private String distCode;
@@ -19,4 +15,18 @@ public class IndustryPartnerDetailsRequest {
 
     private String revisedLeadIndustryPartner;
     private String entryBy;
+
+    public IndustryPartnerDetailsRequest() {
+    }
+
+    public IndustryPartnerDetailsRequest(String distCode, String itiCode,
+            String revisedLeadSector, String proposedNewTrade,
+            String revisedLeadIndustryPartner, String entryBy) {
+        this.distCode = distCode;
+        this.itiCode = itiCode;
+        this.revisedLeadSector = revisedLeadSector;
+        this.proposedNewTrade = proposedNewTrade;
+        this.revisedLeadIndustryPartner = revisedLeadIndustryPartner;
+        this.entryBy = entryBy;
+    }
 }

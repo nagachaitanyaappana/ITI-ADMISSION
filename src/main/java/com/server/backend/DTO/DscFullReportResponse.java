@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +17,6 @@ public class DscFullReportResponse {
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class Meta {
         @JsonProperty("selection_type")
         private String selectionType;
@@ -26,21 +24,31 @@ public class DscFullReportResponse {
         private String phase;
         @JsonProperty("dist_code")
         private String distCode;
+
+        public Meta(String selectionType, String session, String phase, String distCode) {
+            this.selectionType = selectionType;
+            this.session = session;
+            this.phase = phase;
+            this.distCode = distCode;
+        }
     }
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class ItiInfo {
         @JsonProperty("iti_code")
         private String itiCode;
         @JsonProperty("iti_name")
         private String itiName;
+
+        public ItiInfo(String itiCode, String itiName) {
+            this.itiCode = itiCode;
+            this.itiName = itiName;
+        }
     }
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class TradeInfo {
         @JsonProperty("trade_code")
         private String tradeCode;
@@ -48,11 +56,16 @@ public class DscFullReportResponse {
         private String tradeName;
         @JsonProperty("total_strength")
         private int totalStrength;
+
+        public TradeInfo(String tradeCode, String tradeName, int totalStrength) {
+            this.tradeCode = tradeCode;
+            this.tradeName = tradeName;
+            this.totalStrength = totalStrength;
+        }
     }
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class CategoryGroup {
         @JsonProperty("category_code")
         private String categoryCode;
@@ -60,11 +73,19 @@ public class DscFullReportResponse {
         private int filled;
         private int vacant;
         private List<CandidateRow> candidates;
+
+        public CategoryGroup(String categoryCode, int strength, int filled, int vacant,
+                List<CandidateRow> candidates) {
+            this.categoryCode = categoryCode;
+            this.strength = strength;
+            this.filled = filled;
+            this.vacant = vacant;
+            this.candidates = candidates;
+        }
     }
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class CandidateRow {
         private int slNo;
         private String rank;
@@ -77,5 +98,17 @@ public class DscFullReportResponse {
         @JsonProperty("date_of_birth")
         private String dateOfBirth;
         private String caste;
+
+        public CandidateRow(int slNo, String rank, String admissionNumber, String name, String fatherName,
+                String gender, String dateOfBirth, String caste) {
+            this.slNo = slNo;
+            this.rank = rank;
+            this.admissionNumber = admissionNumber;
+            this.name = name;
+            this.fatherName = fatherName;
+            this.gender = gender;
+            this.dateOfBirth = dateOfBirth;
+            this.caste = caste;
+        }
     }
 }

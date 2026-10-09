@@ -1,7 +1,8 @@
 package com.server.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,10 +11,10 @@ import java.time.LocalDateTime;
 @Table(name = "student_application")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class StudentApplication {
+
+    public StudentApplication() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_application_regid_seq")

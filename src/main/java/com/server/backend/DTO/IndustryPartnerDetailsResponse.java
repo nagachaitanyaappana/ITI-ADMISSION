@@ -1,14 +1,10 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class IndustryPartnerDetailsResponse {
 
     private Long pid;
@@ -30,4 +26,22 @@ public class IndustryPartnerDetailsResponse {
     private String entryBy;
 
     private Timestamp entryDate;
+
+    public IndustryPartnerDetailsResponse() {
+    }
+
+    public IndustryPartnerDetailsResponse(Long pid, String distCode, String itiCode,
+            String distName, String itiName, String revisedLeadSector, String proposedNewTrade,
+            String revisedLeadIndustryPartner, String entryBy, Timestamp entryDate) {
+        this.pid = pid;
+        this.distCode = distCode;
+        this.itiCode = itiCode;
+        this.distName = distName;
+        this.itiName = itiName;
+        this.revisedLeadSector = revisedLeadSector;
+        this.proposedNewTrade = proposedNewTrade;
+        this.revisedLeadIndustryPartner = revisedLeadIndustryPartner;
+        this.entryBy = entryBy;
+        this.entryDate = entryDate;
+    }
 }

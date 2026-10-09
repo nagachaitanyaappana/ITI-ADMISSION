@@ -1,10 +1,8 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class ApplicantReportResponse {
     private String sscRegno;
     private String mobileNo;
@@ -12,4 +10,14 @@ public class ApplicantReportResponse {
     private String name;
     private String fatherName;
     private String motherName;
+
+    public ApplicantReportResponse(String sscRegno, String mobileNo, String regId,
+            String name, String fatherName, String motherName) {
+        this.sscRegno = sscRegno;
+        this.mobileNo = mobileNo;
+        this.regId = regId;
+        this.name = name;
+        this.fatherName = fatherName;
+        this.motherName = motherName;
+    }
 }

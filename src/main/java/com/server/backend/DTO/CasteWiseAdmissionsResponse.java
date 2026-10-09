@@ -1,10 +1,8 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class CasteWiseAdmissionsResponse {
     private String districtCode;
     private String districtName;
@@ -23,4 +21,26 @@ public class CasteWiseAdmissionsResponse {
     private int scIII;
     private int sp;
     private int st;
+
+    public CasteWiseAdmissionsResponse(String districtCode, String districtName, int bcA,
+            int bcB, int bcC, int bcD, int bcE, int ews, int exS, int im, int oc, int ph,
+            int scI, int scII, int scIII, int sp, int st) {
+        this.districtCode = districtCode;
+        this.districtName = districtName;
+        this.bcA = bcA;
+        this.bcB = bcB;
+        this.bcC = bcC;
+        this.bcD = bcD;
+        this.bcE = bcE;
+        this.ews = ews;
+        this.exS = exS;
+        this.im = im;
+        this.oc = oc;
+        this.ph = ph;
+        this.scI = scI;
+        this.scII = scII;
+        this.scIII = scIII;
+        this.sp = sp;
+        this.st = st;
+    }
 }

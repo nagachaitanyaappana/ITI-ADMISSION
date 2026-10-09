@@ -3,7 +3,6 @@ package com.server.backend.service.Student;
 import com.server.backend.DTO.StudentApplicationDto;
 import com.server.backend.entity.StudentApplication;
 import com.server.backend.Repository.Student.StudentApplicationRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import java.beans.PropertyDescriptor;
@@ -19,13 +18,21 @@ import com.server.backend.Repository.MeritChecklist.CasteMasterRepository;
 import com.server.backend.Repository.Student.SubCasteMasterPublicRepository;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
 @Service
-@RequiredArgsConstructor
 public class StudentApplicationServiceImpl implements StudentApplicationService {
 
     private final StudentApplicationRepository repository;
     private final CasteMasterRepository casteMasterRepository;
     private final SubCasteMasterPublicRepository subCasteMasterRepository;
+
+    public StudentApplicationServiceImpl(StudentApplicationRepository repository,
+            CasteMasterRepository casteMasterRepository,
+            SubCasteMasterPublicRepository subCasteMasterRepository) {
+        this.repository = repository;
+        this.casteMasterRepository = casteMasterRepository;
+        this.subCasteMasterRepository = subCasteMasterRepository;
+    }
 
     @Override
     public StudentApplicationDto saveStudent(StudentApplicationDto dto) {

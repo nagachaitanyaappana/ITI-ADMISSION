@@ -1,10 +1,8 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class IndustryPartnerExcelRow {
 
     private String distName;
@@ -13,4 +11,15 @@ public class IndustryPartnerExcelRow {
     private String revisedLeadSector;
     private String proposedNewTrade;
     private String revisedLeadIndustryPartner;
+
+    public IndustryPartnerExcelRow(String distName, String itiName, String itiCode,
+            String revisedLeadSector, String proposedNewTrade,
+            String revisedLeadIndustryPartner) {
+        this.distName = distName;
+        this.itiName = itiName;
+        this.itiCode = itiCode;
+        this.revisedLeadSector = revisedLeadSector;
+        this.proposedNewTrade = proposedNewTrade;
+        this.revisedLeadIndustryPartner = revisedLeadIndustryPartner;
+    }
 }

@@ -9,15 +9,17 @@ import com.server.backend.DTO.ShiftUnitPermittedResponseDto;
 import com.server.backend.service.ITI.DGTPermittedShiftsUnits;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @Tag(name = "ITI")
 @RestController
 @RequestMapping("/api/shift-unit-permitted")
-@RequiredArgsConstructor
 public class ShiftUnitPermittedController {
 
     private final DGTPermittedShiftsUnits service;
+
+    public ShiftUnitPermittedController(DGTPermittedShiftsUnits service) {
+        this.service = service;
+    }
 
     // Save record
     @PutMapping

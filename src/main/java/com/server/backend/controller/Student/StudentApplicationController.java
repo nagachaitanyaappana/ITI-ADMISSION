@@ -3,7 +3,6 @@ package com.server.backend.controller.Student;
 import com.server.backend.DTO.StudentApplicationDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.server.backend.service.Student.StudentApplicationService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +13,13 @@ import com.server.backend.entity.SubCasteMasterPublic;
 @Tag(name = "Student")
 @RestController
 @RequestMapping("/api/student")
-@RequiredArgsConstructor
 public class StudentApplicationController {
 
     private final StudentApplicationService service;
+
+    public StudentApplicationController(StudentApplicationService service) {
+        this.service = service;
+    }
 
     // Save Student
     @PostMapping("/save")

@@ -1,12 +1,8 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class IndustryTradeMappingRequest {
 
     private Integer itiCode;
@@ -18,4 +14,16 @@ public class IndustryTradeMappingRequest {
     private String tradeName;
 
     private String tradeShort;
+
+    public IndustryTradeMappingRequest() {
+    }
+
+    public IndustryTradeMappingRequest(Integer itiCode, Long industryId, Integer tradeCode,
+            String tradeName, String tradeShort) {
+        this.itiCode = itiCode;
+        this.industryId = industryId;
+        this.tradeCode = tradeCode;
+        this.tradeName = tradeName;
+        this.tradeShort = tradeShort;
+    }
 }

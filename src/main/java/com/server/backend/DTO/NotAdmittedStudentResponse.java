@@ -2,7 +2,6 @@ package com.server.backend.DTO;
 
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -11,7 +10,6 @@ import lombok.Data;
  * in admissions.iti_admissions for the given year.
  */
 @Data
-@AllArgsConstructor
 public class NotAdmittedStudentResponse {
     private Long regid;
     private String name;
@@ -28,4 +26,24 @@ public class NotAdmittedStudentResponse {
     private String appStatus;
     private LocalDateTime entryDate;
     private LocalDateTime verifiedDate;
+
+    public NotAdmittedStudentResponse(Long regid, String name, String fname, String gender, String caste,
+            String subCaste, String dob, Long phno, String adarno, String email, String year, String phase,
+            String appStatus, LocalDateTime entryDate, LocalDateTime verifiedDate) {
+        this.regid = regid;
+        this.name = name;
+        this.fname = fname;
+        this.gender = gender;
+        this.caste = caste;
+        this.subCaste = subCaste;
+        this.dob = dob;
+        this.phno = phno;
+        this.adarno = adarno;
+        this.email = email;
+        this.year = year;
+        this.phase = phase;
+        this.appStatus = appStatus;
+        this.entryDate = entryDate;
+        this.verifiedDate = verifiedDate;
+    }
 }

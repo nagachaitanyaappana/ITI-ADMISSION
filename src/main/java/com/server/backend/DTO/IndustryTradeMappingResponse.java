@@ -1,12 +1,8 @@
 package com.server.backend.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class IndustryTradeMappingResponse {
 
     private Long slno;
@@ -18,4 +14,21 @@ public class IndustryTradeMappingResponse {
     private String tradeName;
     private String tradeShort;
     private Timestamp entryTime;
+
+    public IndustryTradeMappingResponse() {
+    }
+
+    public IndustryTradeMappingResponse(Long slno, Integer itiCode, Long industryId,
+            String industryName, String industryType, Integer tradeCode, String tradeName,
+            String tradeShort, Timestamp entryTime) {
+        this.slno = slno;
+        this.itiCode = itiCode;
+        this.industryId = industryId;
+        this.industryName = industryName;
+        this.industryType = industryType;
+        this.tradeCode = tradeCode;
+        this.tradeName = tradeName;
+        this.tradeShort = tradeShort;
+        this.entryTime = entryTime;
+    }
 }

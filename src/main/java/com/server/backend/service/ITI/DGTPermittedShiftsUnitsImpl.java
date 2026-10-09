@@ -16,13 +16,14 @@ import com.server.backend.entity.ShiftUnitPermitted;
 import com.server.backend.entity.ShiftUnitPermittedId;
 import com.server.backend.Repository.ITI.ShiftUnitPermittedRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class DGTPermittedShiftsUnitsImpl implements DGTPermittedShiftsUnits {
 
     private final ShiftUnitPermittedRepository repository;
+
+    public DGTPermittedShiftsUnitsImpl(ShiftUnitPermittedRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     @Transactional
